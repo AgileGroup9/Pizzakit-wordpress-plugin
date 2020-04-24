@@ -29,6 +29,10 @@ class Pizzakit {
 		if (isset($data["pizzakitFormSubmission"])) {
 			// $data is an associative array with the JSON data do something
 			// nice with it here.
+
+			// Respond with a JSON object by calling
+			// wp_send_json($response);
+			// where $response is an associative array.
 		}
 	}
 }
