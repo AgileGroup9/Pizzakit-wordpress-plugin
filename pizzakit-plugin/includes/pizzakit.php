@@ -33,8 +33,9 @@ class Pizzakit {
 			// Respond with a JSON object by calling
 			// wp_send_json($response);
 			// where $response is an associative array.
-		}
 	}
+
+	
 }
 
 ?>

@@ -1,1 +1,4 @@
-# Master-branchen lämnas tom eftersom ingenting är "final" och fungerande ännu. Se underliggande branches för eventuell progress.
+# Pizzakit wordpress plugin
+
+## Installation
+Copy the whole folder 'pizzakit-plugin' into .../wp-content/plugins/
