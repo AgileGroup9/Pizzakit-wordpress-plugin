@@ -33,7 +33,7 @@ class Pizzakit {
 		// In this the example it's "pizzakitFormSubmission".
 		if (isset($data["pizzakitFormSubmission"])) {
 
-			// "Critical error" is caused at this line.
+			// ------ "Critical error" is caused at this line.
 			Pizzakit::insert_into_tables($data);
 
 			// Respond with a JSON object by calling
@@ -55,7 +55,7 @@ class Pizzakit {
 				. $_data["comments"] . ')';
 		$wpdb->query($sql);
 
-		// Get the ID to use for this order
+		// ------ Get the ID to use for this order - might be broken
 		$_orderID = $wpdb->get_results("SELECT MAX(id)+1 FROM wp_orders", OBJECT);
 
 		//insert into entries
