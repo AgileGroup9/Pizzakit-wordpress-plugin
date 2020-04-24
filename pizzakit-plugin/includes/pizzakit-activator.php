@@ -20,7 +20,7 @@ class Pizzakit_Activator {
     // WP_ORDERS
     if ($wpdb->get_var('SHOW TABLES LIKE wp_orders') != 'wp_orders') {
       $sql = 'CREATE TABLE wp_orders(
-        id INTEGER(10) UNSIGNED AUTO_INCREMENT,
+        id INTEGER(10) UNSIGNED,
         email VARCHAR(100),
         name TEXT,
   			telNr VARCHAR(15),
