@@ -13,6 +13,12 @@ class Pizzakit {
 			true
 		);
 	}
+
+	public static function insert_table_data(){
+
+		
+
+	}
 }
 
 ?>
