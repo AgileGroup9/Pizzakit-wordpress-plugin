@@ -27,6 +27,7 @@ class Pizzakit_Activator {
   			address TEXT,
   			doorCode VARCHAR(10),
         postalCode VARCHAR(6),
+				comments TEXT,
         date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   			PRIMARY KEY (id)
       )';
@@ -38,7 +39,7 @@ class Pizzakit_Activator {
     // WP_ITEMS
     if ($wpdb->get_var('SHOW TABLES LIKE wp_items') != 'wp_items') {
       $sql = 'CREATE TABLE wp_items(
-        name VARCHAR(15) NOT NULL,
+        name VARCHAR(25) NOT NULL,
         price INT NOT NULL,
   			PRIMARY KEY (name)
       )';
