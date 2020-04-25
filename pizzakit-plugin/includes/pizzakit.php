@@ -20,6 +20,7 @@ class Pizzakit {
 	}
 
 	private static function handle_post() {
+
 		$json = file_get_contents("php://input");
 		$data = json_decode($json, true);
 
@@ -28,40 +29,90 @@ class Pizzakit {
 		// In this the example it's "pizzakitFormSubmission".
 		if (isset($data["pizzakitFormSubmission"])) {
 
-			// insert the data into the different tables
-			// This assumes that the data is in a map-structure with the column names as keys
-			insert_into_tables($data);
+			Pizzakit::insert_into_tables($data);
 
 			// Respond with a JSON object by calling
 			// wp_send_json($response);
 			// where $response is an associative array.
-	}
+		}
 
+		// Send a JSON object with the tag "addItemsToMenu"=true
+		// and an array of [itemname, price] to add them to the
+		// wp_items database table
+		if (isset($data["addItemsToMenu"])){
+
+			Pizzakit::add_menu_items($data);
+		}
+
+		// Send a JSON object with the tag "removeItemsFromMenu"=true
+		// and an array of item names to remove them from the
+		// wp_items database table
+		if (isset($data["removeItemsFromMenu"])){
+
+			Pizzakit::remove_menu_items($data);
+		}
+
+	}
 
 	private static function insert_into_tables($_data){
 
-		//insert into orders
-		$sql = "INSERT INTO wp_orders(email, name, telNr, address, doorCode, postalCode)
-			VALUES ("
-				. $_data['email'] . ", "
-				. $_data['name'] . ", "
-				. $_data['telNr'] . ", "
-				. $_data['address'] . ", "
-				. $_data['doorCode'] . ", "
-				. $_data['postalCode'] . ",)";
+		global $wpdb;
 
+		// Get the ID to use for this order
+		$_result = $wpdb->get_results("SELECT MAX(id)+1 AS maxID FROM wp_orders", OBJECT);
+		$_orderID	= $_result[0]->maxID;
+
+		//insert into orders
+		$sql = "INSERT INTO wp_orders(id, email, name, telNr, address, doorCode, postalCode, comments) VALUES ("
+				. $_orderID . ", '"
+				. $_data["email"] . "', '"
+				. $_data["name"] . "', '"
+				. $_data["telNr"] . "', '"
+				. $_data["address"] . "', '"
+				. $_data["doorCode"] . "', '"
+				. $_data["postalCode"] . "', '"
+				. $_data["comments"] . "')";
 		$wpdb->query($sql);
 
 		//insert into entries
-		$sql = "INSERT INTO wp_entries(orderID, item, quantity)
-			VALUES (
-				(SELECT MAX(id)+1 FROM wp_orders)), "
-				. $_data['item'] . ", "
-				. $_data['quantity'] . ")";
+		foreach ($_data["cart"] as $_item){
+			$sql = "INSERT INTO wp_entries(orderID, item, quantity)
+				VALUES ("
+					. $_orderID . ", '"
+					. $_item[0] . "', '"
+					. $_item[1] . "')";
 
-		$wpdb->query($sql);
-
+					$wpdb->query($sql);
+		}
 	}
+
+	private static function add_menu_items($_data){
+
+		global $wpdb;
+
+		//insert items
+		foreach ($_data["items"] as $_item){
+			$sql = "INSERT INTO wp_items(name, price)
+				VALUES ('"
+					. $_item[0] . "', '"
+					. $_item[1] . "')";
+
+					$wpdb->query($sql);
+		}
+	}
+
+		private static function remove_menu_items($_data){
+
+			global $wpdb;
+
+			//remove items
+			foreach ($_data["items"] as $_item){
+				$sql = "DELETE FROM wp_items WHERE name='" . $_item . "'";
+
+				$wpdb->query($sql);
+			}
+	}
+
 }
 
 ?>
