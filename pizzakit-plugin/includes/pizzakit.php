@@ -97,7 +97,6 @@ class Pizzakit {
 			$wpdb->delete($_table,$_whereArr);
 		}
 	}
-
 }
 
 ?>

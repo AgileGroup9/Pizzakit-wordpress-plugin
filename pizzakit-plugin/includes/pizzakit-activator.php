@@ -23,13 +23,13 @@ class Pizzakit_Activator {
         id INTEGER(10) UNSIGNED AUTO_INCREMENT,
         email VARCHAR(100),
         name TEXT,
-  			telNr VARCHAR(15),
-  			address TEXT,
-  			doorCode VARCHAR(10),
+  		telNr VARCHAR(15),
+  		address TEXT,
+  		doorCode VARCHAR(10),
         postalCode VARCHAR(6),
 				comments TEXT,
         date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  			PRIMARY KEY (id)
+  		PRIMARY KEY (id)
       )';
 
       dbDelta($sql);
