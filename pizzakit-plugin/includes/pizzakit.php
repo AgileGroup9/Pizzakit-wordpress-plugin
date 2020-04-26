@@ -31,9 +31,8 @@ class Pizzakit {
 
 			Pizzakit::insert_into_tables($data);
 
-			// Respond with a JSON object by calling
-			// wp_send_json($response);
-			// where $response is an associative array.
+			$response = array('orderPlaced' => true);
+			wp_send_json($response);
 		}
 	}
 
