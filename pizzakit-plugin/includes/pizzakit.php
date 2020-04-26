@@ -31,25 +31,24 @@ class Pizzakit {
 
 			Pizzakit::insert_into_tables($data);
 
-			// Respond with a JSON object by calling
-			// wp_send_json($response);
-			// where $response is an associative array.
+			$response = array('orderPlaced' => true);
+			wp_send_json($response);
 		}
 
-		// Send a JSON object with the tag "addItemsToMenu"=true
-		// and an array of [itemname, price] to add them to the
-		// wp_items database table
 		if (isset($data["addItemsToMenu"])){
 
 			Pizzakit::add_menu_items($data);
+			
+			$response = array('menuItemAdded' => true);
+			wp_send_json($response);
 		}
 
-		// Send a JSON object with the tag "removeItemsFromMenu"=true
-		// and an array of item names to remove them from the
-		// wp_items database table
 		if (isset($data["removeItemsFromMenu"])){
 
 			Pizzakit::remove_menu_items($data);
+			
+			$response = array('menuItemRemoved' => true);
+			wp_send_json($response);
 		}
 	}
 
