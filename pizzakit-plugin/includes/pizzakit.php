@@ -51,66 +51,52 @@ class Pizzakit {
 
 			Pizzakit::remove_menu_items($data);
 		}
-
 	}
 
 	private static function insert_into_tables($_data){
 
 		global $wpdb;
 
-		// Get the ID to use for this order
-		$_result = $wpdb->get_results("SELECT MAX(id)+1 AS maxID FROM wp_orders", OBJECT);
-		$_orderID	= $_result[0]->maxID;
-
-		//insert into orders
-		$sql = "INSERT INTO wp_orders(id, email, name, telNr, address, doorCode, postalCode, comments) VALUES ("
-				. $_orderID . ", '"
-				. $_data["email"] . "', '"
-				. $_data["name"] . "', '"
-				. $_data["telNr"] . "', '"
-				. $_data["address"] . "', '"
-				. $_data["doorCode"] . "', '"
-				. $_data["postalCode"] . "', '"
-				. $_data["comments"] . "')";
-		$wpdb->query($sql);
+		//insert into orders, using insert() function to get it prepared
+		$table = $wpdb->prefix. 'orders';
+		$data = array('id' => null,'email' => $_data["email"],'name' => $_data["name"],'telNr' => $_data["telNr"],
+			'address' => $_data["address"], 'doorCode' => $_data["doorCode"], 'postalCode' => $_data["postalCode"], 'comments' => $_data["comments"]);
+		$format = array('%d','%s','%s','%s','%s','%s','%s','%s');
+		$wpdb->insert($table,$data,$format);
+		$lastid = $wpdb->insert_id;
 
 		//insert into entries
 		foreach ($_data["cart"] as $_item){
-			$sql = "INSERT INTO wp_entries(orderID, item, quantity)
-				VALUES ("
-					. $_orderID . ", '"
-					. $_item[0] . "', '"
-					. $_item[1] . "')";
-
-					$wpdb->query($sql);
+			$table2 = $wpdb->prefix. 'entries';
+			$data = array('orderID' => $lastid,'item'=>$_item[0],'quantity'=>$_item[1]);
+			$format = array('%d','%s','%d');
+			$wpdb->insert($table2,$data,$format);
 		}
 	}
 
 	private static function add_menu_items($_data){
 
 		global $wpdb;
+		$table = $wpdb->prefix . 'items';
 
 		//insert items
 		foreach ($_data["items"] as $_item){
-			$sql = "INSERT INTO wp_items(name, price)
-				VALUES ('"
-					. $_item[0] . "', '"
-					. $_item[1] . "')";
-
-					$wpdb->query($sql);
+			$_dataArr = array('name' => $_item[0],'price'=>$_item[1]);
+			$format = array('%s','%d');
+			$wpdb->insert($table,$_dataArr,$format);
 		}
 	}
 
-		private static function remove_menu_items($_data){
+	private static function remove_menu_items($_data){
 
-			global $wpdb;
+		global $wpdb;
+		$table = $wpdb->prefix . 'items';
 
-			//remove items
-			foreach ($_data["items"] as $_item){
-				$sql = "DELETE FROM wp_items WHERE name='" . $_item . "'";
-
-				$wpdb->query($sql);
-			}
+		//remove items
+		foreach ($_data["items"] as $_item){
+			$_where = array('name' => $_item);
+			$wpdb->delete($table,$_where);
+		}
 	}
 
 }
