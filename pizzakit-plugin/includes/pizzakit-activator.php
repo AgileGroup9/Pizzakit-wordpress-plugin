@@ -27,7 +27,7 @@ class Pizzakit_Activator {
   		address TEXT,
   		doorCode VARCHAR(10),
         postalCode VARCHAR(6),
-		comments TEXT,
+				comments TEXT,
         date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   		PRIMARY KEY (id)
       )';
