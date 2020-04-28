@@ -11,10 +11,13 @@ class Pizzakit {
 	}
 
 	public static function enqueue_blocks() {
+		$assets_file = include plugin_dir_path( __FILE__ ) . '../order-form/index.asset.php';
+
 		wp_enqueue_script(
-			"pizzakit-order-form-js",
-			plugin_dir_url(__FILE__) . "../order-form/order-form.js",
-			array("wp-blocks", "wp-editor"),
+			'pizzakit-order-form-js',
+			plugin_dir_url(__FILE__) . '../order-form/index.js',
+			$asset_file['dependencies'],
+			$asset_file['version'],
 			true
 		);
 	}
