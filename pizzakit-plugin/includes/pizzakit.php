@@ -72,17 +72,25 @@ class Pizzakit {
 			$wpdb->insert($_table,$_dataArr,$_format);
 		}
 	}
-
-	private static function add_menu_items($_data){
+	public static function add_menu_items_at_start($json_file){
+		Pizzakit::add_menu_items(json_decode(file_get_contents($json_file),true));
+	}
+	
+	private static function add_menu_items($data){
 
 		global $wpdb;
-		$_table = $wpdb->prefix . 'items';
+		$table = $wpdb->prefix . 'items';
 
 		//insert items
-		foreach ($_data["items"] as $_item){
-			$_dataArr = array('name' => $_item[0],'price'=>$_item[1]);
-			$_format = array('%s','%d');
-			$wpdb->insert($_table,$_dataArr,$_format);
+		foreach ($data["main_items"] as $item){
+			$data_arr = array('name' => $item["name"], 'price' => $item["price"], "comment" => $item["comment"], "main_item" => true);
+			$format = array('%s','%d','%s','%d');
+			$wpdb->insert($table,$data_arr,$format);
+		}
+		foreach ($data["extras"] as $extra) {
+			$data_arr = array('name' => $extra["name"],'price' => $extra["price"],"comment" => $extra["comment"], "main_item" => false);
+			$format = array('%s','%d','%s','%d');
+			$wpdb->insert($table,$data_arr,$format);
 		}
 	}
 
