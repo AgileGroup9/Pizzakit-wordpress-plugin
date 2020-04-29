@@ -1,5 +1,6 @@
 import React from 'react';
 import Small_item from './Items';
+import './style.scss';
 
 
 // Main Application

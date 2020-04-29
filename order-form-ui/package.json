@@ -10,6 +10,10 @@
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^8.0.1",
-		"path": "^0.12.7"
+		"css-loader": "^3.5.3",
+		"path": "^0.12.7",
+		"sass": "^1.26.5",
+		"sass-loader": "^8.0.2",
+		"style-loader": "^1.2.1"
 	}
 }
