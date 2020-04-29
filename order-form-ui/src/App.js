@@ -172,78 +172,76 @@ class App extends React.Component {
 		// Renders form. For info about how to add stuff, google jsx
 		// TODO: remove inline css (code smell)
 		return(
-			<div className="container-fluid " style={{'max-width': '800px;'}}>
-				<div>
-					<div className="form-group">
-						<label>Storlek på pizzakit:</label>
-						<div>
-							<div className="kit-size">
-								{/* TODO, Dynamicaly render pizza-kit sizes*/}
-								<Small_item 
-									name="Picollo" 
-									count={this.state.cart.get('Picollo')}
-									onClick={(name,delta) => this.handle_cart_update(name,delta)}
-									desc={'- kit för 2 pizza'}
-								/>
-							</div>
-        
-							<div className="kit-size">
-								<Small_item
-									name="Grande" 
-									count={this.state.cart.get('Grande')}
-									onClick={(name,delta) => this.handle_cart_update(name,delta)}
-									desc={'- kit för 4 pizza'}
-								/>
-							</div>
+			<p>
+				<div className="form-group">
+					<h6>Storlek på pizzakit:</h6>
+					<div>
+						<div className="kit-size">
+							{/* TODO, Dynamicaly render pizza-kit sizes*/}
+							<Small_item 
+								name="Picollo" 
+								count={this.state.cart.get('Picollo')}
+								onClick={(name,delta) => this.handle_cart_update(name,delta)}
+								desc={'- kit för 2 pizza'}
+							/>
 						</div>
-						<div style={{'padding-top': '10px'}}>
-							<small className="form-text text-muted"> I alla pizzakit ingår Tomatsås, San Marzano Fior di Latte
-                                (mozarella) samt en basilikakruka</small>
+	
+						<div className="kit-size">
+							<Small_item
+								name="Grande" 
+								count={this.state.cart.get('Grande')}
+								onClick={(name,delta) => this.handle_cart_update(name,delta)}
+								desc={'- kit för 4 pizza'}
+							/>
 						</div>
 					</div>
-					<div className="h-divider"></div>
-
-					<div className="form-group">
-						<h4>Välj toppings:</h4>
-						{/*Extras are rendered here*/ toppings_list}
-					</div>
-					<div className="h-divider"></div>
-
-					<h4 style={{'padding-top': '15px', 'padding-bottom':'10px'}}> <b>Totalkostnad:</b> {sum}kr</h4>
-					<h5>(obligatoriska fält : <span>*</span>)</h5>
-					<div id="detail-form">
-						<div className="form-group smal" style={{'max-width': '250px'}} id="email">
-							<label htmlFor="email_inpt">Email<span>*</span>:</label>
-							<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')}   placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+"/>
-						</div>
-						<div className="form-group smal" id="tele">
-							<label htmlFor="tel_inpt">Telefonnummer<span>*</span>:</label>
-							<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="070......."/>
-						</div>
-						<div className="form-group smal">
-							<label htmlFor="name_inpt">Namn<span>*</span>:</label>
-							<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Glen Glensson"/>
-						</div>
-						<div className="form-group smal" >
-							<label htmlFor="addr_inpt">Leveransaddress<span>*</span>:</label>
-							<input type="text" name="address" id="addr_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Pizzagatan 123"/>
-						</div>
-						<div className="form-group smal" >
-							<label htmlFor="post_nr_inpt">Postkod<span>*</span>:</label>
-							<input type="text" name="postalCode" id="post_nr_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_postalCode_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="123 45"/>
-						</div>
-						<div className="form-group smal" >
-							<label htmlFor="code_inpt">Portkod:</label>
-							<input type="text" name="doorCode" id="code_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="0001"/>
-						</div>
-					</div>
-					<div className="h-divider"></div>
-					<div id="final-form">
-						<textarea name="comments" rows="2" cols="30" placeholder="Kommentarer" onChange={this.handle_detail_update}></textarea>
-						<button href="https://bottegamenomale.se/" onClick={() => this.handle_submit(this.post_address)} className="btn btn-primary">Gå till betalning</button>
+					<div>
+						<small className="form-text text-muted"> I alla pizzakit ingår Tomatsås, San Marzano Fior di Latte
+							(mozarella) samt en basilikakruka</small>
 					</div>
 				</div>
-			</div>
+				<hr/>
+
+				<div className="form-group">
+					<h6>Välj toppings:</h6>
+					{/*Extras are rendered here*/ toppings_list}
+				</div>
+				<hr/>
+
+				<h6><strong>Totalkostnad:</strong> {sum}kr</h6>
+				<p>(obligatoriska fält: <span>*</span>)</p>
+				<div id="detail-form">
+					<div className="form-group" id="email">
+						<label htmlFor="email_inpt">Email<span>*</span>:</label>
+						<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')} placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+"/>
+					</div>
+					<div className="form-group" id="tele">
+						<label htmlFor="tel_inpt">Telefonnummer<span>*</span>:</label>
+						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="070......."/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="name_inpt">Namn<span>*</span>:</label>
+						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Glen Glensson"/>
+					</div>
+					<div className="form-group" >
+						<label htmlFor="addr_inpt">Leveransaddress<span>*</span>:</label>
+						<input type="text" name="address" id="addr_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Pizzagatan 123"/>
+					</div>
+					<div className="form-group" >
+						<label htmlFor="post_nr_inpt">Postkod<span>*</span>:</label>
+						<input type="text" name="postalCode" id="post_nr_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_postalCode_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="123 45"/>
+					</div>
+					<div className="form-group" >
+						<label htmlFor="code_inpt">Portkod:</label>
+						<input type="text" name="doorCode" id="code_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="0001"/>
+					</div>
+				</div>
+				<hr/>
+				<div id="final-form">
+					<textarea name="comments" rows="2" cols="30" placeholder="Kommentarer" onChange={this.handle_detail_update}></textarea>
+					<button onClick={() => this.handle_submit(this.post_address)} className="btn btn-primary">Gå till betalning</button>
+				</div>
+			</p>
 		);
 	}
 }

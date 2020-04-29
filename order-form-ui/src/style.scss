@@ -1,15 +1,5 @@
-#pizzakit-order-form {
-	body {
-		font-family: "Special Elite";
-		font-size: 18px;
-		background-color: #fcf7e6;
-		line-height: 1.2;
-	}
-
-	head {
-		font-family: "Special Elite";
-		font-size: 26px;
-	}
+#pizzakit-order-form > p {
+	display: block;
 
 	label {
 		margin-top: 5px;
@@ -21,30 +11,6 @@
 		font-size: medium;
 	}
 
-	.h-divider {
-		margin-top: 5px;
-		margin-bottom: 5px;
-		height: 1px;
-		width: 100%;
-		border-top: 1px solid gray;
-	}
-
-	.centered {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		text-align: center;
-	}
-
-	.smal {
-		max-width: 250px;
-	}
-
-	.kit-size {
-		max-width: 400px;
-	}
-
 	.inpt {
 		display: flex;
 		flex-direction: row;
@@ -53,6 +19,10 @@
 		margin-left: 25px;
 		margin-bottom: 5px;
 		max-width: 420px;
+
+		label {
+			font-size: 2rem;
+		}
 	}
 
 	.number-select {
@@ -60,28 +30,38 @@
 		flex-basis: 0;
 		display: flex;
 		align-items: center;
+
+		&::before {
+			content: "";
+			flex-grow: 1;
+		}
+
+		button {
+			margin-right: 5px;
+			margin-left: 5px;
+			font-size: 14px;
+
+			outline: none;
+			text-decoration: none;
+		}
 	}
 
-	.number-select::before {
-		content: "";
-		flex-grow: 1;
-	}
-
-	.number-select button {
-		margin-right: 5px;
-		margin-left: 5px;
-		background-color: red;
-		font-size: 14px;
-	}
-
-	.invalid {
-		border: 1px solid red;
+	> h6 {
+		margin-bottom: 0px;
 	}
 
 	#detail-form {
 		display: grid;
 		gap: 10px;
 		grid-template: 80px / 225px;
+		
+		@media (min-width: 525px) {
+			grid-template: 80px 80px / 225px 225px;
+		}
+
+		.invalid {
+			border: 1px solid red;
+		}
 	}
 
 	#final-form {
@@ -89,36 +69,12 @@
 		flex-direction: row;
 		align-items: center;
 
-	}
-
-	#final-form button {
-		height: 50px;
-		margin-left: 20px;
-	}
-
-	#email {
-		grid-row: 1;
-		grid-column: 1;
-	}
-
-	#tele {
-		grid-row: 2;
-		grid-column: 1;
-	}
-
-	#method {
-		grid-row: 3;
-		grid-column: 1;
-	}
-
-	@media (min-width: 525px) {
-		#detail-form {
-			grid-template: 80px 80px / 225px 300px;
+		textarea {
+			resize: vertical;
 		}
 
-		#method {
-			grid-row: 1;
-			grid-column: 2;
+		button {
+			margin-left: 20px;
 		}
 	}
 }
