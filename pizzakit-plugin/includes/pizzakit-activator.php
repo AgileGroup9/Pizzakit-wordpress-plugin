@@ -18,18 +18,18 @@ class Pizzakit_Activator {
     */
 
     // WP_ORDERS
-    if ($wpdb->get_var('SHOW TABLES LIKE wp_orders') != 'wp_orders') {
-      $sql = 'CREATE TABLE wp_orders(
-        id INTEGER(10) UNSIGNED AUTO_INCREMENT,
-        email VARCHAR(100),
-        name TEXT,
-  		telNr VARCHAR(15),
-  		address TEXT,
-  		doorCode VARCHAR(10),
-        postalCode VARCHAR(6),
+    if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'orders') != $wpdb->prefix . 'orders') {
+      $sql = 'CREATE TABLE ' . $wpdb->prefix . 'orders(
+		    id INTEGER(10) UNSIGNED AUTO_INCREMENT,
+		    email VARCHAR(100),
+		    name TEXT,
+				telNr VARCHAR(15),
+				address TEXT,
+				doorCode VARCHAR(10),
+		    postalCode VARCHAR(6),
 				comments TEXT,
-        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  		PRIMARY KEY (id)
+		    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+				PRIMARY KEY (id)
       )';
 
       dbDelta($sql);
@@ -37,8 +37,8 @@ class Pizzakit_Activator {
     }
 
     // WP_ITEMS
-    if ($wpdb->get_var('SHOW TABLES LIKE wp_items') != 'wp_items') {
-      $sql = 'CREATE TABLE wp_items(
+    if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'items') != $wpdb->prefix . 'items') {
+      $sql = 'CREATE TABLE ' . $wpdb->prefix . 'items(
         name VARCHAR(25) NOT NULL,
         price INT NOT NULL,
   			PRIMARY KEY (name)
@@ -49,14 +49,14 @@ class Pizzakit_Activator {
     }
 
     // WP_ENTRIES
-    if ($wpdb->get_var('SHOW TABLES LIKE wp_entries') != 'wp_entries') {
-      $sql = 'CREATE TABLE wp_entries(
+    if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'entries') != $wpdb->prefix . 'entries') {
+      $sql = 'CREATE TABLE ' . $wpdb->prefix . 'entries(
         orderID INTEGER(10) UNSIGNED,
         item VARCHAR(15) NOT NULL,
         quantity INT NOT NULL,
         PRIMARY KEY(orderID, item),
-        FOREIGN KEY (orderID) REFERENCES wp_orders(id),
-        FOREIGN KEY (item) REFERENCES wp_items(name)
+        FOREIGN KEY (orderID) REFERENCES ' . $wpdb->prefix . 'orders(id),
+        FOREIGN KEY (item) REFERENCES ' . $wpdb->prefix . 'items(name)
       )';
 
       dbDelta($sql);
