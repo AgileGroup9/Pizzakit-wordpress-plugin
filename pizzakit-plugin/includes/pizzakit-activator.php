@@ -1,9 +1,8 @@
 <?php
 
 class Pizzakit_Activator {
-	
 	public static function activate() {
-
+		
 		global $wpdb;
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -11,7 +10,7 @@ class Pizzakit_Activator {
 		*
 		* wp_orders(_id_, email, name, telNr, address, doorCode, postalCode date)
 		*
-		* wp_items (_name_, price)
+		* wp_items (_name_, price,comment,main_item)
 		*
 		* wp_entries(_order_, _item_, quantity)
 		*   order -> wp_orders.id
@@ -19,53 +18,50 @@ class Pizzakit_Activator {
 		*/
 
 		// WP_ORDERS
-		if ($wpdb->get_var('SHOW TABLES LIKE wp_orders') != 'wp_orders') {
-		  $sql = 'CREATE TABLE wp_orders(
-			id INTEGER(10) UNSIGNED AUTO_INCREMENT,
+		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'orders') != $wpdb->prefix . 'orders') {
+			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'orders(
+			id INT UNSIGNED AUTO_INCREMENT,
 			email VARCHAR(100),
 			name TEXT,
 			telNr VARCHAR(15),
 			address TEXT,
 			doorCode VARCHAR(10),
-			postalCode VARCHAR(6),
+			postalCode VARCHAR(10),
 			comments TEXT,
 			date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY (id)
 		  )';
 
-		  dbDelta($sql);
-		  add_option('orders_version','1.0');
+			dbDelta($sql);
+			add_option('orders_version','1.0');
 		}
 
 		// WP_ITEMS
-		if ($wpdb->get_var('SHOW TABLES LIKE wp_items') != 'wp_items') {
-		  $sql = 'CREATE TABLE wp_items(
-			name VARCHAR(25) NOT NULL,
+		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'items') != $wpdb->prefix . 'items') {
+			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'items(
+			name VARCHAR(100) NOT NULL,
 			price INT NOT NULL,
 			comment TEXT,
 			main_item BOOLEAN,
-			PRIMARY KEY (name)
-		  )';
+  			PRIMARY KEY (name)
+			)';
 
-		  dbDelta($sql);
-		  add_option('items_version','1.0');
-		}
+			dbDelta($sql);
+			add_option('items_version','1.0');
+    }
 
 		// WP_ENTRIES
-		if ($wpdb->get_var('SHOW TABLES LIKE wp_entries') != 'wp_entries') {
-		  $sql = 'CREATE TABLE wp_entries(
-			orderID INTEGER(10) UNSIGNED,
-			item VARCHAR(15) NOT NULL,
+		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'entries') != $wpdb->prefix . 'entries') {
+			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'entries(
+			orderID INT UNSIGNED REFERENCES ' . $wpdb->prefix . 'orders(id),
+			item VARCHAR(100) NOT NULL,
 			quantity INT NOT NULL,
-			PRIMARY KEY(orderID, item),
-			FOREIGN KEY (orderID) REFERENCES wp_orders(id),
-			FOREIGN KEY (item) REFERENCES wp_items(name)
-		  )';
+			PRIMARY KEY(orderID, item)
+			)';
 
-		  dbDelta($sql);
-		  add_option('entries_version','1.0');
+			dbDelta($sql);
+			add_option('entries_version','1.0');
 		}
-		Pizzakit::add_menu_items_at_start(ABSPATH . 'wp-content/plugins/pizzakit-plugin/items_for_sale.json');
 	}
 }
 

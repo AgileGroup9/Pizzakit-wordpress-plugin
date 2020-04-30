@@ -9,6 +9,7 @@
 		{"name" : "Parmaskinka", "price" : 20, "comment" : "5 skivor"},
 		{"name" : "Prosciutto Cotto (kokt skinka)", "price" : 20, "comment" : "5 skivor"},
 		{"name" : "Buffelmozzarella", "price" : 25, "comment" : "125 g"},
+		{"name" : "Halv böj", "price" : 25, "comment" : "40%"},
 		{"name" : "En extra deg", "price" : 35, "comment" : null }
 	]
 }

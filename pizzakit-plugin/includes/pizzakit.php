@@ -35,19 +35,11 @@ class Pizzakit {
 			wp_send_json($response);
 		}
 
-		if (isset($data["addItemsToMenu"])){
+		if (isset($data["refresh_menu_items"])){
 
-			Pizzakit::add_menu_items($data);
+			Pizzakit::refresh_menu_items();
 
-			$response = array('menuItemAdded' => true);
-			wp_send_json($response);
-		}
-
-		if (isset($data["removeItemsFromMenu"])){
-
-			Pizzakit::remove_menu_items($data);
-
-			$response = array('menuItemRemoved' => true);
+			$response = array('menu_items_refreshed' => true);
 			wp_send_json($response);
 		}
 	}
@@ -72,15 +64,16 @@ class Pizzakit {
 			$wpdb->insert($_table,$_dataArr,$_format);
 		}
 	}
-	public static function add_menu_items_at_start($json_file){
-		Pizzakit::add_menu_items(json_decode(file_get_contents($json_file),true));
-	}
-	
-	private static function add_menu_items($data){
 
+	public static function refresh_menu_items(){
 		global $wpdb;
 		$table = $wpdb->prefix . 'items';
-
+		$json = file_get_contents(plugin_dir_path(__FILE__) . 'items_for_sale.json');
+		$data = json_decode($json, true);
+		
+		//drop all data in items-table
+		$wpdb->query('TRUNCATE TABLE ' . $table);
+		
 		//insert items
 		foreach ($data["main_items"] as $item){
 			$data_arr = array('name' => $item["name"], 'price' => $item["price"], "comment" => $item["comment"], "main_item" => true);
@@ -91,18 +84,6 @@ class Pizzakit {
 			$data_arr = array('name' => $extra["name"],'price' => $extra["price"],"comment" => $extra["comment"], "main_item" => false);
 			$format = array('%s','%d','%s','%d');
 			$wpdb->insert($table,$data_arr,$format);
-		}
-	}
-
-	private static function remove_menu_items($_data){
-
-		global $wpdb;
-		$_table = $wpdb->prefix . 'items';
-
-		//remove items
-		foreach ($_data["items"] as $_item){
-			$_whereArr = array('name' => $_item);
-			$wpdb->delete($_table,$_whereArr);
 		}
 	}
 }
