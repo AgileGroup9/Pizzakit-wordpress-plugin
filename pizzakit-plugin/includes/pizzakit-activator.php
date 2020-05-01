@@ -43,7 +43,7 @@ class Pizzakit_Activator {
 			price INT NOT NULL,
 			comment TEXT,
 			main_item BOOLEAN,
-  			PRIMARY KEY (name)
+  		PRIMARY KEY (name)
 			)';
 
 			dbDelta($sql);
