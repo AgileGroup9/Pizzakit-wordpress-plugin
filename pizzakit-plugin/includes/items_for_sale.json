@@ -1,0 +1,14 @@
+{
+	"main_items" : [
+		{"name" : "Grande", "price" : 265, "comment" : "4 st pizzor"},
+		{"name" : "Piccolo", "price" :175, "comment" : "2 st pizzor"}
+	],
+	"extras" : [
+		{"name" : "Salami Mild", "price" : 20, "comment" : "5 skivor"},
+		{"name" : "Salami Stark", "price" : 20, "comment" : "5 skivor"},
+		{"name" : "Parmaskinka", "price" : 20, "comment" : "5 skivor"},
+		{"name" : "Prosciutto Cotto (kokt skinka)", "price" : 20, "comment" : "5 skivor"},
+		{"name" : "Buffelmozzarella", "price" : 25, "comment" : "125 g"},
+		{"name" : "En extra deg", "price" : 35, "comment" : null }
+	]
+}
