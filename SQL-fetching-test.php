@@ -1,35 +1,22 @@
 <?php
 /* Template Name: Admin page */
-// Create connection
-//$conn = new mysqli("localhost", "root", "root", "wpdb");
+//Change orderID -> order, and 1/0 -> true/false
 
 global $wpdb;
 
-// Check connection
+$sql = "SELECT id FROM wp_orders";
+$orders = $wpdb->get_results($sql);
 
-if (!$wpdb->check_connection()) {
-    echo fuck;
-    //die();
-}
-
-$sql = "SELECT name FROM wp_items";
-$result = $wpdb->get_results($sql);
-
-//var_dump($result);
-
-//echo $result->name;
-
-if ($result[0] != NULL) {
-    // output data of each row
-    foreach($result as $p){
-      echo "Name: " . $p->name . "<br>";
+if ($orders[0] != NULL) {
+    foreach($orders as $o) {
+      echo "<br>Order ID: " . $o->id . "<br>";
+      $sql = "SELECT * FROM wp_entries WHERE orderID = " . $o->id;
+      $items = $wpdb->get_results($sql);
+      foreach ($items as $i) {
+          echo "- " . $i->quantity . " x " . $i->item . "<br>";
+      }
     }
-  } else {
-      echo "0 results";
-  }
-    /*while($row = $result->fetch_assoc()) {
-        echo "id: " . $row["id"] . "<br>";
-    }*/
-
-//$conn->close();
+} else {
+  echo "No orders found";
+}
 ?>
