@@ -1,0 +1,80 @@
+#pizzakit-order-form > p {
+	display: block;
+
+	label {
+		margin-top: 5px;
+		font-weight: 400;
+	}
+
+	span {
+		color: red;
+		font-size: medium;
+	}
+
+	.inpt {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		margin-left: 25px;
+		margin-bottom: 5px;
+		max-width: 420px;
+
+		label {
+			font-size: 2rem;
+		}
+	}
+
+	.number-select {
+		flex-grow: 1;
+		flex-basis: 0;
+		display: flex;
+		align-items: center;
+
+		&::before {
+			content: "";
+			flex-grow: 1;
+		}
+
+		button {
+			margin-right: 10px;
+			margin-left: 10px;
+			font-size: 14px;
+
+			outline: none;
+			text-decoration: none;
+		}
+	}
+
+	> h6 {
+		margin-bottom: 0px;
+	}
+
+	#detail-form {
+		display: grid;
+		gap: 10px;
+		grid-template: 80px / 225px;
+		
+		@media (min-width: 525px) {
+			grid-template: 80px 80px / 225px 225px;
+		}
+
+		.invalid {
+			border: 1px solid red;
+		}
+	}
+
+	#final-form {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+
+		textarea {
+			resize: vertical;
+		}
+
+		button {
+			margin-left: 20px;
+		}
+	}
+}

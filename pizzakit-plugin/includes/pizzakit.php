@@ -3,20 +3,13 @@
 class Pizzakit {
 	public static function run() {
 		add_action("init", "Pizzakit::init");
-		add_action("enqueue_block_editor_assets", "Pizzakit::enqueue_blocks");
 	}
 
 	public static function init() {
 		Pizzakit::handle_post();
-	}
 
-	public static function enqueue_blocks() {
-		wp_enqueue_script(
-			"pizzakit-order-form-js",
-			plugin_dir_url(__FILE__) . "../order-form/order-form.js",
-			array("wp-blocks", "wp-editor"),
-			true
-		);
+		require_once plugin_dir_path( __FILE__ ) . 'pizzakit-blocks.php';
+		Pizzakit_Blocks::register_blocks();
 	}
 
 	private static function handle_post() {
