@@ -7,6 +7,11 @@ class PaymentConfirmation extends React.Component {
 		this.pollFailures = 0;
 		this.timeout = null;
 		this.controller = new AbortController();
+
+		this.state = {
+			loading: true,
+			message: 'Vi har mottagit din order, och väntar nu på din betalning.'
+		};
 	}
 
 	componentDidMount() {
@@ -36,6 +41,13 @@ class PaymentConfirmation extends React.Component {
 			if (json.success === true) {
 				// Dummy page for now
 				this.props.navigateTo(<p>Din order är laggd och betald.</p>);
+
+				this.setState({
+					loading: false,
+					message: 'Betalning mottagen. Du skickas nu vidare till din orderbekräftelse.'
+				});
+
+				return; // Stop polling
 			}
 
 			this.pollFailures = 0;
@@ -44,10 +56,15 @@ class PaymentConfirmation extends React.Component {
 			this.pollFailures++;
 
 			if (this.pollFailures > PaymentConfirmation.acceptableFailures) {
-				alert(
-					'Något gick fel: ' +
-					((typeof ex === 'object' ? ex.message : ex) || '...men vi har ingen aning om vad 😢')
-				);
+				const errorMessage = 'Något gick fel: ' + ((typeof ex === 'object' ? ex.message : ex) || '...men vi har ingen aning om vad 😢');
+				this.setState({
+					loading: false,
+					message: errorMessage
+				});
+
+				alert(errorMessage);
+				
+				return; // Stop polling
 			}
 		}
 
@@ -58,9 +75,9 @@ class PaymentConfirmation extends React.Component {
 		return(
 			<p className="payment-confirmation">
 				<figure><div/></figure>
-				<progress/>
+				<progress className={this.state.loading ? '' : 'hidden'}/>
 				<div>
-					<p>Vi har mottagit din order, och väntar nu på din betalning.</p>
+					<p>{this.state.message}</p>
 				</div>
 			</p>
 		);

@@ -111,6 +111,10 @@
 
 	progress {
 		width: 100%;
+
+		&.hidden {
+			visibility: hidden;
+		}
 	}
 
 	div {
