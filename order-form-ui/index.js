@@ -1,7 +1,7 @@
 import { registerBlockType } from '@wordpress/blocks';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './src/App';
+import OrderForm from './src/OrderForm';
 
 registerBlockType(
 	'pizzakit/order-form',
@@ -16,5 +16,5 @@ registerBlockType(
 
 const root = document.getElementById('pizzakit-order-form');
 if (root != null) {
-	ReactDOM.render(<App post_address="/"/>, root);
+	ReactDOM.render(<OrderForm post_address="/"/>, root);
 }

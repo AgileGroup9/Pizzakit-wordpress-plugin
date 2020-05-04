@@ -5,7 +5,7 @@ import './style.scss';
 
 // Main Application
 // Renders a form and keeps track of items the client has selected
-class App extends React.Component {
+class OrderForm extends React.Component {
 	constructor(props){
 		super(props);
 
@@ -246,4 +246,4 @@ class App extends React.Component {
 	}
 }
 
-export default App;
+export default OrderForm;
