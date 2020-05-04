@@ -8,7 +8,7 @@ class PaymentConfirmation extends React.Component {
 	render() {
 		return(
 			<p className="payment-confirmation">
-				<figure/>
+				<figure><div/></figure>
 				<progress/>
 				<div>
 					<p>Vi har mottagit din order, och väntar nu på din betalning.</p>
