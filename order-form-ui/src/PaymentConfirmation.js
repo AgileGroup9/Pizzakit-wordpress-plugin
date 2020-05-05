@@ -75,7 +75,7 @@ class PaymentConfirmation extends React.Component {
 		return(
 			<p className="payment-confirmation">
 				<figure><div/></figure>
-				<progress className={this.state.loading ? '' : 'hidden'}/>
+				<progress className={`has-accent-background-color ${this.state.loading ? '' : 'hidden'}`}/>
 				<div>
 					<p>{this.state.message}</p>
 				</div>
