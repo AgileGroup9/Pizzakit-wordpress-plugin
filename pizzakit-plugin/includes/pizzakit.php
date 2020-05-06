@@ -84,6 +84,15 @@ class Pizzakit {
 		$where_format = array("%d");
 		return $wpdb->update($table, $data, $where, $format, $where_format);
 	}
+	//removes order from database, returns number of deleted rows(should be 1)
+	public static function remove_order($order) {
+		global $wpdb;
+		$table = $wpdb->prefix . 'orders';
+		$where = array("id" => $order);
+		$where_format = array("%d");
+		return $wpdb->delete($table, $where, $where_format);
+	}
+	// only for testing purposes, remove this later!
 	public static function populate_orders() {
 		global $wpdb;
 		
@@ -91,7 +100,7 @@ class Pizzakit {
 		$data = json_decode($json, true);
 
 		foreach ($data["orders"] as $order) {
-			Pizzakit::insert_into_tables($order);
+			$lastid = Pizzakit::insert_into_tables($order);
 		}
 	}
 }

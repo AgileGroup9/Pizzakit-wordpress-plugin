@@ -57,7 +57,8 @@ class Pizzakit_Activator {
 			orderID INT UNSIGNED REFERENCES ' . $wpdb->prefix . 'orders(id),
 			item VARCHAR(100) NOT NULL,
 			quantity INT NOT NULL,
-			PRIMARY KEY(orderID, item)
+			PRIMARY KEY(orderID, item),
+			FOREIGN KEY(orderID) REFERENCES ' . $wpdb->prefix . 'orders(id) ON DELETE CASCADE ON UPDATE CASCADE
 			)';
 
 			dbDelta($sql);
