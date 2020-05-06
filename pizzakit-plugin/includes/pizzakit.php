@@ -27,14 +27,6 @@ class Pizzakit {
 			$response = array('orderPlaced' => true);
 			wp_send_json($response);
 		}
-
-		if (isset($data["refresh_menu_items"])){
-
-			Pizzakit::refresh_menu_items();
-
-			$response = array('menu_items_refreshed' => true);
-			wp_send_json($response);
-		}
 	}
 
 	private static function insert_into_tables($_data){
@@ -59,30 +51,15 @@ class Pizzakit {
 		return $_lastid;
 	}
 
-	public static function refresh_menu_items($data){
+	public static function fill_menu($data){
 		global $wpdb;
 		$table = $wpdb->prefix . 'items';
-		
-		//drop all data in items-table
-		$wpdb->query('TRUNCATE TABLE ' . $table);
 		
 		//insert items
 		foreach ($data["menu"] as $item){
 			$data_arr = array('name' => $item["name"], 'price' => $item["price"], "comment" => $item["comment"], "main_item" => $item["main_item"]);
 			$format = array('%s','%d','%s','%d');
 			$wpdb->insert($table,$data_arr,$format);
-		}
-	}
-	
-	// only for testing purposes, remove this later!
-	public static function populate_orders() {
-		global $wpdb;
-		
-		$json = file_get_contents(plugin_dir_path(__FILE__) . 'orders.json');
-		$data = json_decode($json, true);
-
-		foreach ($data["orders"] as $order) {
-			$lastid = Pizzakit::insert_into_tables($order);
 		}
 	}
 }
