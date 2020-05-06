@@ -3,20 +3,13 @@
 class Pizzakit {
 	public static function run() {
 		add_action("init", "Pizzakit::init");
-		add_action("enqueue_block_editor_assets", "Pizzakit::enqueue_blocks");
 	}
 
 	public static function init() {
 		Pizzakit::handle_post();
-	}
 
-	public static function enqueue_blocks() {
-		wp_enqueue_script(
-			"pizzakit-order-form-js",
-			plugin_dir_url(__FILE__) . "../order-form/order-form.js",
-			array("wp-blocks", "wp-editor"),
-			true
-		);
+		require_once plugin_dir_path( __FILE__ ) . 'pizzakit-blocks.php';
+		Pizzakit_Blocks::register_blocks();
 	}
 
 	private static function handle_post() {
@@ -35,19 +28,11 @@ class Pizzakit {
 			wp_send_json($response);
 		}
 
-		if (isset($data["addItemsToMenu"])){
+		if (isset($data["refresh_menu_items"])){
 
-			Pizzakit::add_menu_items($data);
+			Pizzakit::refresh_menu_items();
 
-			$response = array('menuItemAdded' => true);
-			wp_send_json($response);
-		}
-
-		if (isset($data["removeItemsFromMenu"])){
-
-			Pizzakit::remove_menu_items($data);
-
-			$response = array('menuItemRemoved' => true);
+			$response = array('menu_items_refreshed' => true);
 			wp_send_json($response);
 		}
 	}
@@ -56,7 +41,7 @@ class Pizzakit {
 
 		global $wpdb;
 
-		//insert into orders, using insert() function to get it prepared
+		//insert into orders, using insert() function to get it prepared. Returns id of last inserted order.
 		$_table = $wpdb->prefix. 'orders';
 		$_dataArr = array('id' => null,'email' => $_data["email"],'name' => $_data["name"],'telNr' => $_data["telNr"],
 			'address' => $_data["address"], 'doorCode' => $_data["doorCode"], 'postalCode' => $_data["postalCode"], 'comments' => $_data["comments"]);
@@ -71,31 +56,33 @@ class Pizzakit {
 			$_format = array('%d','%s','%d');
 			$wpdb->insert($_table,$_dataArr,$_format);
 		}
+		return $_lastid;
 	}
 
-	private static function add_menu_items($_data){
-
+	public static function refresh_menu_items($data){
 		global $wpdb;
-		$_table = $wpdb->prefix . 'items';
-
+		$table = $wpdb->prefix . 'items';
+		
+		//drop all data in items-table
+		$wpdb->query('TRUNCATE TABLE ' . $table);
+		
 		//insert items
-		foreach ($_data["items"] as $_item){
-			$_dataArr = array('name' => $_item[0],'price'=>$_item[1]);
-			$_format = array('%s','%d');
-			$wpdb->insert($_table,$_dataArr,$_format);
+		foreach ($data["menu"] as $item){
+			$data_arr = array('name' => $item["name"], 'price' => $item["price"], "comment" => $item["comment"], "main_item" => $item["main_item"]);
+			$format = array('%s','%d','%s','%d');
+			$wpdb->insert($table,$data_arr,$format);
 		}
 	}
-
-	private static function remove_menu_items($_data){
-
+	
+	public static function set_done($orderID) {
+		//set boolean "done" to true, returns number of changed rows(should be 1) or false..
 		global $wpdb;
-		$_table = $wpdb->prefix . 'items';
-
-		//remove items
-		foreach ($_data["items"] as $_item){
-			$_whereArr = array('name' => $_item);
-			$wpdb->delete($_table,$_whereArr);
-		}
+		$table = $wpdb->prefix . 'orders';
+		$data = array("done" => true);
+		$where = array("id" => $orderID);
+		$format = array("%d");
+		$where_format = array("%d");
+		return $wpdb->update($table, $data, $where, $format, $where_format);
 	}
 }
 

@@ -26,6 +26,11 @@ define("PIZZAKIT_VERSION", "0.0.1");
 function activate_pizzakit() {
 	require_once plugin_dir_path(__FILE__) . "includes/pizzakit-activator.php";
 	Pizzakit_Activator::activate();
+	
+	//add menu-items at start
+	$json = file_get_contents(plugin_dir_path(__FILE__) . 'includes/items_for_sale.json');
+	$data = json_decode($json, true);
+	Pizzakit::refresh_menu_items($data);
 }
 
 /**
