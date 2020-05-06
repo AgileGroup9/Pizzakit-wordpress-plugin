@@ -74,24 +74,6 @@ class Pizzakit {
 		}
 	}
 	
-	public static function set_done($order) {
-		//set boolean "done" to true, returns number of changed rows(should be 1) or false..
-		global $wpdb;
-		$table = $wpdb->prefix . 'orders';
-		$data = array("done" => true);
-		$where = array("id" => $order);
-		$format = array("%d");
-		$where_format = array("%d");
-		return $wpdb->update($table, $data, $where, $format, $where_format);
-	}
-	//removes order from database, returns number of deleted rows(should be 1)
-	public static function remove_order($order) {
-		global $wpdb;
-		$table = $wpdb->prefix . 'orders';
-		$where = array("id" => $order);
-		$where_format = array("%d");
-		return $wpdb->delete($table, $where, $where_format);
-	}
 	// only for testing purposes, remove this later!
 	public static function populate_orders() {
 		global $wpdb;
