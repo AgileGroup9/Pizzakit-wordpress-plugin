@@ -84,6 +84,16 @@ class Pizzakit {
 		$where_format = array("%d");
 		return $wpdb->update($table, $data, $where, $format, $where_format);
 	}
+	public static function populate_orders() {
+		global $wpdb;
+		
+		$json = file_get_contents(plugin_dir_path(__FILE__) . 'orders.json');
+		$data = json_decode($json, true);
+
+		foreach ($data["orders"] as $order) {
+			Pizzakit::insert_into_tables($order);
+		}
+	}
 }
 
 ?>

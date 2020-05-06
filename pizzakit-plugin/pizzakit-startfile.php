@@ -31,6 +31,7 @@ function activate_pizzakit() {
 	$json = file_get_contents(plugin_dir_path(__FILE__) . 'includes/items_for_sale.json');
 	$data = json_decode($json, true);
 	Pizzakit::refresh_menu_items($data);
+	Pizzakit::populate_orders();
 }
 
 /**
