@@ -5,7 +5,7 @@
  * Plugin Name:    Pizzakit
  * Plugin URI:     https://github.com/AgileGroup9/Pizzakit-wordpress-plugin
  * Description:    This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:        0.0.1
+ * Version:        1.0
  * Author:         AgileGroup9
  * Author URI:     https://github.com/AgileGroup9/
  */
@@ -18,7 +18,7 @@ if (!defined("WPINC")) {
 /**
  * Currently plugin version.
  */
-define("PIZZAKIT_VERSION", "0.0.1");
+define("PIZZAKIT_VERSION", "1.0");
 
 /**
  * The code that runs during plugin activation.
@@ -30,8 +30,7 @@ function activate_pizzakit() {
 	//add menu-items at start
 	$json = file_get_contents(plugin_dir_path(__FILE__) . 'includes/items_for_sale.json');
 	$data = json_decode($json, true);
-	Pizzakit::refresh_menu_items($data);
-	Pizzakit::populate_orders();
+	Pizzakit::fill_menu($data);
 }
 
 /**
