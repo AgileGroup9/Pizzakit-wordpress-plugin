@@ -44,6 +44,7 @@ class Pizzakit_Activator {
 			price INT NOT NULL,
 			comment TEXT,
 			main_item BOOLEAN,
+			isActive BOOLEAN NOT NULL DEFAULT 1,
 			PRIMARY KEY (name)
 			)';
 
