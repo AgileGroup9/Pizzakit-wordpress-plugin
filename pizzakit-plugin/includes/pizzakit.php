@@ -52,7 +52,7 @@ class Pizzakit {
 		//insert into entries
 		foreach ($_data["cart"] as $_item){
 			$_table = $wpdb->prefix. 'entries';
-			$_dataArr = array('orderID' => $_lastid,'item'=>$_item[0],'quantity'=>$_item[1]);
+			$_dataArr = array('order' => $_lastid,'item'=>$_item[0],'quantity'=>$_item[1]);
 			$_format = array('%d','%s','%d');
 			$wpdb->insert($_table,$_dataArr,$_format);
 		}
@@ -74,12 +74,12 @@ class Pizzakit {
 		}
 	}
 	
-	public static function set_done($orderID) {
+	public static function set_done($order) {
 		//set boolean "done" to true, returns number of changed rows(should be 1) or false..
 		global $wpdb;
 		$table = $wpdb->prefix . 'orders';
 		$data = array("done" => true);
-		$where = array("id" => $orderID);
+		$where = array("id" => $order);
 		$format = array("%d");
 		$where_format = array("%d");
 		return $wpdb->update($table, $data, $where, $format, $where_format);

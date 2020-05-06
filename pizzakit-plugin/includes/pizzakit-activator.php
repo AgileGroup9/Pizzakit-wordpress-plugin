@@ -54,10 +54,10 @@ class Pizzakit_Activator {
 		// WP_ENTRIES
 		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'entries') != $wpdb->prefix . 'entries') {
 			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'entries(
-			orderID INT UNSIGNED REFERENCES ' . $wpdb->prefix . 'orders(id),
+			order INT UNSIGNED REFERENCES ' . $wpdb->prefix . 'orders(id),
 			item VARCHAR(100) NOT NULL,
 			quantity INT NOT NULL,
-			PRIMARY KEY(orderID, item)
+			PRIMARY KEY(order, item)
 			)';
 
 			dbDelta($sql);
