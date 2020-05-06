@@ -1,6 +1,7 @@
 import React from 'react';
 import Small_item from './Items';
-
+import ConSuccess from './ConSuccess'
+import ConFailed from './ConFailed'
 
 // Main Application
 // Renders a form and keeps track of items the client has selected
@@ -74,10 +75,14 @@ class OrderForm extends React.Component {
 		return false;
 	}
 
-	handle_submit(target_addr){
+	handle_submit(){
 		if(this.is_fields_empty()){
+			//To test out if pane swapping works TODO:Remove
+			this.props.navigateTo(ConSuccess, { success: false })
+			/*
 			alert('Var snäll och fyll i alla obligatoriska fält');
 			return;
+			*/
 		}
 		const validation_results = this.check_validation();
 		if(validation_results !== ''){
@@ -93,10 +98,10 @@ class OrderForm extends React.Component {
 			body: this.state_to_json(),
 		}).then((response)=>{
 			if(response.ok){
-				console.log('Delivery order accepted');
+				this.props.navigateTo(ConSuccess, { success: false })
 			}
 			else{
-				console.log('Delivery order failed: ' + response.body);
+				this.props.navigateTo(ConFailed, { success: false })
 			}
 		});
 	}
