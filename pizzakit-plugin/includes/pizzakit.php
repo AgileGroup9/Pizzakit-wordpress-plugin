@@ -52,7 +52,7 @@ class Pizzakit {
 		//insert into entries
 		foreach ($_data["cart"] as $_item){
 			$_table = $wpdb->prefix. 'entries';
-			$_dataArr = array('order' => $_lastid,'item'=>$_item[0],'quantity'=>$_item[1]);
+			$_dataArr = array('orderID' => $_lastid,'item'=>$_item[0],'quantity'=>$_item[1]);
 			$_format = array('%d','%s','%d');
 			$wpdb->insert($_table,$_dataArr,$_format);
 		}

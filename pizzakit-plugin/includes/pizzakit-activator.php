@@ -49,15 +49,15 @@ class Pizzakit_Activator {
 
 			dbDelta($sql);
 			add_option('items_version','1.0');
-    }
+		}
 
 		// WP_ENTRIES
 		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'entries') != $wpdb->prefix . 'entries') {
 			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'entries(
-			order INT UNSIGNED REFERENCES ' . $wpdb->prefix . 'orders(id),
+			orderID INT UNSIGNED REFERENCES ' . $wpdb->prefix . 'orders(id),
 			item VARCHAR(100) NOT NULL,
 			quantity INT NOT NULL,
-			PRIMARY KEY(order, item)
+			PRIMARY KEY(orderID, item)
 			)';
 
 			dbDelta($sql);
