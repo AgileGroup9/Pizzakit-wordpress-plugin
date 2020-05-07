@@ -34,7 +34,7 @@ class Pizzakit {
 		// In this the example it's "pizzakitFormSubmission".
 		if (isset($data["pizzakitFormSubmission"])) {
 
-			$order_id = Pizzakit::insert_into_tables($data);
+			$order = Pizzakit::insert_into_tables($data);
 			$response = Pizzakit::create_payment($order_id);
 
 			if($response != -1){
@@ -90,10 +90,13 @@ class Pizzakit {
 		}
 	}
 
-	private static function create_payment($order_id){
+	private static function create_payment($order){
 		#Try to create a payment with swish
 		# if ok create a payment in db
-		$res = Pizzakit::create_swish_payment($order_id,0.02);
+		$order_id = $order[0];
+		$order_total = $order[1];
+
+		$res = Pizzakit::create_swish_payment($order_id,$order_total);
 		if($res !== NULL){
 			global $wpdb;
 			$table = $wpdb->prefix . 'payment';
@@ -113,9 +116,9 @@ class Pizzakit {
 			"callbackUrl" => get_home_url() . "/index.php/wp-json/pizzakit/callback/" . $order_id,
 			"payerAlias" => "4671234768",
 			"payeeAlias" => "1234679304",
-			"amount" => "1",
+			"amount" => $cost,
 			"currency" => "SEK",
-			"message" => "Where is the money?"
+			"message" => "Menomale pizzakit"
 		);          
 		return(Pizzakit::communicate_with_swish($endpoint,$method,$data));
 	}
@@ -182,6 +185,10 @@ class Pizzakit {
 
 	private static function insert_into_tables($_data){
 
+		$json = file_get_contents(plugin_dir_path(__FILE__) . 'items_for_sale.json');
+		$decoded = json_decode($json, true);
+		$items = array_merge($decoded['main_items'],$decoded['extras']);
+
 		global $wpdb;
 
 		//insert into orders, using insert() function to get it prepared
@@ -192,14 +199,22 @@ class Pizzakit {
 		$wpdb->insert($_table,$_dataArr,$_format);
 		$_lastid = $wpdb->insert_id;
 
+		$total_cost = 0;
+		$item_cost = 0;
+
 		//insert into entries
 		foreach ($_data["cart"] as $_item){
+			foreach($items as $i){
+				if($i[0] == $_item[0]){
+					$total_cost += $i[1]*$_item[1];
+				}
+			}
 			$_table = $wpdb->prefix. 'entries';
 			$_dataArr = array('orderID' => $_lastid,'item'=>$_item[0],'quantity'=>$_item[1]);
 			$_format = array('%d','%s','%d');
 			$wpdb->insert($_table,$_dataArr,$_format);
 		}
-		return($_lastid);
+		return(array($_lastid,$total_cost));
 	}
 
 	public static function refresh_menu_items(){
