@@ -60,7 +60,7 @@ class Pizzakit {
 		# No side effects
 		global $wpdb;
 		$table = $wpdb->prefix . 'payment';
-		$query = $wpdb->prepare('SELECT status FROM '.$table.' WHERE orderID = %d',$data['id']);
+		$query = $wpdb->prepare('SELECT status FROM '.$table.' WHERE orderID = %d',$data->get_url_params()['id']);
 		$res = $wpdb->get_var($query);
 		if($res != NULL){
 			wp_send_json(array("payment" => $res));
@@ -73,15 +73,19 @@ class Pizzakit {
 	public static function swish_callback_handler($_data){
 		#todo, validate callback
 		#all this does is set status field to Payed for the order_id
-		trigger_error(print_r($_data,$return=true));
-		trigger_error(print_r($_data['params']['JSON']['status'],$return=true));
-		trigger_error(print_r($_data['params']['URL']['id'],$return=true));
 		if($_data->get_url_params()['id']){
-			global $wpdb;
-			$table = $wpdb->prefix . 'payment';
-			$res = $wpdb->update($table,array( 'status' => $_data->get_json_params()['status']),array('orderID' => $_data->get_url_params()['id']),array('%s'),array('%d'));
-			if($res == false){
-				var_dump(false);
+			#check with swish that this is legit
+			$swish_id = $_data->get_json_params()['id'];
+			if($resp = Pizzakit::verify_swish_payment($swish_id)){
+				$resp_json = json_decode($resp,true);
+				if($resp_json['status'] == "PAID"){
+					global $wpdb;
+					$table = $wpdb->prefix . 'payment';
+					$res = $wpdb->update($table,array( 'status' => $resp_json['status']),array('orderID' => $_data->get_url_params()['id']),array('%s'),array('%d'));
+					if($res == false){
+						var_dump(false);
+					}
+				}
 			}
 		}
 	}
@@ -89,7 +93,8 @@ class Pizzakit {
 	private static function create_payment($order_id){
 		#Try to create a payment with swish
 		# if ok create a payment in db
-		if(Pizzakit::create_swish_payment($order_id,0.02)){
+		$res = Pizzakit::create_swish_payment($order_id,0.02);
+		if($res !== NULL){
 			global $wpdb;
 			$table = $wpdb->prefix . 'payment';
 			$data = array('orderID' => $order_id,'status'=>'PENDING');
@@ -101,13 +106,38 @@ class Pizzakit {
 	}
 
 	private static function create_swish_payment($order_id,$cost){
-		$_url = "https://mss.cpc.getswish.net/swish-cpcapi/api/v1/paymentrequests/";
+		$endpoint = "/v1/paymentrequests/";
+		$method = CURLOPT_POST;
+		$data = array(
+			"payeePaymentReference" => "0123456789",
+			"callbackUrl" => get_home_url() . "/index.php/wp-json/pizzakit/callback/" . $order_id,
+			"payerAlias" => "4671234768",
+			"payeeAlias" => "1234679304",
+			"amount" => "1",
+			"currency" => "SEK",
+			"message" => "Where is the money?"
+		);          
+		return(Pizzakit::communicate_with_swish($endpoint,$method,$data));
+	}
+
+	private static function verify_swish_payment($swish_id){
+		$endpoint = "/v1/paymentrequests/".$swish_id;
+		$method = CURLOPT_HTTPGET;
+		$data = array();
+		return Pizzakit::communicate_with_swish($endpoint,$method,$data);
+	}
+
+	private static function communicate_with_swish($endpoint,$method,$data){
+		$_url = "https://mss.cpc.getswish.net/swish-cpcapi/api".$endpoint;
 		$_test_uuid = "22826f1c-eda4-4577-b615-ebdb4d9fcb86";
 
 		$ch = curl_init($_url);
-		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, $method, TRUE);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($ch, CURLOPT_VERBOSE, 1);
+		curl_setopt($ch, CURLOPT_HEADER, 1);
 		curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/Swish_TLS_RootCA.pem');
 		curl_setopt($ch, CURLOPT_SSLCERT, __DIR__.'/Swish_Merchant_TestCertificate_1234679304.pem');
 		curl_setopt($ch, CURLOPT_SSLKEY, __DIR__.'/Swish_Merchant_TestCertificate_1234679304.key');
@@ -129,22 +159,25 @@ class Pizzakit {
 				}
 		);
 
-		$data = array("payeePaymentReference" => "0123456789", "callbackUrl" => "https://morse.se/index.php/wp-json/pizzakit/callback/" . $order_id, "payerAlias" => "4671234768", "payeeAlias" => "1234679304", "amount" => "1", "currency" => "SEK", "message" => "Where is the money?");          
 		$data_string = json_encode($data);
-																
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);    
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
-			'Content-Type: application/json',                                                                                
-			'Content-Length: ' . strlen($data_string))                                                                       
-		);                                                                                                                   
-
-		if(!$response = curl_exec($ch)) { 
-			trigger_error(curl_error($ch));
-			return(false);
+		
+		if($method == CURLOPT_POST){
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+				'Content-Type: application/json',                                                                                
+				'Content-Length: ' . strlen($data_string))                                                                       
+			);                                                                                                                   
 		}
+		$result = curl_exec ($ch);
+		if($result === FALSE) {
+			return(NULL);
+		}
+
+		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+		$header = substr($result, 0, $header_size);
+		$body = substr($result, $header_size);
 		curl_close($ch);
-		var_dump($response);
-		return(true);
+		return($body);
 	}
 
 	private static function insert_into_tables($_data){
