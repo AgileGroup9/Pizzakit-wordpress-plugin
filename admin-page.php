@@ -160,10 +160,14 @@ else {
           <div class="container-fluid col-sm-12 col-md-6 col-lg-4">
             <ul class="list-group">
               <!-- top section -->
-              <li class="list-group-item" style="min-height: 52px">
+              <li class="list-group-item" style="min-height: 75px">
                 <div>
                   <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
                     <b>Order ID: </b> ' . $o->id . '
+                    <br>
+                    <p style="font-size: 15px">
+                      <b>Adress: </b> ' . $o->address . '
+                    </p>
                   </div>
                   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
                     <div class="btn-group pull-right" style="width:50px">
