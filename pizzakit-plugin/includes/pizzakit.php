@@ -35,10 +35,10 @@ class Pizzakit {
 		if (isset($data["pizzakitFormSubmission"])) {
 
 			$order = Pizzakit::insert_into_tables($data);
-			$response = Pizzakit::create_payment($order_id);
+			$response = Pizzakit::create_payment($order);
 
 			if($response != -1){
-				wp_send_json(array( 'token' => $order_id));
+				wp_send_json(array( 'token' => $order[0]));
 			}
 			else{
 				wp_send_json(array('token' => -1));
@@ -205,8 +205,8 @@ class Pizzakit {
 		//insert into entries
 		foreach ($_data["cart"] as $_item){
 			foreach($items as $i){
-				if($i[0] == $_item[0]){
-					$total_cost += $i[1]*$_item[1];
+				if($i['name'] == $_item[0]){
+					$total_cost += $i['price']*$_item[1];
 				}
 			}
 			$_table = $wpdb->prefix. 'entries';
