@@ -32,15 +32,15 @@ if ($_POST["page"] == "edit-menu") {
             <ul class="nav navbar-nav">
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="orders">
-                  <input type="submit" class="btn btn-secondary" value="Ordrar">
+                  <input type="submit" class="btn btn-secondary" value="Nya ordrar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                 <input type="hidden" name="page" value="edit-menu">
                 <input type="submit" class="btn btn-primary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="history">
-                  <input type="submit" class="btn btn-secondary" value="Historik">
+                  <input type="hidden" name="page" value="all_orders">
+                  <input type="submit" class="btn btn-secondary" value="Alla ordrar">
               </form></li>
             </ul>
           </div>
@@ -48,7 +48,7 @@ if ($_POST["page"] == "edit-menu") {
   echo "Theos kod";
 }
 
-elseif ($_POST["page"] == "history") {
+elseif ($_POST["page"] == "all_orders") {
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
             <div class="navbar-header">
@@ -57,15 +57,15 @@ elseif ($_POST["page"] == "history") {
             <ul class="nav navbar-nav">
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="orders">
-                  <input type="submit" class="btn btn-secondary" value="Ordrar">
+                  <input type="submit" class="btn btn-secondary" value="Nya ordrar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                 <input type="hidden" name="page" value="edit-menu">
                 <input type="submit" class="btn btn-secondary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="history">
-                  <input type="submit" class="btn btn-primary" value="Historik">
+                  <input type="hidden" name="page" value="all_orders">
+                  <input type="submit" class="btn btn-primary" value="Alla ordrar">
               </form></li>
             </ul>
           </div>
@@ -85,13 +85,13 @@ elseif ($_POST["page"] == "history") {
                   <li class="list-group-item" style="min-height: 52px">
                       <div>
                           <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
-                              <b>Order number: </b>' . $o->id . '
+                              <b>Order ID: </b>' . $o->id . '
                           </div>
                           <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
                               <div class="btn-group pull-right" style="min-width:25px">
                                 <form action="." method="post">
                                   <input type="hidden" name="delete" value="' . $o->id . '">
-                                  <input type="hidden" name="page" value="history">
+                                  <input type="hidden" name="page" value="all_orders">
                                   <input type="submit" class="btn-sm btn-danger" value="Radera">
                                 </form>
                               </div>
@@ -103,8 +103,10 @@ elseif ($_POST["page"] == "history") {
                       <div class="row">
                           <div class="col-sm-6 col-md-6 col-lg-6" style="padding-top:5px">
                               <tstyle style="font-size: 16px">
-                                  <b>Ordered by:</b> ' . $o->name . '
-                                  <b>Date:</b> ' . $o->date . '
+                                  <b>Kund:</b> ' . $o->name . '
+                                  <b>Datum:</b> ' . $o->date . '
+                                  <b>Mail:</b> ' . $o->email . '
+                                  <b>Tel. nr.:</b> ' . $o->telNr . '
                               </tstyle>
                           </div>
                           <div class="col-sm-6 col-md-6 col-lg-6 pull-right" style="padding-top:0px;padding-bottom:5px">
@@ -112,8 +114,62 @@ elseif ($_POST["page"] == "history") {
                               $sql = "SELECT * FROM wp_entries, wp_items WHERE wp_entries.item = wp_items.name AND wp_entries.orderID = " . $o->id;
                               $items = $wpdb->get_results($sql);
                               if ($items[0] != NULL) {
+                                $c = 1;
                                 foreach($items as $i) {
-                                    echo '<b>' . $i->item . ': </b>' . $i->quantity . ', ';                                  
+                                    if ($c!=1)
+                                      echo ', ';
+                                    echo '<b>' . $i->item . ': </b>' . $i->quantity; 
+                                    $c++;                                 
+                                }
+                              };          
+                              echo '</div>
+                      </div>          
+                  </li>
+              </ul>
+          </div>';
+      }
+      else {
+        echo '<!-- One order block, generate one per order -->
+          <div class="container-fluid col-sm-12 col-md-6 col-lg-6"
+              style="padding-top: 25px;padding-left: 15px;padding-right: 15px;">
+              <ul class="list-group">
+                  <!-- top section -->
+                  <li class="list-group-item" style="min-height: 52px">
+                      <div>
+                          <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
+                              <b>Order ID: </b>' . $o->id . '
+                          </div>
+                          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                              <div class="btn-group pull-right" style="min-width:25px">
+                                <form action="." method="post">
+                                  <input type="hidden" name="done" value="' . $o->id . '">
+                                  <input type="hidden" name="page" value="all_orders">
+                                  <input type="submit" class="btn-sm btn-success" value="Klar">
+                                </form>
+                              </div>
+                          </div>
+                      </div>
+                  </li>
+                  <!-- topping section -->
+                  <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+                      <div class="row">
+                          <div class="col-sm-6 col-md-6 col-lg-6" style="padding-top:5px">
+                              <tstyle style="font-size: 16px">
+                                  <b>Kund:</b> ' . $o->name . '
+                                  <b>Datum:</b> ' . $o->date . '
+                              </tstyle>
+                          </div>
+                          <div class="col-sm-6 col-md-6 col-lg-6 pull-right" style="padding-top:0px;padding-bottom:5px">
+                              <!-- Generate these for each order-->';
+                              $sql = "SELECT * FROM wp_entries, wp_items WHERE wp_entries.item = wp_items.name AND wp_entries.orderID = " . $o->id;
+                              $items = $wpdb->get_results($sql);
+                              if ($items[0] != NULL) {
+                                $c = 1;
+                                foreach($items as $i) {
+                                    if ($c!=1)
+                                      echo ', ';
+                                    echo '<b>' . $i->item . ': </b>' . $i->quantity; 
+                                    $c++;                                 
                                 }
                               };          
                               echo '</div>
@@ -136,15 +192,15 @@ else {
       <ul class="nav navbar-nav">
         <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
             <input type="hidden" name="page" value="orders">
-            <input type="submit" class="btn btn-primary" value="Ordrar">
+            <input type="submit" class="btn btn-primary" value="Nya ordrar">
         </form></li>
         <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
           <input type="hidden" name="page" value="edit-menu">
           <input type="submit" class="btn btn-secondary" value="Ändra meny">
         </form></li>
         <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-            <input type="hidden" name="page" value="history">
-            <input type="submit" class="btn btn-secondary" value="Historik">
+          <input type="hidden" name="page" value="all_orders">
+          <input type="submit" class="btn btn-secondary" value="Alla ordrar">
         </form></li>
       </ul>
     </div>
@@ -165,9 +221,9 @@ else {
                   <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
                     <b>Order ID: </b> ' . $o->id . '
                     <br>
-                    <p style="font-size: 15px">
-                      <b>Adress: </b> ' . $o->address . '
-                    </p>
+                     <p style="font-size: 15px">
+                       <b>Adress: </b> ' . $o->address . ',' . $o->postalCode . '
+                     </p>
                   </div>
                   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
                     <div class="btn-group pull-right" style="width:50px">
