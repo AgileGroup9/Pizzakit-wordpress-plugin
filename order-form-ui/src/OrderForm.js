@@ -75,7 +75,7 @@ class OrderForm extends React.Component {
 		return false;
 	}
 
-	handle_submit(){
+	handle_submit(target_addr){
 		if(this.is_fields_empty()){
 			alert('Var snäll och fyll i alla obligatoriska fält');
 			return;
@@ -94,10 +94,10 @@ class OrderForm extends React.Component {
 			body: this.state_to_json(),
 		}).then((response)=>{
 			if(response.ok){
-				this.props.navigateTo(ConSuccess, { success: false })
+				console.log('Delivery order accepted');
 			}
 			else{
-				this.props.navigateTo(ConFailed, { success: false })
+				console.log('Delivery order failed: ' + response.body);
 			}
 		});
 	}
