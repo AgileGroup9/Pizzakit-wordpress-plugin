@@ -16,6 +16,8 @@ class PaymentConfirmation extends React.Component {
 
 	componentDidMount() {
 		this.fetchUpdate();
+
+		window.location = 'swish://paymentrequest?token=' + this.props.token;
 	}
 
 	componentWillUnmount() {
