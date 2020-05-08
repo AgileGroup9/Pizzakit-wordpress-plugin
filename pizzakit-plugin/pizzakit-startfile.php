@@ -23,10 +23,11 @@ define("PIZZAKIT_VERSION", "1.0");
 /**
  * The code that runs during plugin activation.
  */
-function activate_pizzakit() {
+function activate_pizzakit()
+{
 	require_once plugin_dir_path(__FILE__) . "includes/pizzakit-activator.php";
 	Pizzakit_Activator::activate();
-	
+
 	//add menu-items at start
 	$json = file_get_contents(plugin_dir_path(__FILE__) . 'includes/items_for_sale.json');
 	$data = json_decode($json, true);
@@ -36,7 +37,8 @@ function activate_pizzakit() {
 /**
  * The code that runs during plugin deactivation.
  */
-function deactivate_pizzakit() {
+function deactivate_pizzakit()
+{
 	require_once plugin_dir_path(__FILE__) . "includes/pizzakit-deactivator.php";
 	Pizzakit_Deactivator::deactivate();
 }
@@ -44,10 +46,9 @@ function deactivate_pizzakit() {
 register_activation_hook(__FILE__, "activate_pizzakit");
 register_deactivation_hook(__FILE__, "deactivate_pizzakit");
 
-function run_pizzakit() {
+function run_pizzakit()
+{
 	require_once plugin_dir_path(__FILE__) . "includes/pizzakit.php";
 	Pizzakit::run();
 }
 run_pizzakit();
-
-?>
