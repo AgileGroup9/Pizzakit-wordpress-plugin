@@ -97,11 +97,12 @@ class Pizzakit {
 		$order_total = $order[1];
 
 		$res = Pizzakit::create_swish_payment($order_id,$order_total);
-		if($res !== NULL){
+		
+		if($res['response'] !== NULL){
 			global $wpdb;
 			$table = $wpdb->prefix . 'payment';
-			$data = array('orderID' => $order_id,'status'=>'PENDING');
-			$format = array('%d','%s');
+			$data = array('orderID' => $order_id,'uuid' => $res['uuid'],'status'=>'PENDING');
+			$format = array('%d','%s','%s');
 			$wpdb->insert($table,$data,$format);
 			return($order_id);
 		}
@@ -109,8 +110,9 @@ class Pizzakit {
 	}
 
 	private static function create_swish_payment($order_id,$cost){
-		$endpoint = "/v1/paymentrequests/";
-		$method = CURLOPT_POST;
+		$random_uuid = wp_generate_uuid4();
+		$endpoint = "/v2/paymentrequests/".$random_uuid;
+		$method = CURLOPT_PUT;
 		$data = array(
 			"payeePaymentReference" => "0123456789",
 			"callbackUrl" => get_home_url() . "/index.php/wp-json/pizzakit/callback/" . $order_id,
@@ -120,7 +122,7 @@ class Pizzakit {
 			"currency" => "SEK",
 			"message" => "Menomale pizzakit"
 		);          
-		return(Pizzakit::communicate_with_swish($endpoint,$method,$data));
+		return(array('uuid' => $random_uuid, 'response' => Pizzakit::communicate_with_swish($endpoint,$method,$data)));
 	}
 
 	private static function verify_swish_payment($swish_id){
@@ -135,7 +137,19 @@ class Pizzakit {
 		$_test_uuid = "22826f1c-eda4-4577-b615-ebdb4d9fcb86";
 
 		$ch = curl_init($_url);
-		curl_setopt($ch, $method, TRUE);
+
+		if($method == CURLOPT_GET){
+			curl_setopt($ch, CURLOPT_GET, TRUE);
+		}
+		else{
+			$data_string = json_encode($data);
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+				'Content-Type: application/json',                                                                                
+				'Content-Length: ' . strlen($data_string))                                                                       
+			);    
+		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -144,6 +158,8 @@ class Pizzakit {
 		curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/Swish_TLS_RootCA.pem');
 		curl_setopt($ch, CURLOPT_SSLCERT, __DIR__.'/Swish_Merchant_TestCertificate_1234679304.pem');
 		curl_setopt($ch, CURLOPT_SSLKEY, __DIR__.'/Swish_Merchant_TestCertificate_1234679304.key');
+
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 
 		curl_setopt($ch, CURLOPT_HEADERFUNCTION,
 				function($curl, $header) use (&$headers) {
@@ -161,21 +177,15 @@ class Pizzakit {
 				return $len;
 				}
 		);
-
-		$data_string = json_encode($data);
 		
-		if($method == CURLOPT_POST){
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
-				'Content-Type: application/json',                                                                                
-				'Content-Length: ' . strlen($data_string))                                                                       
-			);                                                                                                                   
-		}
 		$result = curl_exec ($ch);
+
+		$info = curl_getinfo($ch);
+		trigger_error(print_r($info['request_header'],$return=true));
 		if($result === FALSE) {
+			trigger_error(curl_error($ch)); 
 			return(NULL);
 		}
-
 		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 		$header = substr($result, 0, $header_size);
 		$body = substr($result, $header_size);
