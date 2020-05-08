@@ -84,6 +84,20 @@ class Pizzakit_Activator
 			dbDelta($sql);
 			add_option('entries_version', '1.0');
 		}
+
+		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'payment') != $wpdb->prefix . 'payment') {
+			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'payment(
+			orderID INT UNSIGNED REFERENCES ' . $wpdb->prefix . 'orders(id),
+			uuid VARCHAR(32) NOT NULL,
+			status VARCHAR(30) NOT NULL,
+			PRIMARY KEY(orderID)
+			)';
+
+			dbDelta($sql);
+			add_option('payment_version','2.1');
+		}
+
 		Pizzakit_Activator::add_admin_page();
+
 	}
 }
