@@ -70,20 +70,33 @@ class Pizzakit {
 		}
 	}
 
+	private static function validate_callback($order_id,$uuid){
+		global $wpdb;
+		$table = $wpdb->prefix . 'payment';
+		$query = $wpdb->prepare('SELECT uuid FROM '.$table.' WHERE orderID = %d',$order_id);
+		$res = $wpdb->get_var($query);
+		trigger_error("Checking: ".$uuid." === ".$res." -> ".strcmp($res,$uuid));
+		return(strcmp($res,$uuid) == 0);
+	}
+
 	public static function swish_callback_handler($_data){
 		#todo, validate callback
 		#all this does is set status field to Payed for the order_id
 		if($_data->get_url_params()['id']){
-			#check with swish that this is legit
-			$swish_id = $_data->get_json_params()['id'];
-			if($resp = Pizzakit::verify_swish_payment($swish_id)){
-				$resp_json = json_decode($resp,true);
-				if($resp_json['status'] == "PAID"){
-					global $wpdb;
-					$table = $wpdb->prefix . 'payment';
-					$res = $wpdb->update($table,array( 'status' => $resp_json['status']),array('orderID' => $_data->get_url_params()['id']),array('%s'),array('%d'));
-					if($res == false){
-						var_dump(false);
+			$order_id = $_data->get_url_params()['id'];
+			$req_uuid = $_data->get_json_params()['id'];
+			#Is this payment id coupled to our order?
+			if(Pizzakit::validate_callback($order_id,$req_uuid))
+			{
+				if($resp = Pizzakit::verify_swish_payment($req_uuid)){
+					$resp_json = json_decode($resp,true);
+					if($resp_json['status'] == "PAID"){
+						global $wpdb;
+						$table = $wpdb->prefix . 'payment';
+						$res = $wpdb->update($table,array( 'status' => $resp_json['status']),array('orderID' => $_data->get_url_params()['id']),array('%s'),array('%d'));
+						if($res == false){
+							var_dump(false);
+						}
 					}
 				}
 			}
@@ -110,7 +123,7 @@ class Pizzakit {
 	}
 
 	private static function create_swish_payment($order_id,$cost){
-		$random_uuid = wp_generate_uuid4();
+		$random_uuid = str_replace("-","",wp_generate_uuid4());
 		$endpoint = "/v2/paymentrequests/".$random_uuid;
 		$method = CURLOPT_PUT;
 		$data = array(
@@ -138,10 +151,10 @@ class Pizzakit {
 
 		$ch = curl_init($_url);
 
-		if($method == CURLOPT_GET){
-			curl_setopt($ch, CURLOPT_GET, TRUE);
+		if($method == CURLOPT_HTTPGET){
+			curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
 		}
-		else{
+		elseif (CURLOPT_PUT) {
 			$data_string = json_encode($data);
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
@@ -181,7 +194,6 @@ class Pizzakit {
 		$result = curl_exec ($ch);
 
 		$info = curl_getinfo($ch);
-		trigger_error(print_r($info['request_header'],$return=true));
 		if($result === FALSE) {
 			trigger_error(curl_error($ch)); 
 			return(NULL);
