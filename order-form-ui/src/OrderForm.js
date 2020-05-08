@@ -77,12 +77,8 @@ class OrderForm extends React.Component {
 
 	handle_submit(){
 		if(this.is_fields_empty()){
-			//To test out if pane swapping works TODO:Remove
-			this.props.navigateTo(ConSuccess, { success: false })
-			/*
 			alert('Var snäll och fyll i alla obligatoriska fält');
 			return;
-			*/
 		}
 		const validation_results = this.check_validation();
 		if(validation_results !== ''){
