@@ -49,7 +49,6 @@ register_deactivation_hook(__FILE__, "deactivate_pizzakit");
 function run_pizzakit()
 {
 	require_once plugin_dir_path(__FILE__) . "includes/pizzakit.php";
-	Pizzakit::refresh_menu_items();
 	Pizzakit::run();
 }
 run_pizzakit();
