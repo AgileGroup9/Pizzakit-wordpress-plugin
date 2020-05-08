@@ -12,5 +12,11 @@ defaultConfig.module.rules.push({
 		'sass-loader'
 	]
 });
+defaultConfig.module.rules.push({
+	test: /.(png|jpg)$/,
+	use: [
+		'url-loader'
+	]
+});
 
 module.exports = defaultConfig;
