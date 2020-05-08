@@ -1,5 +1,6 @@
 import React from 'react';
 import Small_item from './Items';
+import PaymentConfirmation from './PaymentConfirmation';
 
 
 // Main Application
@@ -74,7 +75,7 @@ class OrderForm extends React.Component {
 		return false;
 	}
 
-	handle_submit(target_addr){
+	async handle_submit(target_addr) {
 		if(this.is_fields_empty()){
 			alert('Var snäll och fyll i alla obligatoriska fält');
 			return;
@@ -83,7 +84,7 @@ class OrderForm extends React.Component {
 		if(validation_results !== ''){
 			alert(validation_results);
 		}
-		fetch(target_addr,{
+		const response = await fetch(target_addr, {
 			method: 'POST',
 			mode: 'no-cors', 
 			headers: {
@@ -91,14 +92,20 @@ class OrderForm extends React.Component {
 				'Content-Type': 'application/json'
 			},
 			body: this.state_to_json(),
-		}).then((response)=>{
-			if(response.ok){
-				console.log('Delivery order accepted');
-			}
-			else{
-				console.log('Delivery order failed: ' + response.body);
-			}
 		});
+		if (response.ok) {
+			const json = await response.json();
+			
+			if (json.token != null && json.token !== '-1') {
+				this.props.navigateTo(PaymentConfirmation, { token: json.token });
+			}
+			else {
+				console.log('Delivery order failed: ' + json.token);
+			}
+		}
+		else {
+			console.log('Delivery order failed: ' + response.statusText);
+		}
 	}
 
 	validate_email(str){

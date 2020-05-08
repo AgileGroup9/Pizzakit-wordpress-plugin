@@ -26,28 +26,31 @@ class PaymentConfirmation extends React.Component {
 	async fetchUpdate() {
 		try {
 			const response = await fetch(
-				this.props.post_address,
+				`//${location.host}/index.php/wp-json/pizzakit/payment/${this.props.token}`,
 				{
 					signal: this.controller.signal,
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ 'pizzakitSwishConfirmation': true })
+					method: 'GET'
 				}
 			);
 			const json = await response.json();
-			// Dummy check for now
-			if (json.success === true) {
-				// Dummy page for now
-				this.props.navigateTo(<p>Din order är laggd och betald.</p>);
-
-				this.setState({
-					loading: false,
-					message: 'Betalning mottagen. Du skickas nu vidare till din orderbekräftelse.'
-				});
-
-				return; // Stop polling
+			if (json.error != null) {
+				throw new Error(json.error);
+			}
+			else if (json.payment != null && json.payment !== 'PENDING') {
+				if (json.payment === 'PAYED') {
+					// Dummy page for now
+					this.props.navigateTo(<p>Din order är laggd och betald.</p>);
+	
+					this.setState({
+						loading: false,
+						message: 'Betalning mottagen. Du skickas nu vidare till din orderbekräftelse.'
+					});
+	
+					return; // Stop polling
+				}
+				else {
+					throw new Error(`Payment status: ${json.payment}`);
+				}
 			}
 
 			this.pollFailures = 0;
