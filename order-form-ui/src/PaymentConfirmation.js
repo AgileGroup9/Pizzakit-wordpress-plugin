@@ -42,7 +42,7 @@ class PaymentConfirmation extends React.Component {
 				else if (json.payment != null && json.payment !== 'PENDING') {
 					if (json.payment === 'PAYED') {
 						// Dummy page for now
-						this.props.navigateTo(<p>Din order är laggd och betald.</p>);
+						this.props.navigateTo(() => <p>Din order är laggd och betald.</p>);
 		
 						this.setState({
 							loading: false,
@@ -67,12 +67,8 @@ class PaymentConfirmation extends React.Component {
 
 			if (this.pollFailures > PaymentConfirmation.acceptableFailures) {
 				const errorMessage = 'Något gick fel: ' + ((typeof ex === 'object' ? ex.message : ex) || '...men vi har ingen aning om vad 😢');
-				this.setState({
-					loading: false,
-					message: errorMessage
-				});
-
-				alert(errorMessage);
+				// Dummy page for now
+				this.props.navigateTo(() => <p>{errorMessage}</p>);
 				
 				return; // Stop polling
 			}
