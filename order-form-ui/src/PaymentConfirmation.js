@@ -34,25 +34,30 @@ class PaymentConfirmation extends React.Component {
 					method: 'GET'
 				}
 			);
-			const json = await response.json();
-			if (json.error != null) {
-				throw new Error(json.error);
+			if (response.ok) {
+				const json = await response.json();
+				if (json.error != null) {
+					throw new Error(json.error);
+				}
+				else if (json.payment != null && json.payment !== 'PENDING') {
+					if (json.payment === 'PAYED') {
+						// Dummy page for now
+						this.props.navigateTo(<p>Din order är laggd och betald.</p>);
+		
+						this.setState({
+							loading: false,
+							message: 'Betalning mottagen. Du skickas nu vidare till din orderbekräftelse.'
+						});
+		
+						return; // Stop polling
+					}
+					else {
+						throw new Error(`Payment status: ${json.payment}`);
+					}
+				}
 			}
-			else if (json.payment != null && json.payment !== 'PENDING') {
-				if (json.payment === 'PAYED') {
-					// Dummy page for now
-					this.props.navigateTo(<p>Din order är laggd och betald.</p>);
-	
-					this.setState({
-						loading: false,
-						message: 'Betalning mottagen. Du skickas nu vidare till din orderbekräftelse.'
-					});
-	
-					return; // Stop polling
-				}
-				else {
-					throw new Error(`Payment status: ${json.payment}`);
-				}
+			else {
+				throw new Error(response.statusText);
 			}
 
 			this.pollFailures = 0;
