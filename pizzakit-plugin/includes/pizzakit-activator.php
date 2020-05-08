@@ -22,7 +22,6 @@ class Pizzakit_Activator
 
 	public static function activate()
 	{
-
 		global $wpdb;
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 

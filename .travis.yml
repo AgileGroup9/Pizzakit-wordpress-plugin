@@ -1,5 +1,19 @@
-language: php
-php:
-  - '7.3'
-script:
-  - './syntaxcheck.sh'
+matrix:
+  include:
+  - language: php
+    php:
+      - '7.3'
+    script:
+      - './syntaxcheck.sh'
+
+  - language: node_js
+    node_js:
+      - '12'
+    install:
+      - 'cd order-form-ui'
+      - 'npm ci'
+      - 'cd ..'
+    script:
+      - 'cd order-form-ui'
+      - 'npx wp-scripts build'
+      - 'cd ..'
