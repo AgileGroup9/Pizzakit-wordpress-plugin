@@ -1,7 +1,6 @@
 <?php
 
 class Pizzakit {
-	public static $resp = "None";
 
 	public static function run() {
 		add_action("init", "Pizzakit::init");
