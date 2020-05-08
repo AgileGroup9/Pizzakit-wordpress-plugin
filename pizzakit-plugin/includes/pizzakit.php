@@ -37,7 +37,7 @@ class Pizzakit {
 			$order = Pizzakit::insert_into_tables($data);
 			$response = Pizzakit::create_payment($order);
 
-			if($response != -1){
+			if($response > 0){
 				wp_send_json(array( 'token' => $order[0]));
 			}
 			else{
@@ -108,6 +108,15 @@ class Pizzakit {
 		# if ok create a payment in db
 		$order_id = $order[0];
 		$order_total = $order[1];
+
+		if($order_total < 1){
+			global $wpdb;
+			$table = $wpdb->prefix . 'payment';
+			$data = array('orderID' => $order_id,'uuid' => '-2','status'=>'INVALID_TOTAL');
+			$format = array('%d','%s','%s');
+			$wpdb->insert($table,$data,$format);
+			return(-1);
+		}
 
 		$res = Pizzakit::create_swish_payment($order_id,$order_total);
 		
