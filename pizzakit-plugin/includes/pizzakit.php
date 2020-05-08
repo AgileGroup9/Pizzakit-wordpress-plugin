@@ -107,6 +107,7 @@ class Pizzakit {
 		# if ok create a payment in db
 		$order_id = $order[0];
 		$order_total = $order[1];
+		$tel_nr = $order[2];
 
 		if($order_total < 1){
 			global $wpdb;
@@ -117,7 +118,7 @@ class Pizzakit {
 			return(-1);
 		}
 
-		$res = Pizzakit::create_swish_payment($order_id,$order_total);
+		$res = Pizzakit::create_swish_payment($order_id,$order_total,$tel_nr);
 		
 		if($res['response'] !== NULL){
 			global $wpdb;
@@ -130,14 +131,14 @@ class Pizzakit {
 		return(-1);
 	}
 
-	private static function create_swish_payment($order_id,$cost){
+	private static function create_swish_payment($order_id,$cost,$tel_nr){
 		$random_uuid = str_replace("-","",wp_generate_uuid4());
 		$endpoint = "/v2/paymentrequests/".$random_uuid;
 		$method = CURLOPT_PUT;
 		$data = array(
-			"payeePaymentReference" => "0123456789",
+			"payeePaymentReference" => $order_id,
 			"callbackUrl" => get_home_url() . "/index.php/wp-json/pizzakit/callback/" . $order_id,
-			"payerAlias" => "4671234768",
+			"payerAlias" => $tel_nr,
 			"payeeAlias" => "1234679304",
 			"amount" => $cost,
 			"currency" => "SEK",
@@ -244,7 +245,7 @@ class Pizzakit {
 			$_format = array('%d','%s','%d');
 			$wpdb->insert($_table,$_dataArr,$_format);
 		}
-		return(array($_lastid,$total_cost));
+		return(array($_lastid,$total_cost,$_data['telNr']));
 	}
 
 	public static function refresh_menu_items(){
