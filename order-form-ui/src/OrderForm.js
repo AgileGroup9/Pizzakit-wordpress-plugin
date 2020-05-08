@@ -1,7 +1,8 @@
 import React from 'react';
 import Small_item from './Items';
 import PaymentConfirmation from './PaymentConfirmation';
-
+import ConSuccess from './ConSuccess'
+import ConFailed from './ConFailed'
 
 // Main Application
 // Renders a form and keeps track of items the client has selected
