@@ -1,4 +1,6 @@
 import React from 'react';
+import ConSuccess from './ConSuccess'
+import ConFailed from './ConFailed'
 
 class PaymentConfirmation extends React.Component {
 	constructor(props) {
@@ -39,8 +41,7 @@ class PaymentConfirmation extends React.Component {
 				}
 				else if (json.payment != null && json.payment !== 'PENDING') {
 					if (json.payment === 'PAYED') {
-						// Dummy page for now
-						this.props.navigateTo(() => <p>Din order är laggd och betald.</p>);
+						this.props.navigateTo(ConSuccess);
 		
 						this.setState({
 							loading: false,
@@ -64,9 +65,7 @@ class PaymentConfirmation extends React.Component {
 			this.pollFailures++;
 
 			if (this.pollFailures > PaymentConfirmation.acceptableFailures) {
-				const errorMessage = 'Något gick fel: ' + ((typeof ex === 'object' ? ex.message : ex) || '...men vi har ingen aning om vad 😢');
-				// Dummy page for now
-				this.props.navigateTo(() => <p>{errorMessage}</p>);
+				this.props.navigateTo(ConFailed);
 				
 				return; // Stop polling
 			}

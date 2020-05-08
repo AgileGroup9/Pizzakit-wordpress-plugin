@@ -101,11 +101,11 @@ class OrderForm extends React.Component {
 				this.props.navigateTo(PaymentConfirmation, { token: json.token });
 			}
 			else {
-				console.log('Delivery order failed: ' + json.token);
+				this.props.navigateTo(ConFailed);
 			}
 		}
 		else {
-			console.log('Delivery order failed: ' + response.statusText);
+			this.props.navigateTo(ConFailed);
 		}
 	}
 
