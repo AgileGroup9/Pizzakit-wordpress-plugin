@@ -15,10 +15,6 @@ class Pizzakit {
 				'methods' => 'GET',
 				'callback' => [__CLASS__, 'payment_query_handler'],
 			  ) );
-						register_rest_route( 'pizzakit', '/payment/(?P<id>\d+)', array(
-				'methods' => 'GET',
-				'callback' => [__CLASS__, 'payment_query_handler'],
-			  ) );
 		  } );
 
 	}
