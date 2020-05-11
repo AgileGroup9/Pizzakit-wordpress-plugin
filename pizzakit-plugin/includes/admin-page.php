@@ -17,6 +17,43 @@ if (isset($_POST["delete"])) {
   $where_format = array("%d");
   $wpdb->delete($table, $where, $where_format);
 }
+
+// handle an incoming POST object with items to delete from db
+if (isset($_POST["deleteItem"])) {
+  $table = $wpdb->prefix . 'items';
+  $where = array("name" => $_POST["deleteItem"]);
+  $where_format = array("%s");
+  $wpdb->delete($table, $where, $where_format);
+}
+
+// For handling additions to wp-items from "Ändra meny"
+if (isset($_POST["addItem"])) {
+  $table = $wpdb->prefix . 'items';
+  $data = array('name'=>$_POST["addItemName"], 'price'=>$_POST["addItemPrice"], 'comment'=>$_POST["addItemComment"]);
+  //$where = array("name" => $_POST["addItem"]);
+  $where_format = array('%s','%d','%s');
+  $wpdb->insert($table, $data, $where_format);
+}
+
+// handle an incoming POST object with items to activate in db
+if (isset($_POST["activateItem"])) {
+  $table = $wpdb->prefix . 'items';
+  $data = array("isActive" => TRUE);
+  $where = array("name" => $_POST["activateItem"]);
+  $format = array("%s");
+  $where_format = array("%s");
+  $wpdb->update($table, $data, $where, $format, $where_format);
+}
+
+// handle an incoming POST object with items to deactivate in db
+if (isset($_POST["deactivateItem"])) {
+  $table = $wpdb->prefix . 'items';
+  $data = array("isActive" => FALSE);
+  $where = array("name" => $_POST["deactivateItem"]);
+  $format = array("%s");
+  $where_format = array("%s");
+  $wpdb->update($table, $data, $where, $format, $where_format);
+}
 ?>
 
 <!-- import bootstrap css -->
@@ -49,8 +86,110 @@ if ($_POST["page"] == "edit-menu") {
               </form></li>
             </ul>
           </div>
-        </nav>';
-  echo "Theos kod";
+        </nav>
+      <h3 style="padding-left: 25px">Ändra meny</h3>';
+
+        $sql = "SELECT * FROM wp_items";
+        $items = $wpdb->get_results($sql);
+
+        echo '<ul class="list-group">
+                <li class="list-group-item">
+                  <div class="container-fluid">
+                    <div class="row">
+                      <div class="col-sm-r col-xs-3">
+                        <b>Namn</b>
+                      </div>
+                      <div class="col-sm-r col-xs-3">
+                        <b>Pris</b>
+                      </div>
+                      <div class="col-sm-r col-xs-3">
+                        <b>Kommentar</b>
+                      </div>
+                      <div class="col-sm-r col-xs-3">
+                        <b>Åtgärder</b>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ';
+
+        foreach ($items as $i) {
+          echo
+              '<li class="list-group-item">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
+                      ' . $i->name .
+                    '</div>
+                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
+                      ' . $i->price . 'kr
+                    </div>
+                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
+                      ' . $i->comment . '
+                    </div>
+                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <form action="." method="post">';
+
+                          // If the item is disabled, generate activate buttons
+                          if ($i->isActive == 0){
+                            echo '
+                              <input type="hidden" name="activateItem" value="' . $i->name . '">
+                              <input type="hidden" name="page" value="edit-menu">
+                              <input type="submit" class="btn-xs btn-success pull-left" value="Aktivera">
+                            ';
+
+                          // If the item is enabled, generate deactivate button
+                          } else {
+                            echo '
+                              <input type="hidden" name="deactivateItem" value="' . $i->name . '">
+                              <input type="hidden" name="page" value="edit-menu">
+                              <input type="submit" class="btn-xs btn-warning pull-left" value="Avaktivera">
+                            ';
+                          }
+
+                          echo '
+                          </form>
+                        </div>
+                        <div class="col-sm-6">
+                          <form action="." method="post">
+                            <input type="hidden" name="deleteItem" value="' . $i->name . '">
+                            <input type="hidden" name="page" value="edit-menu">
+                            <input type="submit" class="btn-xs btn-danger pull-left" value="Radera">
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>';
+        }
+
+        //Adds a row with input fields for adding items to wp-items. Handled at top of page.
+        echo '
+        <li class="list-group-item">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
+                      <form action="." method="post"><input class="form-control" type="text" name="addItemName" placeholder="Namn">
+                    </div>
+                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
+                      <input class="form-control" type="text" name="addItemPrice" placeholder="Pris (kr)">
+                    </div>
+                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
+                      <input class="form-control" type="text" name="addItemComment" placeholder="Kommentar">
+                    </div>
+                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
+                        <input type="hidden" name="addItem" value="TRUE">
+                        <input type="hidden" name="page" value="edit-menu">
+                        <input type="submit" class="btn-sm btn-success pull-left" value="Lägg till">
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </li>';
+        echo '</ul>';
 }
 
 elseif ($_POST["page"] == "all-orders") {
@@ -83,8 +222,9 @@ elseif ($_POST["page"] == "all-orders") {
               </form></li>
             </ul>
           </div>
-        </nav>';
-  
+        </nav>
+      <h3 style="padding-left: 25px">Alla ordrar</h3>';
+
   if (isset($_POST["order-search"])) {
     $sql = "SELECT * FROM wp_orders WHERE wp_orders.name LIKE '%" . $_POST["order-search"] . "%'";
     $orders = $wpdb->get_results($sql);
@@ -137,12 +277,12 @@ elseif ($_POST["page"] == "all-orders") {
                                 foreach($items as $i) {
                                     if ($c!=1)
                                       echo ', ';
-                                    echo '<b>' . $i->item . ': </b>' . $i->quantity; 
-                                    $c++;                                 
+                                    echo '<b>' . $i->item . ': </b>' . $i->quantity;
+                                    $c++;
                                 }
-                              };          
+                              };
                               echo '</div>
-                      </div>          
+                      </div>
                   </li>
               </ul>
           </div>';
@@ -187,12 +327,12 @@ elseif ($_POST["page"] == "all-orders") {
                                 foreach($items as $i) {
                                     if ($c!=1)
                                       echo ', ';
-                                    echo '<b>' . $i->item . ': </b>' . $i->quantity; 
-                                    $c++;                                 
+                                    echo '<b>' . $i->item . ': </b>' . $i->quantity;
+                                    $c++;
                                 }
-                              };          
+                              };
                               echo '</div>
-                      </div>          
+                      </div>
                   </li>
               </ul>
           </div>';
@@ -204,31 +344,32 @@ elseif ($_POST["page"] == "all-orders") {
 else {
   echo '
     <nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#">Verktyg</a>
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Verktyg</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+              <input type="hidden" name="page" value="orders">
+              <input type="submit" class="btn btn-primary" value="Nya ordrar">
+          </form></li>
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+            <input type="hidden" name="page" value="edit-menu">
+            <input type="submit" class="btn btn-secondary" value="Ändra meny">
+          </form></li>
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+            <input type="hidden" name="page" value="all-orders">
+            <input type="submit" class="btn btn-secondary" value="Alla ordrar">
+          </form></li>
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
+            <input type="hidden" name="page" value="all-orders">
+            <input type="text" class="form-control" name="order-search" placeholder="Kundens namn">
+            <input type="submit" class="btn btn-secondary" value="Sök">
+          </form></li>
+        </ul>
       </div>
-      <ul class="nav navbar-nav">
-        <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-            <input type="hidden" name="page" value="orders">
-            <input type="submit" class="btn btn-primary" value="Nya ordrar">
-        </form></li>
-        <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-          <input type="hidden" name="page" value="edit-menu">
-          <input type="submit" class="btn btn-secondary" value="Ändra meny">
-        </form></li>
-        <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-          <input type="hidden" name="page" value="all-orders">
-          <input type="submit" class="btn btn-secondary" value="Alla ordrar">
-        </form></li>
-        <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
-          <input type="hidden" name="page" value="all-orders">
-          <input type="text" class="form-control" name="order-search" placeholder="Kundens namn">
-          <input type="submit" class="btn btn-secondary" value="Sök">
-        </form></li>
-      </ul>
-    </div>
-  </nav>';
+    </nav>
+  <h3 style="padding-left: 25px">Nya ordrar</h3>';
 
   $sql = "SELECT * FROM wp_orders";
   $orders = $wpdb->get_results($sql);
