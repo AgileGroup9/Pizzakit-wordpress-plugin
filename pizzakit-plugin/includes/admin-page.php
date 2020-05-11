@@ -26,6 +26,15 @@ if (isset($_POST["deleteItem"])) {
   $wpdb->delete($table, $where, $where_format);
 }
 
+// For handling additions to wp-items from "Ändra Meny"
+if (isset($_POST["addItem"])) {
+  $table = $wpdb->prefix . 'items';
+  $data = array('name'=>$_POST["addItemName"], 'price'=>$_POST["addItemPrice"], 'comment'=>$_POST["addItemComment"]);
+  //$where = array("name" => $_POST["addItem"]);
+  $where_format = array('%s','%d','%s');
+  $wpdb->insert($table, $data, $where_format);
+}
+
 // handle an incoming POST object with items to activate in db
 if (isset($_POST["activateItem"])) {
   $table = $wpdb->prefix . 'items';
@@ -158,6 +167,30 @@ if ($_POST["page"] == "edit-menu") {
                 </div>
               </li>';
         }
+
+        //Adds a row with input fields for adding items to wp-items. Handled at top of page.
+        echo '
+        <li class="list-group-item">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
+                      <form action="." method="post"><input class="form-control" type="text" name="addItemName" placeholder="Namn">
+                    </div>
+                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
+                      <input class="form-control" type="text" name="addItemPrice" placeholder="Pris (kr)">
+                    </div>
+                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
+                      <input class="form-control" type="text" name="addItemComment" placeholder="Kommentar">
+                    </div>
+                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
+                        <input type="hidden" name="addItem" value="TRUE">
+                        <input type="hidden" name="page" value="edit-menu">
+                        <input type="submit" class="btn-sm btn-success pull-left" value="Lägg till">
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </li>';
         echo '</ul>';
 }
 
