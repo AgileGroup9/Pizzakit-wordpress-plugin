@@ -18,6 +18,7 @@ if (isset($_POST["delete"])) {
   $wpdb->delete($table, $where, $where_format);
 }
 
+// handle an incoming POST object with items to delete from db
 if (isset($_POST["deleteItem"])) {
   $table = $wpdb->prefix . 'items';
   $where = array("name" => $_POST["deleteItem"]);
@@ -25,6 +26,25 @@ if (isset($_POST["deleteItem"])) {
   $wpdb->delete($table, $where, $where_format);
 }
 
+// handle an incoming POST object with items to activate in db
+if (isset($_POST["activateItem"])) {
+  $table = $wpdb->prefix . 'items';
+  $data = array("isActive" => TRUE);
+  $where = array("name" => $_POST["activateItem"]);
+  $format = array("%s");
+  $where_format = array("%s");
+  $wpdb->update($table, $data, $where, $format, $where_format);
+}
+
+// handle an incoming POST object with items to deactivate in db
+if (isset($_POST["deactivateItem"])) {
+  $table = $wpdb->prefix . 'items';
+  $data = array("isActive" => FALSE);
+  $where = array("name" => $_POST["deactivateItem"]);
+  $format = array("%s");
+  $where_format = array("%s");
+  $wpdb->update($table, $data, $where, $format, $where_format);
+}
 ?>
 
 <!-- import bootstrap css -->
@@ -61,7 +81,7 @@ if ($_POST["page"] == "edit-menu") {
                   <div class="container-fluid">
                     <div class="row">
                       <div class="col-sm-r col-xs-3">
-                        <h3>Ändra Menyval</h3>
+                        <h3>Ändra Meny</h3>
                       </div>
                     </div>
                   </div>
@@ -103,11 +123,27 @@ if ($_POST["page"] == "edit-menu") {
                     <div class="col-sm-3 col-xs-3" style="font-size:16px">
                       <div class="row">
                         <div class="col-sm-6">
-                          <label class="switch">
-                            <input type="checkbox">
-                              <span class="slider round">
-                              </span>
-                          </label>
+                          <form action="." method="post">';
+
+                          // If the item is disabled, generate activate buttons
+                          if ($i->isActive == 0){
+                            echo '
+                              <input type="hidden" name="activateItem" value="' . $i->name . '">
+                              <input type="hidden" name="page" value="edit-menu">
+                              <input type="submit" class="btn-xs btn-success pull-left" value="Aktivera">
+                            ';
+
+                          // If the item is enabled, generate deactivate button
+                          } else {
+                            echo '
+                              <input type="hidden" name="deactivateItem" value="' . $i->name . '">
+                              <input type="hidden" name="page" value="edit-menu">
+                              <input type="submit" class="btn-xs btn-warning pull-left" value="Avaktivera">
+                            ';
+                          }
+
+                          echo '
+                          </form>
                         </div>
                         <div class="col-sm-6">
                           <form action="." method="post">
