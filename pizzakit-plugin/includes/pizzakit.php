@@ -195,9 +195,6 @@ class Pizzakit {
 						return $len;
 				} 
 
-				$name = strtolower(trim($header[0]));
-				echo "[". $name . "] => " . $header[1];
-
 				return $len;
 				}
 		);
