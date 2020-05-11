@@ -17,43 +17,6 @@ if (isset($_POST["delete"])) {
   $where_format = array("%d");
   $wpdb->delete($table, $where, $where_format);
 }
-
-// handle an incoming POST object with items to delete from db
-if (isset($_POST["deleteItem"])) {
-  $table = $wpdb->prefix . 'items';
-  $where = array("name" => $_POST["deleteItem"]);
-  $where_format = array("%s");
-  $wpdb->delete($table, $where, $where_format);
-}
-
-// For handling additions to wp-items from "Ändra Meny"
-if (isset($_POST["addItem"])) {
-  $table = $wpdb->prefix . 'items';
-  $data = array('name'=>$_POST["addItemName"], 'price'=>$_POST["addItemPrice"], 'comment'=>$_POST["addItemComment"]);
-  //$where = array("name" => $_POST["addItem"]);
-  $where_format = array('%s','%d','%s');
-  $wpdb->insert($table, $data, $where_format);
-}
-
-// handle an incoming POST object with items to activate in db
-if (isset($_POST["activateItem"])) {
-  $table = $wpdb->prefix . 'items';
-  $data = array("isActive" => TRUE);
-  $where = array("name" => $_POST["activateItem"]);
-  $format = array("%s");
-  $where_format = array("%s");
-  $wpdb->update($table, $data, $where, $format, $where_format);
-}
-
-// handle an incoming POST object with items to deactivate in db
-if (isset($_POST["deactivateItem"])) {
-  $table = $wpdb->prefix . 'items';
-  $data = array("isActive" => FALSE);
-  $where = array("name" => $_POST["deactivateItem"]);
-  $format = array("%s");
-  $where_format = array("%s");
-  $wpdb->update($table, $data, $where, $format, $where_format);
-}
 ?>
 
 <!-- import bootstrap css -->
@@ -76,125 +39,21 @@ if ($_POST["page"] == "edit-menu") {
                 <input type="submit" class="btn btn-primary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="all_orders">
+                  <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-secondary" value="Alla ordrar">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
+                <input type="hidden" name="page" value="all-orders">
+                <input type="text" class="form-control" name="order-search" placeholder="Kundens namn">
+                <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
           </div>
         </nav>';
-        $sql = "SELECT * FROM wp_items";
-        $items = $wpdb->get_results($sql);
-
-        echo '<ul class="list-group">
-                <li class="list-group-item">
-                  <div class="container-fluid">
-                    <div class="row">
-                      <div class="col-sm-r col-xs-3">
-                        <h3>Ändra Meny</h3>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li class="list-group-item">
-                  <div class="container-fluid">
-                    <div class="row">
-                      <div class="col-sm-r col-xs-3">
-                        <b>Namn</b>
-                      </div>
-                      <div class="col-sm-r col-xs-3">
-                        <b>Pris</b>
-                      </div>
-                      <div class="col-sm-r col-xs-3">
-                        <b>Kommentar</b>
-                      </div>
-                      <div class="col-sm-r col-xs-3">
-                        <b>Åtgärder</b>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              ';
-
-        foreach ($items as $i) {
-          echo
-              '<li class="list-group-item">
-                <div class="container-fluid">
-                  <div class="row">
-                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
-                      ' . $i->name .
-                    '</div>
-                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
-                      ' . $i->price . 'kr
-                    </div>
-                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
-                      ' . $i->comment . '
-                    </div>
-                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <form action="." method="post">';
-
-                          // If the item is disabled, generate activate buttons
-                          if ($i->isActive == 0){
-                            echo '
-                              <input type="hidden" name="activateItem" value="' . $i->name . '">
-                              <input type="hidden" name="page" value="edit-menu">
-                              <input type="submit" class="btn-xs btn-success pull-left" value="Aktivera">
-                            ';
-
-                          // If the item is enabled, generate deactivate button
-                          } else {
-                            echo '
-                              <input type="hidden" name="deactivateItem" value="' . $i->name . '">
-                              <input type="hidden" name="page" value="edit-menu">
-                              <input type="submit" class="btn-xs btn-warning pull-left" value="Avaktivera">
-                            ';
-                          }
-
-                          echo '
-                          </form>
-                        </div>
-                        <div class="col-sm-6">
-                          <form action="." method="post">
-                            <input type="hidden" name="deleteItem" value="' . $i->name . '">
-                            <input type="hidden" name="page" value="edit-menu">
-                            <input type="submit" class="btn-xs btn-danger pull-left" value="Radera">
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>';
-        }
-
-        //Adds a row with input fields for adding items to wp-items. Handled at top of page.
-        echo '
-        <li class="list-group-item">
-                <div class="container-fluid">
-                  <div class="row">
-                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
-                      <form action="." method="post"><input class="form-control" type="text" name="addItemName" placeholder="Namn">
-                    </div>
-                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
-                      <input class="form-control" type="text" name="addItemPrice" placeholder="Pris (kr)">
-                    </div>
-                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
-                      <input class="form-control" type="text" name="addItemComment" placeholder="Kommentar">
-                    </div>
-                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3" style="font-size:16px">
-                        <input type="hidden" name="addItem" value="TRUE">
-                        <input type="hidden" name="page" value="edit-menu">
-                        <input type="submit" class="btn-sm btn-success pull-left" value="Lägg till">
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </li>';
-        echo '</ul>';
+  echo "Theos kod";
 }
 
-elseif ($_POST["page"] == "all_orders") {
+elseif ($_POST["page"] == "all-orders") {
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
             <div class="navbar-header">
@@ -210,15 +69,29 @@ elseif ($_POST["page"] == "all_orders") {
                 <input type="submit" class="btn btn-secondary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="all_orders">
+                  <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-primary" value="Alla ordrar">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
+                <input type="hidden" name="page" value="all-orders">
+                <input type="text" class="form-control" name="order-search" placeholder="';
+                if (isset($_POST["order-search"])) {
+                  echo $_POST["order-search"];
+                } else echo "Kundens namn";
+                echo '">
+                <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
           </div>
         </nav>';
-
-  $sql = "SELECT * FROM wp_orders";
-  $orders = $wpdb->get_results($sql);
+  
+  if (isset($_POST["order-search"])) {
+    $sql = "SELECT * FROM wp_orders WHERE wp_orders.name LIKE '%" . $_POST["order-search"] . "%'";
+    $orders = $wpdb->get_results($sql);
+  } else {
+    $sql = "SELECT * FROM wp_orders";
+    $orders = $wpdb->get_results($sql);
+  }
 
   if ($orders[0] != NULL) {
     foreach($orders as $o) {
@@ -237,7 +110,7 @@ elseif ($_POST["page"] == "all_orders") {
                               <div class="btn-group pull-right" style="min-width:25px">
                                 <form action="." method="post">
                                   <input type="hidden" name="delete" value="' . $o->id . '">
-                                  <input type="hidden" name="page" value="all_orders">
+                                  <input type="hidden" name="page" value="all-orders">
                                   <input type="submit" class="btn-sm btn-danger" value="Radera">
                                 </form>
                               </div>
@@ -264,12 +137,12 @@ elseif ($_POST["page"] == "all_orders") {
                                 foreach($items as $i) {
                                     if ($c!=1)
                                       echo ', ';
-                                    echo '<b>' . $i->item . ': </b>' . $i->quantity;
-                                    $c++;
+                                    echo '<b>' . $i->item . ': </b>' . $i->quantity; 
+                                    $c++;                                 
                                 }
-                              };
+                              };          
                               echo '</div>
-                      </div>
+                      </div>          
                   </li>
               </ul>
           </div>';
@@ -289,7 +162,7 @@ elseif ($_POST["page"] == "all_orders") {
                               <div class="btn-group pull-right" style="min-width:25px">
                                 <form action="." method="post">
                                   <input type="hidden" name="done" value="' . $o->id . '">
-                                  <input type="hidden" name="page" value="all_orders">
+                                  <input type="hidden" name="page" value="all-orders">
                                   <input type="submit" class="btn-sm btn-success" value="Klar">
                                 </form>
                               </div>
@@ -314,12 +187,12 @@ elseif ($_POST["page"] == "all_orders") {
                                 foreach($items as $i) {
                                     if ($c!=1)
                                       echo ', ';
-                                    echo '<b>' . $i->item . ': </b>' . $i->quantity;
-                                    $c++;
+                                    echo '<b>' . $i->item . ': </b>' . $i->quantity; 
+                                    $c++;                                 
                                 }
-                              };
+                              };          
                               echo '</div>
-                      </div>
+                      </div>          
                   </li>
               </ul>
           </div>';
@@ -345,8 +218,13 @@ else {
           <input type="submit" class="btn btn-secondary" value="Ändra meny">
         </form></li>
         <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-          <input type="hidden" name="page" value="all_orders">
+          <input type="hidden" name="page" value="all-orders">
           <input type="submit" class="btn btn-secondary" value="Alla ordrar">
+        </form></li>
+        <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
+          <input type="hidden" name="page" value="all-orders">
+          <input type="text" class="form-control" name="order-search" placeholder="Kundens namn">
+          <input type="submit" class="btn btn-secondary" value="Sök">
         </form></li>
       </ul>
     </div>
@@ -424,70 +302,3 @@ else {
   }
 }
 ?>
-
-
-<style>
-/* The switch - the box around the slider */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 24px;
-}
-
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: #2196F3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(34px);
-  -ms-transform: translateX(34px);
-  transform: translateX(34px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-</style>
