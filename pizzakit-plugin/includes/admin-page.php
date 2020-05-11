@@ -26,7 +26,7 @@ if (isset($_POST["deleteItem"])) {
   $wpdb->delete($table, $where, $where_format);
 }
 
-// For handling additions to wp-items from "Ändra Meny"
+// For handling additions to wp-items from "Ändra meny"
 if (isset($_POST["addItem"])) {
   $table = $wpdb->prefix . 'items';
   $data = array('name'=>$_POST["addItemName"], 'price'=>$_POST["addItemPrice"], 'comment'=>$_POST["addItemComment"]);
@@ -76,25 +76,23 @@ if ($_POST["page"] == "edit-menu") {
                 <input type="submit" class="btn btn-primary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="all_orders">
+                  <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-secondary" value="Alla ordrar">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
+                <input type="hidden" name="page" value="all-orders">
+                <input type="text" class="form-control" name="order-search" placeholder="Kundens namn">
+                <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
           </div>
-        </nav>';
+        </nav>
+      <h3 style="padding-left: 25px">Ändra meny</h3>';
+
         $sql = "SELECT * FROM wp_items";
         $items = $wpdb->get_results($sql);
 
         echo '<ul class="list-group">
-                <li class="list-group-item">
-                  <div class="container-fluid">
-                    <div class="row">
-                      <div class="col-sm-r col-xs-3">
-                        <h3>Ändra Meny</h3>
-                      </div>
-                    </div>
-                  </div>
-                </li>
                 <li class="list-group-item">
                   <div class="container-fluid">
                     <div class="row">
@@ -194,7 +192,7 @@ if ($_POST["page"] == "edit-menu") {
         echo '</ul>';
 }
 
-elseif ($_POST["page"] == "all_orders") {
+elseif ($_POST["page"] == "all-orders") {
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
             <div class="navbar-header">
@@ -210,15 +208,30 @@ elseif ($_POST["page"] == "all_orders") {
                 <input type="submit" class="btn btn-secondary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="all_orders">
+                  <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-primary" value="Alla ordrar">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
+                <input type="hidden" name="page" value="all-orders">
+                <input type="text" class="form-control" name="order-search" placeholder="';
+                if (isset($_POST["order-search"])) {
+                  echo $_POST["order-search"];
+                } else echo "Kundens namn";
+                echo '">
+                <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
           </div>
-        </nav>';
+        </nav>
+      <h3 style="padding-left: 25px">Alla ordrar</h3>';
 
-  $sql = "SELECT * FROM wp_orders";
-  $orders = $wpdb->get_results($sql);
+  if (isset($_POST["order-search"])) {
+    $sql = "SELECT * FROM wp_orders WHERE wp_orders.name LIKE '%" . $_POST["order-search"] . "%'";
+    $orders = $wpdb->get_results($sql);
+  } else {
+    $sql = "SELECT * FROM wp_orders";
+    $orders = $wpdb->get_results($sql);
+  }
 
   if ($orders[0] != NULL) {
     foreach($orders as $o) {
@@ -237,7 +250,7 @@ elseif ($_POST["page"] == "all_orders") {
                               <div class="btn-group pull-right" style="min-width:25px">
                                 <form action="." method="post">
                                   <input type="hidden" name="delete" value="' . $o->id . '">
-                                  <input type="hidden" name="page" value="all_orders">
+                                  <input type="hidden" name="page" value="all-orders">
                                   <input type="submit" class="btn-sm btn-danger" value="Radera">
                                 </form>
                               </div>
@@ -289,7 +302,7 @@ elseif ($_POST["page"] == "all_orders") {
                               <div class="btn-group pull-right" style="min-width:25px">
                                 <form action="." method="post">
                                   <input type="hidden" name="done" value="' . $o->id . '">
-                                  <input type="hidden" name="page" value="all_orders">
+                                  <input type="hidden" name="page" value="all-orders">
                                   <input type="submit" class="btn-sm btn-success" value="Klar">
                                 </form>
                               </div>
@@ -331,26 +344,32 @@ elseif ($_POST["page"] == "all_orders") {
 else {
   echo '
     <nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#">Verktyg</a>
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Verktyg</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+              <input type="hidden" name="page" value="orders">
+              <input type="submit" class="btn btn-primary" value="Nya ordrar">
+          </form></li>
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+            <input type="hidden" name="page" value="edit-menu">
+            <input type="submit" class="btn btn-secondary" value="Ändra meny">
+          </form></li>
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+            <input type="hidden" name="page" value="all-orders">
+            <input type="submit" class="btn btn-secondary" value="Alla ordrar">
+          </form></li>
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
+            <input type="hidden" name="page" value="all-orders">
+            <input type="text" class="form-control" name="order-search" placeholder="Kundens namn">
+            <input type="submit" class="btn btn-secondary" value="Sök">
+          </form></li>
+        </ul>
       </div>
-      <ul class="nav navbar-nav">
-        <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-            <input type="hidden" name="page" value="orders">
-            <input type="submit" class="btn btn-primary" value="Nya ordrar">
-        </form></li>
-        <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-          <input type="hidden" name="page" value="edit-menu">
-          <input type="submit" class="btn btn-secondary" value="Ändra meny">
-        </form></li>
-        <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-          <input type="hidden" name="page" value="all_orders">
-          <input type="submit" class="btn btn-secondary" value="Alla ordrar">
-        </form></li>
-      </ul>
-    </div>
-  </nav>';
+    </nav>
+  <h3 style="padding-left: 25px">Nya ordrar</h3>';
 
   $sql = "SELECT * FROM wp_orders";
   $orders = $wpdb->get_results($sql);
@@ -424,70 +443,3 @@ else {
   }
 }
 ?>
-
-
-<style>
-/* The switch - the box around the slider */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 24px;
-}
-
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: #2196F3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(34px);
-  -ms-transform: translateX(34px);
-  transform: translateX(34px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-</style>
