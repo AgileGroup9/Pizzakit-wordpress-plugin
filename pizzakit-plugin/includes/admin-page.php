@@ -81,7 +81,7 @@ if ($_POST["page"] == "edit-menu") {
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
-                <input type="text" class="form-control" name="order-search" placeholder="Kundens namn">
+                <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
                 <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
@@ -216,7 +216,7 @@ elseif ($_POST["page"] == "all-orders") {
                 <input type="text" class="form-control" name="order-search" placeholder="';
                 if (isset($_POST["order-search"])) {
                   echo $_POST["order-search"];
-                } else echo "Kundens namn";
+                } else echo "Namn eller mailadress";
                 echo '">
                 <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
@@ -363,7 +363,7 @@ else {
           </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
             <input type="hidden" name="page" value="all-orders">
-            <input type="text" class="form-control" name="order-search" placeholder="Kundens namn">
+            <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
             <input type="submit" class="btn btn-secondary" value="Sök">
           </form></li>
         </ul>
