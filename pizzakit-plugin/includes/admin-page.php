@@ -226,7 +226,7 @@ elseif ($_POST["page"] == "all-orders") {
       <h3 style="padding-left: 25px">Alla ordrar</h3>';
 
   if (isset($_POST["order-search"])) {
-    $sql = "SELECT * FROM wp_orders WHERE wp_orders.name LIKE '%" . $_POST["order-search"] . "%'";
+    $sql = "SELECT * FROM wp_orders WHERE wp_orders.name LIKE '%" . $_POST["order-search"] . "%' OR wp_orders.email LIKE '%" . $_POST["order-search"] . "%'";
     $orders = $wpdb->get_results($sql);
   } else {
     $sql = "SELECT * FROM wp_orders";
