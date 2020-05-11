@@ -17,6 +17,14 @@ if (isset($_POST["delete"])) {
   $where_format = array("%d");
   $wpdb->delete($table, $where, $where_format);
 }
+
+if (isset($_POST["deleteItem"])) {
+  $table = $wpdb->prefix . 'items';
+  $where = array("name" => $_POST["deleteItem"]);
+  $where_format = array("%s");
+  $wpdb->delete($table, $where, $where_format);
+}
+
 ?>
 
 <!-- import bootstrap css -->
@@ -47,7 +55,7 @@ if ($_POST["page"] == "edit-menu") {
         </nav>';
         $sql = "SELECT * FROM wp_items";
         $items = $wpdb->get_results($sql);
-      
+
         echo '<ul class="list-group">
                 <li class="list-group-item">
                   <div class="container-fluid">
@@ -71,37 +79,48 @@ if ($_POST["page"] == "edit-menu") {
                         <b>Kommentar</b>
                       </div>
                       <div class="col-sm-r col-xs-3">
-                        <b>Aktiv</b>
+                        <b>Åtgärder</b>
                       </div>
                     </div>
                   </div>
                 </li>
               ';
-      
+
         foreach ($items as $i) {
-          echo 
+          echo
               '<li class="list-group-item">
                 <div class="container-fluid">
                   <div class="row">
-                    <div class="col-sm-3 col-xs-3">
-                      ' . $i->name . 
+                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
+                      ' . $i->name .
                     '</div>
-                    <div class="col-sm-3" col-xs-3>
+                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
                       ' . $i->price . 'kr
                     </div>
-                    <div class="col-sm-3 col-xs-3">
+                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
                       ' . $i->comment . '
                     </div>
-                    <div class="col-sm-3 col-xs-3">
-                      <label class="switch">
-                        <input type="checkbox">
-                          <span class="slider round">
-                          </span>
-                      </label>
+                    <div class="col-sm-3 col-xs-3" style="font-size:16px">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <label class="switch">
+                            <input type="checkbox">
+                              <span class="slider round">
+                              </span>
+                          </label>
+                        </div>
+                        <div class="col-sm-6">
+                          <form action="." method="post">
+                            <input type="hidden" name="deleteItem" value="' . $i->name . '">
+                            <input type="hidden" name="page" value="edit-menu">
+                            <input type="submit" class="btn-xs btn-danger pull-left" value="Radera">
+                          </form>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </li>';   
+              </li>';
         }
         echo '</ul>';
 }
@@ -128,10 +147,10 @@ elseif ($_POST["page"] == "all_orders") {
             </ul>
           </div>
         </nav>';
-        
+
   $sql = "SELECT * FROM wp_orders";
   $orders = $wpdb->get_results($sql);
-  
+
   if ($orders[0] != NULL) {
     foreach($orders as $o) {
       if ($o->done == TRUE){
@@ -176,12 +195,12 @@ elseif ($_POST["page"] == "all_orders") {
                                 foreach($items as $i) {
                                     if ($c!=1)
                                       echo ', ';
-                                    echo '<b>' . $i->item . ': </b>' . $i->quantity; 
-                                    $c++;                                 
+                                    echo '<b>' . $i->item . ': </b>' . $i->quantity;
+                                    $c++;
                                 }
-                              };          
+                              };
                               echo '</div>
-                      </div>          
+                      </div>
                   </li>
               </ul>
           </div>';
@@ -226,12 +245,12 @@ elseif ($_POST["page"] == "all_orders") {
                                 foreach($items as $i) {
                                     if ($c!=1)
                                       echo ', ';
-                                    echo '<b>' . $i->item . ': </b>' . $i->quantity; 
-                                    $c++;                                 
+                                    echo '<b>' . $i->item . ': </b>' . $i->quantity;
+                                    $c++;
                                 }
-                              };          
+                              };
                               echo '</div>
-                      </div>          
+                      </div>
                   </li>
               </ul>
           </div>';
@@ -336,7 +355,7 @@ else {
   }
 }
 ?>
-?>
+
 
 <style>
 /* The switch - the box around the slider */
