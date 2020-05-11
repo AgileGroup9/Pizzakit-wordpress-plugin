@@ -27,6 +27,7 @@ class PaymentConfirmation extends React.Component {
 
 	async fetchUpdate() {
 		try {
+
 			const response = await fetch(
 				`//${location.host}/index.php/wp-json/pizzakit/payment/${this.props.token}`,
 				{
@@ -40,7 +41,7 @@ class PaymentConfirmation extends React.Component {
 					throw new Error(json.error);
 				}
 				else if (json.payment != null && json.payment !== 'PENDING') {
-					if (json.payment === 'PAYED') {
+					if (json.payment === 'PAID') {
 						this.props.navigateTo(ConSuccess);
 		
 						this.setState({

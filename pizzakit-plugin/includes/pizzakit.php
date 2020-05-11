@@ -42,10 +42,10 @@ class Pizzakit {
 			$response = Pizzakit::create_payment($order);
 
 			if($response > 0){
-				wp_send_json(array( 'token' => $order[0]));
+				wp_send_json(array( 'token' =>strval($order[0])));
 			}
 			else{
-				wp_send_json(array('token' => -1));
+				wp_send_json(array('token' => '-1'));
 			}
 		}
 	}
@@ -92,7 +92,7 @@ class Pizzakit {
 						$table = $wpdb->prefix . 'payment';
 						$res = $wpdb->update($table,array( 'status' => $resp_json['status']),array('orderID' => $_data->get_url_params()['id']),array('%s'),array('%d'));
 						if($res == false){
-							var_dump(false);
+							trigger_error("Pizzakit: error creating entry in wp_payment");
 						}
 					}
 				}
@@ -191,9 +191,6 @@ class Pizzakit {
 						return $len;
 				} 
 
-				$name = strtolower(trim($header[0]));
-				echo "[". $name . "] => " . $header[1];
-
 				return $len;
 				}
 		);
@@ -218,7 +215,7 @@ class Pizzakit {
 
 		$json = file_get_contents(plugin_dir_path(__FILE__) . 'items_for_sale.json');
 		$decoded = json_decode($json, true);
-		$items = array_merge($decoded['main_items'],$decoded['extras']);
+		$items = $decoded['menu'];
 
 		global $wpdb;
 
