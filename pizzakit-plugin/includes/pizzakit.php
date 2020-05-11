@@ -92,7 +92,7 @@ class Pizzakit {
 						$table = $wpdb->prefix . 'payment';
 						$res = $wpdb->update($table,array( 'status' => $resp_json['status']),array('orderID' => $_data->get_url_params()['id']),array('%s'),array('%d'));
 						if($res == false){
-							var_dump(false);
+							trigger_error("Pizzakit: error creating entry in wp_payment");
 						}
 					}
 				}
