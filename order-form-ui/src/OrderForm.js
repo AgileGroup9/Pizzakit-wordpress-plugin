@@ -10,8 +10,6 @@ class OrderForm extends React.Component {
 	constructor(props){
 		super(props);
 
-		// Hard coded list of items
-		// TODO: retrive items and price from server-side api
 		this.post_address = props.post_address;
 		this.state = {};
 		this.is_email_valid = true;
@@ -20,9 +18,8 @@ class OrderForm extends React.Component {
 
 		// Required for intercepting onChange events from <input>
 		this.handle_detail_update = this.handle_detail_update.bind(this);
-		// Use list_items to create a key-map for tracking the users shopping cart
+		// Create empty states, will be initialized by get_items()
 		this.items = [];
-		this.sum = 0;
 		this.prices = new Map();
 		this.state = {
 			cart : new Map(),
@@ -169,7 +166,7 @@ class OrderForm extends React.Component {
 	}
 
 	render() {
-		// Render toppings dynamicaly
+		// Render items dynamicaly
 		const extras = this.items.filter(x => x["main_item"] === false);
 		const extra_list = extras.map(x => {
 			return(<Small_item
@@ -194,8 +191,8 @@ class OrderForm extends React.Component {
 			/>);
 		});
 
-		this.sum = 0;
-		this.state.cart.forEach((v,k,m) => this.sum += this.prices.get(k)*v);
+		var sum = 0;
+		this.state.cart.forEach((v,k,m) => sum += this.prices.get(k)*v);
 		// Renders form. For info about how to add stuff, google jsx
 		// TODO: remove inline css (code smell)
 		return(
@@ -218,7 +215,7 @@ class OrderForm extends React.Component {
 				</div>
 				<hr/>
 
-				<h6><strong>Totalkostnad:</strong> {this.sum}kr</h6>
+				<h6><strong>Totalkostnad:</strong> {sum}kr</h6>
 				<p>(obligatoriska fält: <span>*</span>)</p>
 				<div id="detail-form">
 					<div className="form-group" id="email">
