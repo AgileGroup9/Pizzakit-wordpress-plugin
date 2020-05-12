@@ -15,6 +15,10 @@ class Pizzakit {
 				'methods' => 'GET',
 				'callback' => [__CLASS__, 'payment_query_handler'],
 			  ) );
+			register_rest_route( 'pizzakit', '/items', array(
+				'methods' => 'GET',
+				'callback' => [__CLASS__, 'item_query_handler'],
+			  ) );
 		  } );
 
 	}
@@ -50,6 +54,14 @@ class Pizzakit {
 		}
 	}
 
+
+	public static function item_query_handler($data)
+	{
+		$json = file_get_contents(plugin_dir_path(__FILE__) . 'items_for_sale.json');
+		$decoded = json_decode($json, true);
+		$items = $decoded['menu'];
+		wp_send_json($items);
+	}
 
 	public static function payment_query_handler($data)
 	{
