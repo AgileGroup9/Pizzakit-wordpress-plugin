@@ -176,6 +176,7 @@ class OrderForm extends React.Component {
 				key = {x['name']}
 				name={x['name']}
 				desc={x['comment']}
+				price={this.prices.get(x['name'])}
 				count={this.state.cart.get(x['name'])}
 				onClick={(name,delta) => this.handle_cart_update(name,delta)}
 			/>);
@@ -187,6 +188,7 @@ class OrderForm extends React.Component {
 				key = {x['name']}
 				name={x['name']}
 				desc={x['comment']}
+				price={this.prices.get(x['name'])}
 				count={this.state.cart.get(x['name'])}
 				onClick={(name,delta) => this.handle_cart_update(name,delta)}
 			/>);
