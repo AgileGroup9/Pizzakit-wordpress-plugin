@@ -54,12 +54,19 @@ if (isset($_POST["deactivateItem"])) {
   $where_format = array("%s");
   $wpdb->update($table, $data, $where, $format, $where_format);
 }
+
+// delete every order that is older than 2 weeks
+// using wpdb::query is safe since no user inputs are used
+if (isset($_POST["clearAllOldOrders"])){
+  $wpdb->query('DELETE from wp_orders WHERE (14 <= (SELECT DATEDIFF(CURRENT_TIMESTAMP, date) AS dd));');
+}
 ?>
 
 <!-- import bootstrap css -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
 <?php
+// Generate edit menu
 if ($_POST["page"] == "edit-menu") {
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
@@ -192,6 +199,7 @@ if ($_POST["page"] == "edit-menu") {
         echo '</ul>';
 }
 
+// Generate the all orders-page
 elseif ($_POST["page"] == "all-orders") {
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
@@ -223,7 +231,21 @@ elseif ($_POST["page"] == "all-orders") {
             </ul>
           </div>
         </nav>
-      <h3 style="padding-left: 25px">Alla ordrar</h3>';
+
+
+      <div class="row" style="padding-bottom:15px">
+        <div class="col-lg-6 col-sm-6 col-md-6 pull-left">
+          <h3 style="padding-left: 25px">Alla ordrar</h3>
+        </div>
+        <div class="col-lg-6 col-sm-6 col-md-6">
+          <form action="." method="post" style="padding-top:15px;padding-right:25px">
+            <input type="hidden" name="clearAllOldOrders" value="TRUE">
+            <input type="hidden" name="page" value="all-orders">
+            <input type="submit" class="btn btn-warning pull-right" value="Radera >2 veckor gamla ordrar" style="color:black">
+          </form>
+        </div>
+      </div>
+        ';
 
   if (isset($_POST["order-search"])) {
     $sql = "SELECT * FROM wp_orders WHERE wp_orders.name LIKE '%" . $_POST["order-search"] . "%' OR wp_orders.email LIKE '%" . $_POST["order-search"] . "%'";
@@ -237,8 +259,8 @@ elseif ($_POST["page"] == "all-orders") {
     foreach($orders as $o) {
       if ($o->done == TRUE){
         echo '<!-- One order block, generate one per order -->
-          <div class="container-fluid col-sm-12 col-md-6 col-lg-6"
-              style="padding-top: 25px;padding-left: 15px;padding-right: 15px;">
+          <div class="container-fluid"
+              style="padding-left: 15px;padding-right: 15px;justify-content:center;width:90%">
               <ul class="list-group">
                   <!-- top section -->
                   <li class="list-group-item" style="min-height: 52px">
@@ -289,8 +311,8 @@ elseif ($_POST["page"] == "all-orders") {
       }
       else {
         echo '<!-- One order block, generate one per order -->
-          <div class="container-fluid col-sm-12 col-md-6 col-lg-6"
-              style="padding-top: 25px;padding-left: 15px;padding-right: 15px;">
+          <div class="container-fluid"
+              style="padding-left: 15px;padding-right: 15px;justify-content:center;width:90%">
               <ul class="list-group">
                   <!-- top section -->
                   <li class="list-group-item" style="min-height: 52px">
@@ -316,6 +338,8 @@ elseif ($_POST["page"] == "all-orders") {
                               <tstyle style="font-size: 16px">
                                   <b>Kund:</b> ' . $o->name . '
                                   <b>Datum:</b> ' . $o->date . '
+                                  <b>Mail:</b> ' . $o->email . '
+                                  <b>Tel. nr.:</b> ' . $o->telNr . '
                               </tstyle>
                           </div>
                           <div class="col-sm-6 col-md-6 col-lg-6 pull-right" style="padding-top:0px;padding-bottom:5px">
@@ -341,6 +365,7 @@ elseif ($_POST["page"] == "all-orders") {
   }
 }
 
+// Generate the new orders-page
 else {
   echo '
     <nav class="navbar navbar-inverse">
