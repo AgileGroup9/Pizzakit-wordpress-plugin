@@ -5,7 +5,13 @@ class App extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = { ...App.defaultState };
+		this.state = {
+			childComponent: props.defaultChild || App.defaultState.childComponent,
+			childProps: props.defaultChildProps || App.defaultState.childProps
+		};
+
+		/** @type {React.RefObject<HTMLElement>} */
+		this.ref = React.createRef();
 	}
 
 	/**
@@ -25,7 +31,15 @@ class App extends React.Component {
 	}
 
 	render() {
-		return React.createElement(this.state.childComponent, { ...this.state.childProps, navigateTo: this.navigateTo.bind(this) });
+		return (
+			<div ref={this.ref}>
+				{React.createElement(this.state.childComponent, { ...this.state.childProps, navigateTo: this.navigateTo.bind(this) })}
+			</div>
+		);
+	}
+
+	componentDidUpdate() {
+		this.ref.current.scrollIntoView();
 	}
 }
 

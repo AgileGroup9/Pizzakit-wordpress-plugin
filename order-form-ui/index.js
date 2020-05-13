@@ -17,6 +17,5 @@ registerBlockType(
 
 const root = document.getElementById('pizzakit-order-form');
 if (root != null) {
-	const app = ReactDOM.render(<App />, root);
-	app.navigateTo(OrderForm, { post_address: '/' });
+	ReactDOM.render(<App defaultChild={OrderForm} defaultChildProps={{ post_address: '/' }} />, root);
 }
