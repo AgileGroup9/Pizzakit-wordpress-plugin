@@ -248,7 +248,7 @@ class OrderForm extends React.Component {
 				<hr/>
 				<div id="final-form">
 					<textarea name="comments" rows="2" cols="30" placeholder="Kommentarer" onChange={this.handle_detail_update}></textarea>
-					<button onClick={() => this.handle_submit(this.post_address)} className="btn btn-primary">Gå till betalning</button>
+					<button onClick={() => this.handle_submit(this.post_address)} className="btn btn-primary"><span>Gå till betalning</span></button>
 				</div>
 			</p>
 		);

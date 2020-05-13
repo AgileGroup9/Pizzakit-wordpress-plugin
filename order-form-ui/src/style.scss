@@ -3,6 +3,31 @@
 
 	&.loading {
 		pointer-events: none;
+
+		button > span::after {
+			animation: dots 3s linear infinite;
+
+			@keyframes dots {
+				0% {
+					content: "   ";
+				}
+				17% {
+					content: ".  ";
+				}
+				33% {
+					content: ".. ";
+				}
+				50% {
+					content: "...";
+				}
+				67% {
+					content: " ..";
+				}
+				83% {
+					content: "  .";
+				}
+			}
+		}
 	}
 
 	label {
@@ -81,7 +106,14 @@
 			margin-left: 20px;
 			outline: none;
 
+			white-space: pre-wrap;
+
 			position: relative;
+
+			span::after {
+				display: inline-block;
+				content: "   ";
+			}
 		}
 	}
 }
