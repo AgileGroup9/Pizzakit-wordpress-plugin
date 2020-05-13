@@ -222,8 +222,8 @@ class Pizzakit {
 		//insert into orders, using insert() function to get it prepared. Returns id of last inserted order.
 		$_table = $wpdb->prefix . 'orders';
 		$_dataArr = array(
-			'id' => null, 'email' => $_data["email"], 'name' => $_data["name"], 'telNr' => $_data["telNr"],
-			'address' => $_data["address"], 'doorCode' => $_data["doorCode"], 'postalCode' => $_data["postalCode"], 'comments' => $_data["comments"]
+			'id' => null, 'email' => Pizzakit::sanitizeText($_data["email"]), 'name' => Pizzakit::sanitizeText($_data["name"]), 'telNr' => Pizzakit::sanitizeText($_data["telNr"]),
+			'address' => Pizzakit::sanitizeText($_data["address"]), 'doorCode' => Pizzakit::sanitizeText($_data["doorCode"]), 'postalCode' => Pizzakit::sanitizeText($_data["postalCode"]), 'comments' => Pizzakit::sanitizeText($_data["comments"])
 		);
 		$_format = array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s');
 		$wpdb->insert($_table, $_dataArr, $_format);
@@ -246,6 +246,20 @@ class Pizzakit {
 			$wpdb->insert($_table,$_dataArr,$_format);
 		}
 		return(array($_lastid,$total_cost,$_data['telNr']));
+	}
+
+	/**
+	 * Removes angle brackets from strings so that they safely can be inserted
+	 * in HTML outputs.
+	 * 
+	 * @param string $text Text that might contain HTML-tags.
+	 * 
+	 * @return string Text that won't break HTML.
+	 */
+	private static function sanitizeText($text) {
+		$text = str_replace("<", "&lt;", $text);
+		$text = str_replace(">", "&gt;", $text);
+		return $text;
 	}
 
 	public static function fill_menu($data)
