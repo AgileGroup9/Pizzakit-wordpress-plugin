@@ -203,8 +203,9 @@ class OrderForm extends React.Component {
 						</div>
 					</div>
 					<div>
-						<small className="form-text text-muted"> I alla pizzakit ingår Tomatsås, San Marzano Fior di Latte
-							(mozarella) samt en basilikakruka</small>
+						<small className="form-text text-muted">
+							I alla pizzakit ingår Tomatsås San Marzano, Fior di Latte (mozzarella), samt en Basilikakruka
+						</small>
 					</div>
 				</div>
 				<hr/>
