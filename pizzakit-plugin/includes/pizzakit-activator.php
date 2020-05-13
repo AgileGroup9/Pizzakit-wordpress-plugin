@@ -60,9 +60,9 @@ class Pizzakit_Activator
 		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'items') != $wpdb->prefix . 'items') {
 			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'items(
 			name VARCHAR(100) NOT NULL,
-			price INT NOT NULL,
+			price INT UNSIGNED NOT NULL CHECK (price > 0),
 			comment TEXT,
-			main_item BOOLEAN,
+			main_item BOOLEAN DEFAULT FALSE,
 			isActive BOOLEAN NOT NULL DEFAULT 1,
 			PRIMARY KEY (name)
 			)';
@@ -76,7 +76,7 @@ class Pizzakit_Activator
 			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'entries(
 			orderID INT UNSIGNED REFERENCES ' . $wpdb->prefix . 'orders(id),
 			item VARCHAR(100) NOT NULL,
-			quantity INT NOT NULL,
+			quantity INT UNSIGNED NOT NULL CHECK (quantity > 0),
 			PRIMARY KEY(orderID, item),
 			FOREIGN KEY(orderID) REFERENCES ' . $wpdb->prefix . 'orders(id) ON DELETE CASCADE ON UPDATE CASCADE
 			)';
