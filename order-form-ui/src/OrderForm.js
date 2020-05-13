@@ -205,14 +205,15 @@ class OrderForm extends React.Component {
 						</div>
 					</div>
 					<div>
-						<small className="form-text text-muted"> I alla pizzakit ingår Tomatsås, San Marzano Fior di Latte
-							(mozarella) samt en basilikakruka</small>
+						<small className="form-text text-muted">
+							I alla pizzakit ingår Tomatsås San Marzano, Fior di Latte (mozzarella), en Basilikakruka, samt Instruktioner
+						</small>
 					</div>
 				</div>
 				<hr/>
 
 				<div className="form-group">
-					<h6>Välj toppings:</h6>
+					<h6>Välj extra tillägg:</h6>
 					{/*Extras are rendered here*/ toppings_list}
 				</div>
 				<hr/>
