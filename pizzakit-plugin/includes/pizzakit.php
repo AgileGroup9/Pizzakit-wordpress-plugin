@@ -57,9 +57,9 @@ class Pizzakit {
 
 	public static function item_query_handler($data)
 	{
-		$json = file_get_contents(plugin_dir_path(__FILE__) . 'items_for_sale.json');
-		$decoded = json_decode($json, true);
-		$items = $decoded['menu'];
+		global $wpdb;
+		$sql = "SELECT * FROM wp_items";
+		$items = $wpdb->get_results($sql);
 		wp_send_json($items);
 	}
 

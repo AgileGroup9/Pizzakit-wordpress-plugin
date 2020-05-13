@@ -167,7 +167,7 @@ class OrderForm extends React.Component {
 
 	render() {
 		// Render items dynamicaly
-		const extras = this.items.filter(x => x["main_item"] === false);
+		const extras = this.items.filter(x => x["main_item"] == false);
 		const extra_list = extras.map(x => {
 			return(<Small_item
 				key = {x['name']}
@@ -179,7 +179,7 @@ class OrderForm extends React.Component {
 			/>);
 		});
 
-		const mains = this.items.filter(x => x["main_item"] === true);
+		const mains = this.items.filter(x => x["main_item"] == true);
 		const main_list = mains.map(x => {
 			return(<Small_item 
 				key = {x['name']}
