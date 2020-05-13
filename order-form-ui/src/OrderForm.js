@@ -211,7 +211,7 @@ class OrderForm extends React.Component {
 				<hr/>
 
 				<div className="form-group">
-					<h6>Välj toppings:</h6>
+					<h6>Välj extra tillägg:</h6>
 					{/*Extras are rendered here*/ toppings_list}
 				</div>
 				<hr/>
