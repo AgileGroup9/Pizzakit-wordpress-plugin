@@ -35,6 +35,7 @@ class OrderForm extends React.Component {
 			doorCode : '',
 			postalCode : '',
 			comments : '',
+			isLoading: false
 		};
 
 		this.is_email_valid = true;
@@ -85,6 +86,7 @@ class OrderForm extends React.Component {
 		if(validation_results !== ''){
 			alert(validation_results);
 		}
+		this.setState({ isLoading: true });
 		const response = await fetch(target_addr, {
 			method: 'POST',
 			mode: 'no-cors', 
@@ -179,7 +181,7 @@ class OrderForm extends React.Component {
 		// Renders form. For info about how to add stuff, google jsx
 		// TODO: remove inline css (code smell)
 		return(
-			<p>
+			<p className={`${this.state.isLoading ? 'loading' : ''}`}>
 				<div className="form-group">
 					<h6>Storlek på pizzakit:</h6>
 					<div>
@@ -246,7 +248,10 @@ class OrderForm extends React.Component {
 				<hr/>
 				<div id="final-form">
 					<textarea name="comments" rows="2" cols="30" placeholder="Kommentarer" onChange={this.handle_detail_update}></textarea>
-					<button onClick={() => this.handle_submit(this.post_address)} className="btn btn-primary">Gå till betalning</button>
+					<button onClick={() => this.handle_submit(this.post_address)} className="btn btn-primary">
+						<span>Gå till betalning</span>
+						<div className="spinner"></div>
+					</button>
 				</div>
 			</p>
 		);
