@@ -1,12 +1,16 @@
 #pizzakit-order-form > p {
 	display: block;
 
+	&.loading {
+		pointer-events: none;
+	}
+
 	label {
 		margin-top: 5px;
 		font-weight: 400;
 	}
 
-	span {
+	*:not(button) > span {
 		color: red;
 		font-size: medium;
 	}
@@ -75,6 +79,9 @@
 
 		button {
 			margin-left: 20px;
+			outline: none;
+
+			position: relative;
 		}
 	}
 }
