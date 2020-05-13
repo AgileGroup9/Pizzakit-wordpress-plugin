@@ -1,4 +1,4 @@
-#pizzakit-order-form > p {
+#pizzakit-order-form > div > p {
 	display: block;
 
 	label {
@@ -79,7 +79,7 @@
 	}
 }
 
-#pizzakit-order-form > .payment-confirmation {
+#pizzakit-order-form > div > .payment-confirmation {
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
@@ -176,7 +176,7 @@
 	}
 }
 
-#pizzakit-order-form > .confirm-page {
+#pizzakit-order-form > div > .confirm-page {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
