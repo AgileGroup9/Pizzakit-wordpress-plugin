@@ -10,24 +10,19 @@ class OrderForm extends React.Component {
 	constructor(props){
 		super(props);
 
-		// Hard coded list of items
-		// TODO: retrive items and price from server-side api
-		this.list_items = new Map([
-			['Picollo' ,175],
-			['Grande' ,265],
-			['Salami mild' ,20],
-			['Salami stark' ,20],
-			['ParmaSkinka',20],
-			['Prosciutto Cotto' ,20],
-			['Buffelmozzarella',25],
-			['Extra deg',35],
-		]);
-
 		this.post_address = props.post_address;
+		this.state = {};
+		this.is_email_valid = true;
+		this.is_telNr_valid = true;
+		this.is_postalCode_valid = true;
 
-		// Use list_items to create a key-map for tracking the users shopping cart
+		// Required for intercepting onChange events from <input>
+		this.handle_detail_update = this.handle_detail_update.bind(this);
+		// Create empty states, will be initialized by get_items()
+		this.items = [];
+		this.prices = new Map();
 		this.state = {
-			cart : new Map( Array.from(this.list_items.keys()).map((e) => [e,0]) ),
+			cart : new Map(),
 			email : '',
 			name : '',
 			telNr : '',
@@ -37,15 +32,8 @@ class OrderForm extends React.Component {
 			comments : '',
 			isLoading: false
 		};
-
-		this.is_email_valid = true;
-		this.is_telNr_valid = true;
-		this.is_postalCode_valid = true;
-
-		// Required for intercepting onChange events from <input>
-		this.handle_detail_update = this.handle_detail_update.bind(this);
+		this.get_items();
 	}
-
 
 	handle_cart_update(item,delta){
 		const newValue = this.state.cart.get(item) + delta;
@@ -75,6 +63,23 @@ class OrderForm extends React.Component {
 			}
 		}
 		return false;
+	}
+
+	async get_items(){
+		const response = await fetch('/index.php/wp-json/pizzakit/items');
+		this.items = await response.json();
+		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
+		console.log(this.prices);
+		this.setState({
+			cart : new Map( this.items.map(x => [x['name'],0])),
+			email : '',
+			name : '',
+			telNr : '',
+			address : '',
+			doorCode : '',
+			postalCode : '',
+			comments : '',
+		});
 	}
 
 	async handle_submit(target_addr) {
@@ -163,21 +168,33 @@ class OrderForm extends React.Component {
 	}
 
 	render() {
-		// Render toppings dynamicaly
-		// Remove pizza-kit from list_items, then map each element to a tag
-		const toppings = Array.from(this.list_items.keys()).slice(2);
-		const toppings_list = toppings.map((t) => {
+		// Render items dynamicaly
+		const extras = this.items.filter(x => x["main_item"] == false);
+		const extra_list = extras.map(x => {
 			return(<Small_item
-				key = {t}
-				name={t} 
-				count={this.state.cart.get(t)}
+				key = {x['name']}
+				name={x['name']}
+				desc={x['comment']}
+				price={this.prices.get(x['name'])}
+				count={this.state.cart.get(x['name'])}
 				onClick={(name,delta) => this.handle_cart_update(name,delta)}
 			/>);
 		});
 
-		const kostnad = Array.from(this.state.cart.entries()).map((e) => [e[0],e[1] * this.list_items.get(e[0])] );
-		const sum = kostnad.reduce((acc,val) => acc + val[1], 0);
+		const mains = this.items.filter(x => x["main_item"] == true);
+		const main_list = mains.map(x => {
+			return(<Small_item 
+				key = {x['name']}
+				name={x['name']}
+				desc={x['comment']}
+				price={this.prices.get(x['name'])}
+				count={this.state.cart.get(x['name'])}
+				onClick={(name,delta) => this.handle_cart_update(name,delta)}
+			/>);
+		});
 
+		var sum = 0;
+		this.state.cart.forEach((v,k,m) => sum += this.prices.get(k)*v);
 		// Renders form. For info about how to add stuff, google jsx
 		// TODO: remove inline css (code smell)
 		return(
@@ -185,24 +202,7 @@ class OrderForm extends React.Component {
 				<div className="form-group">
 					<h6>Storlek på pizzakit:</h6>
 					<div>
-						<div className="kit-size">
-							{/* TODO, Dynamicaly render pizza-kit sizes*/}
-							<Small_item 
-								name="Picollo" 
-								count={this.state.cart.get('Picollo')}
-								onClick={(name,delta) => this.handle_cart_update(name,delta)}
-								desc={'- kit för 2 pizza'}
-							/>
-						</div>
-	
-						<div className="kit-size">
-							<Small_item
-								name="Grande" 
-								count={this.state.cart.get('Grande')}
-								onClick={(name,delta) => this.handle_cart_update(name,delta)}
-								desc={'- kit för 4 pizza'}
-							/>
-						</div>
+					{/*Main items are rendered here*/ main_list}
 					</div>
 					<div>
 						<small className="form-text text-muted">
@@ -213,8 +213,10 @@ class OrderForm extends React.Component {
 				<hr/>
 
 				<div className="form-group">
-					<h6>Välj extra tillägg:</h6>
-					{/*Extras are rendered here*/ toppings_list}
+
+				<h6>Välj extra tillägg:</h6>
+				{/*Extras are rendered here*/ extra_list}
+					
 				</div>
 				<hr/>
 
