@@ -42,16 +42,30 @@ class Pizzakit {
 		// In this the example it's "pizzakitFormSubmission".
 		if (isset($data["pizzakitFormSubmission"])) {
 
-			$order = Pizzakit::insert_into_tables($data);
-			$response = Pizzakit::create_payment($order);
-
-			if($response > 0){
-				wp_send_json(array( 'token' =>strval($order[0])));
-			}
-			else{
+			//if there are negative item quantities, abort mission
+			if (Pizzakit::negativeQuantities($data)){
 				wp_send_json(array('token' => '-1'));
+			} else { // else insert the stuff and create payment
+				$order = Pizzakit::insert_into_tables($data);
+				$response = Pizzakit::create_payment($order);
+
+				if($response > 0){
+					wp_send_json(array( 'token' =>strval($order[0])));
+				}
+				else{
+					wp_send_json(array('token' => '-1'));
+				}
 			}
 		}
+	}
+
+	// returns true if the incoming order has negative quantities
+	public static function negativeQuantities($data){
+		foreach ($data["cart"] as $_item){
+			if ($_item[1] < 0)
+				return(true);
+		}
+		return(false);
 	}
 
 
@@ -129,7 +143,7 @@ class Pizzakit {
 		}
 
 		$res = Pizzakit::create_swish_payment($order_id,$order_total,$tel_nr);
-		
+
 		if($res['response'] !== NULL){
 			global $wpdb;
 			$table = $wpdb->prefix . 'payment';
@@ -153,7 +167,7 @@ class Pizzakit {
 			"amount" => $cost,
 			"currency" => "SEK",
 			"message" => "Menomale pizzakit"
-		);          
+		);
 		return(array('uuid' => $random_uuid, 'response' => Pizzakit::communicate_with_swish($endpoint,$method,$data)));
 	}
 
@@ -177,10 +191,10 @@ class Pizzakit {
 			$data_string = json_encode($data);
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
-				'Content-Type: application/json',                                                                                
-				'Content-Length: ' . strlen($data_string))                                                                       
-			);    
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+				'Content-Type: application/json',
+				'Content-Length: ' . strlen($data_string))
+			);
 		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
@@ -201,17 +215,17 @@ class Pizzakit {
 				if (count($header) < 2) {
 					// ignore invalid headers
 						return $len;
-				} 
+				}
 
 				return $len;
 				}
 		);
-		
+
 		$result = curl_exec ($ch);
 
 		$info = curl_getinfo($ch);
 		if($result === FALSE) {
-			trigger_error(curl_error($ch)); 
+			trigger_error(curl_error($ch));
 			return(NULL);
 		}
 		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
