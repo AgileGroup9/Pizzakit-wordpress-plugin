@@ -393,6 +393,50 @@ else {
       </div>
     </nav>';
 
+  // Only load if there are > 0 orders in wp-orders
+  if($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders") > 0){
+    echo '<h3 style="padding-left: 25px">Sammanställning varuåtgång</h3>';
+    
+    // Get rows, and number of rows for table width. One redundant query here that could be removed
+    $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "items");
+    $rows = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "items");
+
+    // Initialize array with quantities of each item. Don't know if this is necessary tbh
+    $quantities = array();
+    foreach($rows as $r)
+      $quantities[$r->name] = 0;
+
+    // Get entries
+    $entries = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "entries");
+
+    // For each entry that is part of a "done" order, continue. Otherwise, add quantity to array
+    foreach($entries as $e){
+      if($wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "orders WHERE id = " . $e->orderID)[0]->done == 1){continue;}
+        $quantities[$e->item] += $e->quantity;
+    }
+    // Outputs table that generates dynamically depending on amount of items currently in DB
+    echo '
+    <div class="container" style="width:900px;align:left;">                  
+      <br />   
+      <div class="table-responsive" id="summary_table" align="left">  
+        <table class="table table-bordered">  
+            <tr>';
+              foreach($rows as $r){
+                echo '<th width="' . floor(100/$numberRows) . '%">' . $r->name . '</th>';
+              }
+            echo '   
+            </tr>
+            <tr>';
+              foreach($rows as $r){
+                echo '<td>' . $quantities[$r->name] . '</td>';
+              }
+            echo '</tr>
+        </table>
+      </div>
+    </div>
+    ';
+  }
+  
   $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE done = FALSE";
   $orders = $wpdb->get_results($sql);
 
