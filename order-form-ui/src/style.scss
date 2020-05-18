@@ -42,7 +42,7 @@
 		font-weight: 400;
 	}
 
-	*:not(button) > span {
+	label[for] > span {
 		color: red;
 		font-size: medium;
 	}
