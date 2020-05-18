@@ -315,10 +315,23 @@ elseif ($_POST["page"] == "all-orders") {
             $c++;
           }
         };
-        echo '</div>
+              echo '</div>
                       </div>
-                  </li>
-              </ul>
+                  </li>';
+                  if($o->comments != NUlL){
+                    echo '
+                      <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+                        <div class="row">
+                          <div class="col-sm-8 col-md-8 col-lg-8" style="padding-top:5px">
+                            <tstyle style="font-size: 16px">
+                                <b>Kommentar: </b>' . $o->comments . '
+                            </tstyle>
+                          </div>
+                        </div>
+                      </li>
+                    ';
+                  }
+              echo '</ul>
           </div>';
       } else {
         echo '<!-- One order block, generate one per order -->
@@ -366,10 +379,23 @@ elseif ($_POST["page"] == "all-orders") {
             $c++;
           }
         };
-        echo '</div>
+              echo '</div>
                       </div>
-                  </li>
-              </ul>
+                  </li>';
+                  if($o->comments != NUlL){
+                    echo '
+                      <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+                        <div class="row">
+                          <div class="col-sm-8 col-md-8 col-lg-8" style="padding-top:5px">
+                            <tstyle style="font-size: 16px">
+                                <b>Kommentar: </b>' . $o->comments . '
+                            </tstyle>
+                          </div>
+                        </div>
+                      </li>
+                    ';
+                  }
+              echo '</ul>
           </div>';
       }
     }
@@ -472,8 +498,21 @@ else {
         }
       }
       echo '</ul>
-            </li>
-          </ul>
+            </li>';
+            if($o->comments != NUlL){
+              echo '
+                <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+                  <div class="row">
+                    <div class="col-sm-8 col-md-8 col-lg-8" style="padding-top:5px">
+                      <tstyle style="font-size: 16px">
+                          <b>Kommentar: </b>' . $o->comments . '
+                      </tstyle>
+                    </div>
+                  </div>
+                </li>
+              ';
+            }
+          echo '</ul>
         </div>';
     }
   } else {
