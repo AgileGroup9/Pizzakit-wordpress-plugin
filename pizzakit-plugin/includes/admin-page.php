@@ -409,7 +409,7 @@ else {
     // Get entries
     $entries = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "entries");
 
-    // For each entry that is part of a "done" order, continue. Otherwise, add quantity to array
+    // For each entry that isn't part of a "done" order, continue. Otherwise, add quantity to array
     foreach($entries as $e){
       if($wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "orders WHERE id = " . $e->orderID)[0]->done == 1){continue;}
         $quantities[$e->item] += $e->quantity;
