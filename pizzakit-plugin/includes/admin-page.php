@@ -135,6 +135,10 @@ if ($_POST["page"] == "edit-menu") {
                   <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-secondary" value="Alla ordrar">
               </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="export">
+                  <input type="submit" class="btn btn-secondary" value="Exportera">
+              </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
                 <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
@@ -431,6 +435,10 @@ elseif ($_POST["page"] == "all-orders") {
                   <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-primary" value="Alla ordrar">
               </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="export">
+                  <input type="submit" class="btn btn-secondary" value="Exportera">
+              </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
                 <input type="text" class="form-control" name="order-search" placeholder="';
@@ -600,6 +608,10 @@ elseif($_POST["page"] == "orders")  {
             <input type="hidden" name="page" value="all-orders">
             <input type="submit" class="btn btn-secondary" value="Alla ordrar">
           </form></li>
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="export">
+                  <input type="submit" class="btn btn-secondary" value="Exportera">
+              </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
             <input type="hidden" name="page" value="all-orders">
             <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
