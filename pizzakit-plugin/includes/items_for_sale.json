@@ -5,7 +5,7 @@
 		{"name" : "Salami Mild", "price" : 20, "comment" : "5 skivor","main_item" : false},
 		{"name" : "Salami Stark", "price" : 20, "comment" : "5 skivor","main_item" : false},
 		{"name" : "Parmaskinka", "price" : 20, "comment" : "5 skivor","main_item" : false},
-		{"name" : "Prosciutto Cotto (kokt skinka)", "price" : 20, "comment" : "5 skivor","main_item" : false},
+		{"name" : "Prosciutto Cotto", "price" : 20, "comment" : "5 skivor","main_item" : false},
 		{"name" : "Buffelmozzarella", "price" : 25, "comment" : "125 g","main_item" : false},
 		{"name" : "En extra deg", "price" : 35, "comment" : null, "main_item" : false}
 	]
