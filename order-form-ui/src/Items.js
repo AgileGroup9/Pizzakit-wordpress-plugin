@@ -11,7 +11,7 @@ function Number_select(props){
 	return(
 		<div className="number-select">
 			<button className="btn btn-primary" id="minus" onClick={() => props.onClick(-1)}>-</button>
-			{props.count}
+			<span>{props.count}</span>
 			<button className="btn btn-primary" id="plus" onClick={ () => props.onClick(1)}>+</button>
 		</div>
 	);
@@ -52,3 +52,4 @@ function Small_item(props){
 }
 
 export default Small_item;
+export { Number_select };

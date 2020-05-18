@@ -3,6 +3,7 @@ import Small_item from './Items';
 import PaymentConfirmation from './PaymentConfirmation';
 import ConSuccess from './ConSuccess'
 import ConFailed from './ConFailed'
+import Loading_item from './LoadingItems';
 
 // Main Application
 // Renders a form and keeps track of items the client has selected
@@ -170,28 +171,34 @@ class OrderForm extends React.Component {
 	render() {
 		// Render items dynamicaly
 		const extras = this.items.filter(x => x["main_item"] == false);
-		const extra_list = extras.map(x => {
-			return(<Small_item
-				key = {x['name']}
-				name={x['name']}
-				desc={x['comment']}
-				price={this.prices.get(x['name'])}
-				count={this.state.cart.get(x['name'])}
-				onClick={(name,delta) => this.handle_cart_update(name,delta)}
-			/>);
-		});
+		let extra_list = <Loading_item/>;
+		if (this.items.length > 0) {
+			extra_list = extras.map(x => {
+				return(<Small_item
+					key = {x['name']}
+					name={x['name']}
+					desc={x['comment']}
+					price={this.prices.get(x['name'])}
+					count={this.state.cart.get(x['name'])}
+					onClick={(name,delta) => this.handle_cart_update(name,delta)}
+				/>);
+			});
+		}
 
 		const mains = this.items.filter(x => x["main_item"] == true);
-		const main_list = mains.map(x => {
-			return(<Small_item 
-				key = {x['name']}
-				name={x['name']}
-				desc={x['comment']}
-				price={this.prices.get(x['name'])}
-				count={this.state.cart.get(x['name'])}
-				onClick={(name,delta) => this.handle_cart_update(name,delta)}
-			/>);
-		});
+		let main_list = <Loading_item desc={true} price={true}/>;
+		if (this.items.length > 0) {
+			main_list = mains.map(x => {
+				return(<Small_item 
+					key = {x['name']}
+					name={x['name']}
+					desc={x['comment']}
+					price={this.prices.get(x['name'])}
+					count={this.state.cart.get(x['name'])}
+					onClick={(name,delta) => this.handle_cart_update(name,delta)}
+				/>);
+			});
+		}
 
 		var sum = 0;
 		this.state.cart.forEach((v,k,m) => sum += this.prices.get(k)*v);

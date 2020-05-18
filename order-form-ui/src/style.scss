@@ -82,6 +82,56 @@
 		}
 	}
 
+	.loading-item {
+		@mixin shimmer-loading {
+			color: transparent;
+			background: linear-gradient(to right, #eff1f3 10%, #dadada 25%, #eff1f3 30%);
+			background-size: 100vw 100vh;
+			background-attachment: fixed;
+			background-position-x: 0vw;
+			animation: shimmer linear 1.5s infinite;
+			border-radius: 2px;
+		}
+
+		@keyframes shimmer {
+			0% {
+				background-position-x: 0vw;
+			}
+			100% {
+				background-position-x: 100vw;
+			}
+		}
+
+		* {
+			user-select: none;
+
+			&::selection {
+				color: inherit;
+				background: inherit;
+			}
+		}
+
+		label {
+			span {
+				font-size: unset;
+				@include shimmer-loading;
+			}
+			small {
+				@include shimmer-loading;
+			}
+		}
+		.number-select {
+			button {
+				@include shimmer-loading;
+				cursor: unset;
+			}
+			span {
+				@include shimmer-loading;
+				padding: 0px 2px;
+			}
+		}
+	}
+
 	> h6 {
 		margin-bottom: 0px;
 	}
