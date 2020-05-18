@@ -26,7 +26,7 @@ class Pizzakit_Blocks {
 		);
 	}
 	public static function render_order_form($attributes, $content) {
-		return '<div id="pizzakit-order-form"></div>';
+		return '<p id="pizzakit-order-form"><strong>Pizzakit order formulär (laddar...)</strong></p>';
 	}
 }
 
