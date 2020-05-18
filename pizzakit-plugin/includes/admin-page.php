@@ -69,7 +69,8 @@ if (isset($_POST["export"])){
   // SQL-query for complete orderinfo   
   $orders = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'orders',"ARRAY_A"); 
 
-  // Outputs title row and order info to CSV and pushes download
+  // Outputs title rows and order info to CSV and pushes download
+  fputcsv($output, array('wp-orders:'));
   fputcsv($output, $array);
   foreach($orders as $r)  
   {  
@@ -83,7 +84,8 @@ if (isset($_POST["export"])){
   $entries = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'entries', "ARRAY_A");
 
   // Outputs title row and entries info for second table, with break row
-  fputcsv($output, array());  
+  fputcsv($output, array());
+  fputcsv($output, array('wp-entries:'));  
   fputcsv($output, $array);
   
   foreach($entries as $e)  
@@ -272,18 +274,13 @@ elseif ($_POST["page"] == "export"){
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
-                <input type="text" class="form-control" name="order-search" placeholder="';
-                if (isset($_POST["order-search"])) {
-                  echo $_POST["order-search"];
-                } else echo "Namn eller mailadress";
-                echo '">
+                <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
                 <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
           </div>
         </nav>
-      <h3 style="padding-left: 25px">Exportera och Importera</h3>';  
-      echo '
+      <h3 style="padding-left: 25px">Exportera och Importera</h3>
         <div class="container-fluid">
           <form method="post" action="." align="center">  
             <input type="submit" name="export" value="Exportera till CSV" class="btn btn-success" />
@@ -304,9 +301,6 @@ elseif ($_POST["page"] == "export"){
                 </div>
 
             </form>
-
-      ';
-      echo '
       <div class="container" style="width:900px;align:left">   
       <h3 align="left">Orderdata</h3>                 
       <br />  
@@ -345,7 +339,7 @@ elseif ($_POST["page"] == "export"){
 if(isset($_POST["import"])){
  echo '
  <div class="container" style="width:900px;align:left">   
- <h3 align="left">Import data</h3>                 
+ <h3 align="left">Importerade data</h3>                 
  <br />  
  <div class="table-responsive" id="employee_table" align="left">  
       <table class="table table-bordered">  
@@ -367,7 +361,9 @@ $fileName = $_FILES["file"]["tmp_name"];
     if ($_FILES["file"]["size"] > 0) {
         
         $file = fopen($fileName, "r");
-
+        fgetcsv($file, 10000, ",");
+        fgetcsv($file, 10000, ",");
+        echo '<h4 style="margin-top:0px">Orderinfo</h4>';
         while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
           //print_r($column);
           if(count(array_filter($column)) == 0) {
@@ -382,12 +378,39 @@ $fileName = $_FILES["file"]["tmp_name"];
               <td>' . $column[4] . '</td>
               <td>' . $column[6] . '</td>
               <td>' . $column[8] . '</td>     
-            </tr>';  
-            
+            </tr>';
         }
 echo '
       </table>
-    </div>';
+    </div>
+    <div class="table-responsive" id="employee_table" align="left">  
+      <table class="table table-bordered">  
+         <tr>  
+              <th width="20%">ID</th>  
+              <th width="40%">Föremål</th>  
+              <th width="40%">Kvantitet</th>     
+         </tr>';
+         fgetcsv($file, 10000, ",");
+         fgetcsv($file, 10000, ",");
+         echo '<h4>Orderinlägg</h4>';
+         while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
+          //print_r($column);
+          if(count(array_filter($column)) == 0) {
+            break;
+          } 
+        echo '
+            <tr>  
+              <td>' . $column[0] . '</td>  
+              <td>' . $column[1] . '</td>
+              <td>' . $column[2] . '</td>   
+            </tr>  
+          ';
+        }
+
+      echo '</table>
+    </div>
+    
+    ';
 
         // Tried to insert into DB using this code, let it stand for now for future reference
         /*
