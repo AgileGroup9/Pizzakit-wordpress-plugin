@@ -38,9 +38,9 @@ if (isset($_POST["deleteItem"])) {
 // For handling additions to wp-items from "Ändra meny"
 if (isset($_POST["addItem"])) {
   $table = $wpdb->prefix . 'items';
-  $data = array('name'=>$_POST["addItemName"], 'price'=>$_POST["addItemPrice"], 'comment'=>$_POST["addItemComment"]);
+  $data = array('name' => $_POST["addItemName"], 'price' => $_POST["addItemPrice"], 'comment' => $_POST["addItemComment"]);
   //$where = array("name" => $_POST["addItem"]);
-  $where_format = array('%s','%d','%s');
+  $where_format = array('%s', '%d', '%s');
   $wpdb->insert($table, $data, $where_format);
 }
 
@@ -66,7 +66,7 @@ if (isset($_POST["deactivateItem"])) {
 
 // delete every order that is older than 2 weeks
 // using wpdb::query is safe since no user inputs are used
-if (isset($_POST["clearAllOldOrders"])){
+if (isset($_POST["clearAllOldOrders"])) {
   $wpdb->query('DELETE from ' . $wpdb->prefix . 'orders WHERE (14 <= (SELECT DATEDIFF(CURRENT_TIMESTAMP, date) AS dd));');
 }
 ?>
@@ -97,7 +97,7 @@ if ($_POST["page"] == "edit-menu") {
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
-                <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
+                <input type="text" class="form-control" name="order-search" placeholder="Namn, mailadress eller ID">
                 <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
@@ -105,10 +105,10 @@ if ($_POST["page"] == "edit-menu") {
         </nav>
       <h3 style="padding-left: 25px">Ändra meny</h3>';
 
-        $sql = "SELECT * FROM " . $wpdb->prefix . "items";
-        $items = $wpdb->get_results($sql);
+  $sql = "SELECT * FROM " . $wpdb->prefix . "items";
+  $items = $wpdb->get_results($sql);
 
-        echo '<ul class="list-group">
+  echo '<ul class="list-group">
                 <li class="list-group-item">
                   <div class="container-fluid">
                     <div class="row">
@@ -129,14 +129,14 @@ if ($_POST["page"] == "edit-menu") {
                 </li>
               ';
 
-        foreach ($items as $i) {
-          echo
-              '<li class="list-group-item">
+  foreach ($items as $i) {
+    echo
+      '<li class="list-group-item">
                 <div class="container-fluid">
                   <div class="row">
                     <div class="col-sm-3 col-xs-3" style="font-size:16px">
                       ' . $i->name .
-                    '</div>
+        '</div>
                     <div class="col-sm-3 col-xs-3" style="font-size:16px">
                       ' . $i->price . 'kr
                     </div>
@@ -148,24 +148,24 @@ if ($_POST["page"] == "edit-menu") {
                         <div class="col-sm-6">
                           <form action="." method="post">';
 
-                          // If the item is disabled, generate activate buttons
-                          if ($i->isActive == 0){
-                            echo '
+    // If the item is disabled, generate activate buttons
+    if ($i->isActive == 0) {
+      echo '
                               <input type="hidden" name="activateItem" value="' . $i->name . '">
                               <input type="hidden" name="page" value="edit-menu">
                               <input type="submit" class="btn-xs btn-success pull-left" value="Aktivera">
                             ';
 
-                          // If the item is enabled, generate deactivate button
-                          } else {
-                            echo '
+      // If the item is enabled, generate deactivate button
+    } else {
+      echo '
                               <input type="hidden" name="deactivateItem" value="' . $i->name . '">
                               <input type="hidden" name="page" value="edit-menu">
                               <input type="submit" class="btn-xs btn-warning pull-left" value="Avaktivera">
                             ';
-                          }
+    }
 
-                          echo '
+    echo '
                           </form>
                         </div>
                         <div class="col-sm-6">
@@ -180,10 +180,10 @@ if ($_POST["page"] == "edit-menu") {
                   </div>
                 </div>
               </li>';
-        }
+  }
 
-        //Adds a row with input fields for adding items to wp-items. Handled at top of page.
-        echo '
+  //Adds a row with input fields for adding items to wp-items. Handled at top of page.
+  echo '
         <li class="list-group-item">
                 <div class="container-fluid">
                   <div class="row">
@@ -205,7 +205,7 @@ if ($_POST["page"] == "edit-menu") {
                   </div>
                 </div>
               </li>';
-        echo '</ul>';
+  echo '</ul>';
 }
 
 // Generate the all orders-page
@@ -231,10 +231,10 @@ elseif ($_POST["page"] == "all-orders") {
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
                 <input type="text" class="form-control" name="order-search" placeholder="';
-                if (isset($_POST["order-search"])) {
-                  echo $_POST["order-search"];
-                } else echo "Namn eller mailadress";
-                echo '">
+  if (isset($_POST["order-search"])) {
+    echo $_POST["order-search"];
+  } else echo "Namn, mailadress eller ID";
+  echo '">
                 <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
@@ -242,7 +242,7 @@ elseif ($_POST["page"] == "all-orders") {
         </nav>';
 
   if (isset($_POST["order-search"])) {
-    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE " . $wpdb->prefix . "orders.name LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.email LIKE '%" . $_POST["order-search"] . "%'";
+    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE " . $wpdb->prefix . "orders.name LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.id LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.email LIKE '%" . $_POST["order-search"] . "%'";
   } else {
     $sql = "SELECT * FROM " . $wpdb->prefix . "orders";
   }
@@ -261,8 +261,8 @@ elseif ($_POST["page"] == "all-orders") {
           </form>
         </div>
       </div>';
-    foreach($orders as $o) {
-      if ($o->done == TRUE){
+    foreach ($orders as $o) {
+      if ($o->done == TRUE) {
         echo '<!-- One order block, generate one per order -->
           <div class="container-fluid"
               style="padding-left: 15px;padding-right: 15px;justify-content:center;width:90%">
@@ -304,24 +304,23 @@ elseif ($_POST["page"] == "all-orders") {
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
                               <!-- Generate these for each order-->';
-                              $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
-                              $items = $wpdb->get_results($sql);
-                              if ($items[0] != NULL) {
-                                $c = 1;
-                                foreach($items as $i) {
-                                    if ($c!=1)
-                                      echo ', ';
-                                    echo '<b>' . $i->item . ': </b>' . $i->quantity;
-                                    $c++;
-                                }
-                              };
-                              echo '</div>
+        $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
+        $items = $wpdb->get_results($sql);
+        if ($items[0] != NULL) {
+          $c = 1;
+          foreach ($items as $i) {
+            if ($c != 1)
+              echo ', ';
+            echo '<b>' . $i->item . ': </b>' . $i->quantity;
+            $c++;
+          }
+        };
+        echo '</div>
                       </div>
                   </li>
               </ul>
           </div>';
-      }
-      else {
+      } else {
         echo '<!-- One order block, generate one per order -->
           <div class="container-fluid"
               style="padding-left: 15px;padding-right: 15px;justify-content:center;width:90%">
@@ -356,18 +355,18 @@ elseif ($_POST["page"] == "all-orders") {
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
                               <!-- Generate these for each order-->';
-                              $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
-                              $items = $wpdb->get_results($sql);
-                              if ($items[0] != NULL) {
-                                $c = 1;
-                                foreach($items as $i) {
-                                    if ($c!=1)
-                                      echo ', ';
-                                    echo '<b>' . $i->item . ': </b>' . $i->quantity;
-                                    $c++;
-                                }
-                              };
-                              echo '</div>
+        $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
+        $items = $wpdb->get_results($sql);
+        if ($items[0] != NULL) {
+          $c = 1;
+          foreach ($items as $i) {
+            if ($c != 1)
+              echo ', ';
+            echo '<b>' . $i->item . ': </b>' . $i->quantity;
+            $c++;
+          }
+        };
+        echo '</div>
                       </div>
                   </li>
               </ul>
@@ -402,7 +401,7 @@ else {
           </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
             <input type="hidden" name="page" value="all-orders">
-            <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
+            <input type="text" class="form-control" name="order-search" placeholder="Namn, mailadress eller ID">
             <input type="submit" class="btn btn-secondary" value="Sök">
           </form></li>
         </ul>
@@ -445,34 +444,34 @@ else {
               </tstyle>
               <ul class="list-group" style="padding-top: 5px">
                 <!-- generate a <li> for each main item -->';
-                $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
-                $items = $wpdb->get_results($sql);
-                if ($items[0] != NULL) {
-                  foreach($items as $i) {
-                    if ($i->main_item == TRUE) {
-                      echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
-                    }
-                  }
-                }
-              echo '</ul>
+      $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
+      $items = $wpdb->get_results($sql);
+      if ($items[0] != NULL) {
+        foreach ($items as $i) {
+          if ($i->main_item == TRUE) {
+            echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
+          }
+        }
+      }
+      echo '</ul>
             </li>
             <!-- topping section -->
             <li class="list-group-item" style="padding-bottom:0">
               <tstyle style="font-size: 16px">
-                Toppings
+                Tillbehör
               </tstyle>
               <ul class="list-group" style="padding-top: 5px">
                 <!-- generate a <li> for each topping -->';
-                $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
-                $items = $wpdb->get_results($sql);
-                if ($items[0] != NULL) {
-                  foreach($items as $i) {
-                    if ($i->main_item == FALSE) {
-                      echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
-                    }
-                  }
-                }
-              echo '</ul>
+      $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
+      $items = $wpdb->get_results($sql);
+      if ($items[0] != NULL) {
+        foreach ($items as $i) {
+          if ($i->main_item == FALSE) {
+            echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
+          }
+        }
+      }
+      echo '</ul>
             </li>
           </ul>
         </div>';
