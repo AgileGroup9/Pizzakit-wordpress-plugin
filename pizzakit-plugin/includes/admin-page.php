@@ -55,6 +55,12 @@ if (isset($_POST["deactivateItem"])) {
   $wpdb->update($table, $data, $where, $format, $where_format);
 }
 
+// delete every order that is older than 2 weeks
+// using wpdb::query is safe since no user inputs are used
+if (isset($_POST["clearAllOldOrders"])){
+  $wpdb->query('DELETE from ' . $wpdb->prefix . 'orders WHERE (14 <= (SELECT DATEDIFF(CURRENT_TIMESTAMP, date) AS dd));');
+}
+
 if (isset($_POST["export"])){
   
   header('Content-Type: text/csv; charset=utf-8');  
@@ -97,17 +103,17 @@ if (isset($_POST["export"])){
   fclose($output);
 
 }
-/*
-if (isset($_POST["import"])){
-  //Import code goes here
-  echo 'test';
 
-}
-*/
+?>
+
+
+<?php
 
 
 
+// Generate edit menu
 if ($_POST["page"] == "edit-menu") {
+  
   // <!-- import bootstrap css -->
   echo '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">';
 
@@ -129,10 +135,6 @@ if ($_POST["page"] == "edit-menu") {
                   <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-secondary" value="Alla ordrar">
               </form></li>
-              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="export">
-                  <input type="submit" class="btn btn-secondary" value="Exportera">
-              </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
                 <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
@@ -143,7 +145,7 @@ if ($_POST["page"] == "edit-menu") {
         </nav>
       <h3 style="padding-left: 25px">Ändra meny</h3>';
 
-        $sql = "SELECT * FROM wp_items";
+        $sql = "SELECT * FROM " . $wpdb->prefix . "items";
         $items = $wpdb->get_results($sql);
 
         echo '<ul class="list-group">
@@ -297,9 +299,7 @@ elseif ($_POST["page"] == "export"){
                     <button type="submit" id="submit" name="import"
                         class="btn-submit">Import</button>
                     <br />
-
                 </div>
-
             </form>
       <div class="container" style="width:900px;align:left">   
       <h3 align="left">Orderdata</h3>                 
@@ -351,21 +351,16 @@ if(isset($_POST["import"])){
                 <th width="20%">Adress</th>
                 <th width="10%">Postkod</th>  
                 <th width="20%">Timestamp</th>    
-           </tr>
-      
+           </tr>';
 
-';
+    $fileName = $_FILES["file"]["tmp_name"];
 
-$fileName = $_FILES["file"]["tmp_name"];
-    
     if ($_FILES["file"]["size"] > 0) {
-        
         $file = fopen($fileName, "r");
         fgetcsv($file, 10000, ",");
         fgetcsv($file, 10000, ",");
         echo '<h4 style="margin-top:0px">Orderinfo</h4>';
         while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
-          //print_r($column);
           if(count(array_filter($column)) == 0) {
             break;
           } 
@@ -394,7 +389,6 @@ echo '
          fgetcsv($file, 10000, ",");
          echo '<h4>Orderinlägg</h4>';
          while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
-          //print_r($column);
           if(count(array_filter($column)) == 0) {
             break;
           } 
@@ -406,39 +400,19 @@ echo '
             </tr>  
           ';
         }
-
       echo '</table>
     </div>
-    
     ';
-
-        // Tried to insert into DB using this code, let it stand for now for future reference
-        /*
-        while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
-             print_r($column);
-            $formatArray = array('%d','%s','%s','%s','%s','%s','%s','%s','%s','%d');
-            
-            $insertId = $wpdb->insert(wpdb->prefix . 'orders', $column);
-            
-            if (! empty($insertId)) {
-                $type = "success";
-                $message = "CSV Data Imported into the Database";
-            } else {
-                $type = "error";
-                $message = "Problem in Importing CSV Data";
-            }
-            
-        }*/
     }
-
-
-}
+  }
 }
 
+// Generate the all orders-page
 elseif ($_POST["page"] == "all-orders") {
+  
   // <!-- import bootstrap css -->
   echo '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">';
-
+  
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
             <div class="navbar-header">
@@ -457,10 +431,6 @@ elseif ($_POST["page"] == "all-orders") {
                   <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-primary" value="Alla ordrar">
               </form></li>
-              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="export">
-                  <input type="submit" class="btn btn-secondary" value="Exportera">
-              </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
                 <input type="text" class="form-control" name="order-search" placeholder="';
@@ -472,23 +442,33 @@ elseif ($_POST["page"] == "all-orders") {
               </form></li>
             </ul>
           </div>
-        </nav>
-      <h3 style="padding-left: 25px">Alla ordrar</h3>';
+        </nav>';
 
   if (isset($_POST["order-search"])) {
-    $sql = "SELECT * FROM wp_orders WHERE wp_orders.name LIKE '%" . $_POST["order-search"] . "%' OR wp_orders.email LIKE '%" . $_POST["order-search"] . "%'";
-    $orders = $wpdb->get_results($sql);
+    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE " . $wpdb->prefix . "orders.name LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.email LIKE '%" . $_POST["order-search"] . "%'";
   } else {
-    $sql = "SELECT * FROM wp_orders";
-    $orders = $wpdb->get_results($sql);
+    $sql = "SELECT * FROM " . $wpdb->prefix . "orders";
   }
+  $orders = $wpdb->get_results($sql);
 
-  if ($orders[0] != NULL) {
+  if (!empty($orders)) {
+    echo '<div class="row" style="padding-bottom:15px">
+        <div class="col-lg-6 col-sm-6 col-md-6 pull-left">
+          <h3 style="padding-left: 25px">Alla ordrar</h3>
+        </div>
+        <div class="col-lg-6 col-sm-6 col-md-6">
+          <form action="." method="post" style="padding-top:15px;padding-right:25px">
+            <input type="hidden" name="clearAllOldOrders" value="TRUE">
+            <input type="hidden" name="page" value="all-orders">
+            <input type="submit" class="btn btn-warning pull-right" value="Radera >2 veckor gamla ordrar" style="color:black">
+          </form>
+        </div>
+      </div>';
     foreach($orders as $o) {
       if ($o->done == TRUE){
         echo '<!-- One order block, generate one per order -->
-          <div class="container-fluid col-sm-12 col-md-6 col-lg-6"
-              style="padding-top: 25px;padding-left: 15px;padding-right: 15px;">
+          <div class="container-fluid"
+              style="padding-left: 15px;padding-right: 15px;justify-content:center;width:90%">
               <ul class="list-group">
                   <!-- top section -->
                   <li class="list-group-item" style="min-height: 52px">
@@ -510,7 +490,7 @@ elseif ($_POST["page"] == "all-orders") {
                   <!-- topping section -->
                   <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
                       <div class="row">
-                          <div class="col-sm-6 col-md-6 col-lg-6" style="padding-top:5px">
+                          <div class="col-sm-8 col-md-8 col-lg-8" style="padding-top:5px">
                               <tstyle style="font-size: 16px">
                                   <b>Kund:</b> ' . $o->name . '
                                   <b>Datum:</b> ' . $o->date . '
@@ -518,9 +498,9 @@ elseif ($_POST["page"] == "all-orders") {
                                   <b>Tel. nr.:</b> ' . $o->telNr . '
                               </tstyle>
                           </div>
-                          <div class="col-sm-6 col-md-6 col-lg-6 pull-right" style="padding-top:0px;padding-bottom:5px">
+                          <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
                               <!-- Generate these for each order-->';
-                              $sql = "SELECT * FROM wp_entries, wp_items WHERE wp_entries.item = wp_items.name AND wp_entries.orderID = " . $o->id;
+                              $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
                               $items = $wpdb->get_results($sql);
                               if ($items[0] != NULL) {
                                 $c = 1;
@@ -539,8 +519,8 @@ elseif ($_POST["page"] == "all-orders") {
       }
       else {
         echo '<!-- One order block, generate one per order -->
-          <div class="container-fluid col-sm-12 col-md-6 col-lg-6"
-              style="padding-top: 25px;padding-left: 15px;padding-right: 15px;">
+          <div class="container-fluid"
+              style="padding-left: 15px;padding-right: 15px;justify-content:center;width:90%">
               <ul class="list-group">
                   <!-- top section -->
                   <li class="list-group-item" style="min-height: 52px">
@@ -562,15 +542,17 @@ elseif ($_POST["page"] == "all-orders") {
                   <!-- topping section -->
                   <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
                       <div class="row">
-                          <div class="col-sm-6 col-md-6 col-lg-6" style="padding-top:5px">
+                          <div class="col-sm-8 col-md-8 col-lg-8" style="padding-top:5px">
                               <tstyle style="font-size: 16px">
                                   <b>Kund:</b> ' . $o->name . '
                                   <b>Datum:</b> ' . $o->date . '
+                                  <b>Mail:</b> ' . $o->email . '
+                                  <b>Tel. nr.:</b> ' . $o->telNr . '
                               </tstyle>
                           </div>
-                          <div class="col-sm-6 col-md-6 col-lg-6 pull-right" style="padding-top:0px;padding-bottom:5px">
+                          <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
                               <!-- Generate these for each order-->';
-                              $sql = "SELECT * FROM wp_entries, wp_items WHERE wp_entries.item = wp_items.name AND wp_entries.orderID = " . $o->id;
+                              $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
                               $items = $wpdb->get_results($sql);
                               if ($items[0] != NULL) {
                                 $c = 1;
@@ -588,13 +570,17 @@ elseif ($_POST["page"] == "all-orders") {
           </div>';
       }
     }
+  } else {
+    echo '<h3 style="padding-left: 25px">Inga ordrar hittade</h3>';
   }
 }
 
-elseif($_POST["page"] == "orders") {
+// Generate the new orders-page
+elseif($_POST["page"] == "orders")  {
+  
   // <!-- import bootstrap css -->
   echo '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">';
-
+  
   echo '
     <nav class="navbar navbar-inverse">
       <div class="container-fluid">
@@ -614,10 +600,6 @@ elseif($_POST["page"] == "orders") {
             <input type="hidden" name="page" value="all-orders">
             <input type="submit" class="btn btn-secondary" value="Alla ordrar">
           </form></li>
-          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="export">
-                  <input type="submit" class="btn btn-secondary" value="Exportera">
-          </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
             <input type="hidden" name="page" value="all-orders">
             <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
@@ -625,78 +607,78 @@ elseif($_POST["page"] == "orders") {
           </form></li>
         </ul>
       </div>
-    </nav>
-  <h3 style="padding-left: 25px">Nya ordrar</h3>';
+    </nav>';
 
-  $sql = "SELECT * FROM wp_orders";
+  $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE done = FALSE";
   $orders = $wpdb->get_results($sql);
 
-  if ($orders[0] != NULL) {
+  if (!empty($orders)) {
+    echo '<h3 style="padding-left: 25px">Nya ordrar</h3>';
     foreach ($orders as $o) {
-      if ($o->done == FALSE) {
-        echo '<!-- One order block, generate one per order -->
-          <div class="container-fluid col-sm-12 col-md-6 col-lg-4">
-            <ul class="list-group">
-              <!-- top section -->
-              <li class="list-group-item" style="min-height: 75px">
-                <div>
-                  <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
-                    <b>Order ID: </b> ' . $o->id . '
-                    <br>
-                     <p style="font-size: 15px">
-                       <b>Adress: </b> ' . $o->address . ',' . $o->postalCode . '
-                     </p>
-                  </div>
-                  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                    <div class="btn-group pull-right" style="width:50px">
-                      <form action="." method="post">
-                        <input type="hidden" name="done" value="' . $o->id . '">
-                        <input type="submit" class="btn-sm btn-success" value="Klar">
-                      </form>
-                    </div>
+      echo '<!-- One order block, generate one per order -->
+        <div class="container-fluid col-sm-12 col-md-6 col-lg-4">
+          <ul class="list-group">
+            <!-- top section -->
+            <li class="list-group-item" style="min-height: 75px">
+              <div>
+                <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
+                  <b>Order ID: </b> ' . $o->id . '
+                  <br>
+                    <p style="font-size: 15px">
+                      <b>Adress: </b> ' . $o->address . ',' . $o->postalCode . '
+                    </p>
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                  <div class="btn-group pull-right" style="width:50px">
+                    <form action="." method="post">
+                      <input type="hidden" name="done" value="' . $o->id . '">
+                      <input type="submit" class="btn-sm btn-success" value="Klar">
+                    </form>
                   </div>
                 </div>
-              </li>
-              <!-- main items section -->
-              <li class="list-group-item" style="padding-bottom:0">
-                <tstyle style="font-size: 16px">
-                  Pizzakit
-                </tstyle>
-                <ul class="list-group" style="padding-top: 5px">
-                  <!-- generate a <li> for each main item -->';
-                  $sql = "SELECT * FROM wp_entries, wp_items WHERE wp_entries.item = wp_items.name AND wp_entries.orderID = " . $o->id;
-                  $items = $wpdb->get_results($sql);
-                  if ($items[0] != NULL) {
-                    foreach($items as $i) {
-                      if ($i->main_item == TRUE) {
-                        echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
-                      }
+              </div>
+            </li>
+            <!-- main items section -->
+            <li class="list-group-item" style="padding-bottom:0">
+              <tstyle style="font-size: 16px">
+                Pizzakit
+              </tstyle>
+              <ul class="list-group" style="padding-top: 5px">
+                <!-- generate a <li> for each main item -->';
+                $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
+                $items = $wpdb->get_results($sql);
+                if ($items[0] != NULL) {
+                  foreach($items as $i) {
+                    if ($i->main_item == TRUE) {
+                      echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
                     }
                   }
-                echo '</ul>
-              </li>
-              <!-- topping section -->
-              <li class="list-group-item" style="padding-bottom:0">
-                <tstyle style="font-size: 16px">
-                  Toppings
-                </tstyle>
-                <ul class="list-group" style="padding-top: 5px">
-                  <!-- generate a <li> for each topping -->';
-                  $sql = "SELECT * FROM wp_entries, wp_items WHERE wp_entries.item = wp_items.name AND wp_entries.orderID = " . $o->id;
-                  $items = $wpdb->get_results($sql);
-                  if ($items[0] != NULL) {
-                    foreach($items as $i) {
-                      if ($i->main_item == FALSE) {
-                        echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
-                      }
+                }
+              echo '</ul>
+            </li>
+            <!-- topping section -->
+            <li class="list-group-item" style="padding-bottom:0">
+              <tstyle style="font-size: 16px">
+                Toppings
+              </tstyle>
+              <ul class="list-group" style="padding-top: 5px">
+                <!-- generate a <li> for each topping -->';
+                $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
+                $items = $wpdb->get_results($sql);
+                if ($items[0] != NULL) {
+                  foreach($items as $i) {
+                    if ($i->main_item == FALSE) {
+                      echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
                     }
                   }
-                echo '</ul>
-              </li>
-            </ul>
-          </div>';
-      }
+                }
+              echo '</ul>
+            </li>
+          </ul>
+        </div>';
     }
+  } else {
+    echo '<h3 style="padding-left: 25px">Inga nya ordrar</h3>';
   }
 }
 ?>
