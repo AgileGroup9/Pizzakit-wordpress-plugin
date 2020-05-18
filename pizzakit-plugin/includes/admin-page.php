@@ -11,6 +11,15 @@ if (isset($_POST["done"])) {
   $wpdb->update($table, $data, $where, $format, $where_format);
 }
 
+if (isset($_POST["redo"])) {
+  $table = $wpdb->prefix . 'orders';
+  $data = array("done" => FALSE);
+  $where = array("id" => $_POST["redo"]);
+  $format = array("%d");
+  $where_format = array("%d");
+  $wpdb->update($table, $data, $where, $format, $where_format);
+}
+
 if (isset($_POST["delete"])) {
   $table = $wpdb->prefix . 'orders';
   $where = array("id" => $_POST["delete"]);
@@ -270,6 +279,13 @@ elseif ($_POST["page"] == "all-orders") {
                                   <input type="hidden" name="delete" value="' . $o->id . '">
                                   <input type="hidden" name="page" value="all-orders">
                                   <input type="submit" class="btn-sm btn-danger" value="Radera">
+                                </form>
+                              </div>
+                              <div class="btn-group pull-right" style="min-width:25px;margin-right:10px">
+                                <form action="." method="post">
+                                  <input type="hidden" name="redo" value="' . $o->id . '">
+                                  <input type="hidden" name="page" value="all-orders">
+                                  <input type="submit" class="btn-sm btn-secondary" value="Återaktivera">
                                 </form>
                               </div>
                           </div>
