@@ -442,7 +442,7 @@ else {
             <!-- topping section -->
             <li class="list-group-item" style="padding-bottom:0">
               <tstyle style="font-size: 16px">
-                Toppings
+                Tillbehör
               </tstyle>
               <ul class="list-group" style="padding-top: 5px">
                 <!-- generate a <li> for each topping -->';
