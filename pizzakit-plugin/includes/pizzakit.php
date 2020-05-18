@@ -182,14 +182,17 @@ class Pizzakit {
 				'Content-Length: ' . strlen($data_string))                                                                       
 			);    
 		}
+		curl_setopt($ch,CURLOPT_SSLCERTPASSWD,"swish");
+		curl_setopt($ch,CURLOPT_SSLCERTTYPE,"PEM");
+		curl_setopt($ch,CURLOPT_SSLKEYTYPE,"PEM");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_VERBOSE, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 1);
 		curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/Swish_TLS_RootCA.pem');
-		curl_setopt($ch, CURLOPT_SSLCERT, __DIR__.'/Swish_Merchant_TestCertificate_1234679304.pem');
 		curl_setopt($ch, CURLOPT_SSLKEY, __DIR__.'/Swish_Merchant_TestCertificate_1234679304.key');
+		curl_setopt($ch, CURLOPT_SSLCERT, __DIR__.'/Swish_Merchant_TestCertificate_1234679304.pem');
 
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 
