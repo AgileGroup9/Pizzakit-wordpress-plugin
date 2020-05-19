@@ -443,12 +443,13 @@ else {
         <div class="container-fluid col-sm-12 col-md-6 col-lg-4">
           <ul class="list-group">
             <!-- top section -->
-            <li class="list-group-item" style="min-height: 70px">
+            <li class="list-group-item" style="min-height: 90px">
               <div>
                 <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
                   <b>Order ID: </b> ' . $o->id . '
                     <p style="font-size: 14px">
                       <b> Upphämtas: </b>' . 'Placeholder - Meno Male' . '  
+                      <b> Datum: </b>' . $o->date . '
                     </p>
                 </div>
                 <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
