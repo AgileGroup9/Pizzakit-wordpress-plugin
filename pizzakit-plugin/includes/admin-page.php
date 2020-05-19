@@ -803,7 +803,7 @@ else {
   if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders") > 0) {
     // Get rows, and number of rows for table width. One redundant query here that could be removed
     $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "items");
-    $rows = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "items");
+    $rows = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "items ORDER BY list_order ASC");
 
     // Initialize array with quantities of each item. Don't know if this is necessary tbh
     $quantities = array();
@@ -823,7 +823,7 @@ else {
     // Outputs table that generates dynamically depending on amount of items currently in DB
     echo '
     <div class="container" style="width:1200px;" align="left">
-      <h3 align="center" style="margin-top:0px">Sammanlagd orderkvantitet</h3>
+      <h3 align="center" style="margin-top:0px">Orderkvantitet sammanställning</h3>
       <div class="table-responsive" id="summary_table" align="left">
         <table class="table table-bordered" align="left" style="text-align:center">
             <tr>';
