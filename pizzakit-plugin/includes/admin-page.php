@@ -70,28 +70,27 @@ if (isset($_POST["clearAllOldOrders"])) {
   $wpdb->query('DELETE from ' . $wpdb->prefix . 'orders WHERE (14 <= (SELECT DATEDIFF(CURRENT_TIMESTAMP, date) AS dd));');
 }
 
-if (isset($_POST["export"])){
-  
-  header('Content-Type: text/csv; charset=utf-8');  
-  header('Content-Disposition: attachment; filename=backup-' . date("Y/m/d") . '.csv');  
+if (isset($_POST["export"])) {
+
+  header('Content-Type: text/csv; charset=utf-8');
+  header('Content-Disposition: attachment; filename=backup-' . date("Y/m/d") . '.csv');
 
   // Opens output stream
   $output = fopen("php://output", "w");
 
   // Title row for order table
   $array = array('ID', 'Email', 'Namn', 'Telefon', 'Adress', 'Portkod', 'Postnummer', 'Kommentar', 'Timestamp', 'Klar');
-  
+
   // SQL-query for complete orderinfo   
-  $orders = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'orders',"ARRAY_A"); 
+  $orders = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'orders', "ARRAY_A");
 
   // Outputs title rows and order info to CSV and pushes download
   fputcsv($output, array('wp-orders:'));
   fputcsv($output, $array);
-  foreach($orders as $r)  
-  {  
-    fputcsv($output, $r);  
-  } 
-  
+  foreach ($orders as $r) {
+    fputcsv($output, $r);
+  }
+
   // Creates title row for entries table
   $array = array('orderID', 'item', 'quantity');
 
@@ -100,18 +99,16 @@ if (isset($_POST["export"])){
 
   // Outputs title row and entries info for second table, with break row
   fputcsv($output, array());
-  fputcsv($output, array('wp-entries:'));  
+  fputcsv($output, array('wp-entries:'));
   fputcsv($output, $array);
-  
-  foreach($entries as $e)  
-  {  
-    fputcsv($output, $e);  
-  } 
+
+  foreach ($entries as $e) {
+    fputcsv($output, $e);
+  }
 
   // Closes output stream, kills site to supress HTML output
   fclose($output);
   die();
-
 }
 
 ?>
@@ -152,7 +149,7 @@ if ($_POST["page"] == "edit-menu") {
             </ul>
           </div>
         </nav>
-      <h3 style="padding-left: 25px">Ändra meny</h3>';
+      ';
 
   $sql = "SELECT * FROM " . $wpdb->prefix . "items";
   $items = $wpdb->get_results($sql);
@@ -303,9 +300,6 @@ elseif ($_POST["page"] == "all-orders") {
 
   if (!empty($orders)) {
     echo '<div class="row" style="padding-bottom:15px">
-        <div class="col-lg-6 col-sm-6 col-md-6 pull-left">
-          <h3 style="padding-left: 25px">Alla ordrar</h3>
-        </div>
         <div class="col-lg-6 col-sm-6 col-md-6">
           <form action="." method="post" style="padding-top:15px;padding-right:25px">
             <input type="hidden" name="clearAllOldOrders" value="TRUE">
@@ -458,7 +452,7 @@ elseif ($_POST["page"] == "all-orders") {
 }
 
 // Generate export/import-page
-elseif ($_POST["page"] == "export"){
+elseif ($_POST["page"] == "export") {
 
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
@@ -490,7 +484,6 @@ elseif ($_POST["page"] == "export"){
             </ul>
           </div>
         </nav>
-      <h3 style="padding-left: 25px">Exportera och Importera</h3>
         <div class="container-fluid">
           <form method="post" action="." align="center">  
             <input type="submit" name="export" value="Exportera till CSV" class="btn btn-success" />
@@ -522,12 +515,11 @@ elseif ($_POST["page"] == "export"){
                      <th width="20%">Adress</th>
                      <th width="10%">Postkod</th>  
                      <th width="20%">Timestamp</th>    
-                </tr>';  
-                $query = 'SELECT * FROM '. $wpdb->prefix . 'orders';
-                $rows = $wpdb->get_results($query);
-                foreach($rows as $row)   
-                {  
-                  echo '
+                </tr>';
+  $query = 'SELECT * FROM ' . $wpdb->prefix . 'orders';
+  $rows = $wpdb->get_results($query);
+  foreach ($rows as $row) {
+    echo '
                 <tr>  
                      <td>' . $row->id . '</td>  
                      <td>' . $row->email . '</td>
@@ -537,15 +529,14 @@ elseif ($_POST["page"] == "export"){
                      <td>' . $row->postalCode . '</td>
                      <td>' . $row->date . '</td>     
 
-                </tr>';  
-                  
-                }  
-             echo '
+                </tr>';
+  }
+  echo '
            </table>  
       </div>  
  </div>';
-if(isset($_POST["import"])){
- echo '
+  if (isset($_POST["import"])) {
+    echo '
  <div class="container" style="width:900px;align:left">   
  <h3 align="left">Importerade data</h3>                 
  <br />  
@@ -564,15 +555,15 @@ if(isset($_POST["import"])){
     $fileName = $_FILES["file"]["tmp_name"];
 
     if ($_FILES["file"]["size"] > 0) {
-        $file = fopen($fileName, "r");
-        fgetcsv($file, 10000, ",");
-        fgetcsv($file, 10000, ",");
-        echo '<h4 style="margin-top:0px">Orderinfo</h4>';
-        while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
-          if(count(array_filter($column)) == 0) {
-            break;
-          } 
-          echo '
+      $file = fopen($fileName, "r");
+      fgetcsv($file, 10000, ",");
+      fgetcsv($file, 10000, ",");
+      echo '<h4 style="margin-top:0px">Orderinfo</h4>';
+      while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
+        if (count(array_filter($column)) == 0) {
+          break;
+        }
+        echo '
             <tr>  
               <td>' . $column[0] . '</td>  
               <td>' . $column[1] . '</td>
@@ -582,8 +573,8 @@ if(isset($_POST["import"])){
               <td>' . $column[6] . '</td>
               <td>' . $column[8] . '</td>     
             </tr>';
-        }
-echo '
+      }
+      echo '
       </table>
     </div>
     <div class="table-responsive" id="employee_table" align="left">  
@@ -593,13 +584,13 @@ echo '
               <th width="40%">Föremål</th>  
               <th width="40%">Kvantitet</th>     
          </tr>';
-         fgetcsv($file, 10000, ",");
-         fgetcsv($file, 10000, ",");
-         echo '<h4>Orderinlägg</h4>';
-         while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
-          if(count(array_filter($column)) == 0) {
-            break;
-          } 
+      fgetcsv($file, 10000, ",");
+      fgetcsv($file, 10000, ",");
+      echo '<h4>Orderinlägg</h4>';
+      while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
+        if (count(array_filter($column)) == 0) {
+          break;
+        }
         echo '
             <tr>  
               <td>' . $column[0] . '</td>  
@@ -607,7 +598,7 @@ echo '
               <td>' . $column[2] . '</td>   
             </tr>  
           ';
-        }
+      }
       echo '</table>
     </div>
     ';
@@ -650,49 +641,48 @@ else {
     </nav>';
 
   // Only load if there are > 0 orders in wp-orders
-  if($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders") > 0){
-    echo '<h3 style="padding-left: 25px">Sammanställning varuåtgång</h3>';
-    
+  if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders") > 0) {
     // Get rows, and number of rows for table width. One redundant query here that could be removed
     $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "items");
     $rows = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "items");
 
     // Initialize array with quantities of each item. Don't know if this is necessary tbh
     $quantities = array();
-    foreach($rows as $r)
+    foreach ($rows as $r)
       $quantities[$r->name] = 0;
 
     // Get entries
     $entries = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "entries");
 
     // For each entry that isn't part of a "done" order, continue. Otherwise, add quantity to array
-    foreach($entries as $e){
-      if($wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "orders WHERE id = " . $e->orderID)[0]->done == 1){continue;}
-        $quantities[$e->item] += $e->quantity;
+    foreach ($entries as $e) {
+      if ($wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "orders WHERE id = " . $e->orderID)[0]->done == 1) {
+        continue;
+      }
+      $quantities[$e->item] += $e->quantity;
     }
     // Outputs table that generates dynamically depending on amount of items currently in DB
     echo '
-    <div class="container" style="width:900px;align:left;">                  
-      <br />   
+    <div class="container" style="width:1200px;" align="left">                     
       <div class="table-responsive" id="summary_table" align="left">  
-        <table class="table table-bordered">  
+        <table class="table table-bordered" align="left" style="text-align:center">  
             <tr>';
-              foreach($rows as $r){
-                echo '<th width="' . floor(100/$numberRows) . '%">' . $r->name . '</th>';
-              }
-            echo '   
+    foreach ($rows as $r) {
+      echo '<th style="text-align:center; font-size:12px" width="' . floor(100 / $numberRows) . '%">' . $r->name . '</th>';
+    }
+    echo '   
             </tr>
             <tr>';
-              foreach($rows as $r){
-                echo '<td>' . $quantities[$r->name] . '</td>';
-              }
-            echo '</tr>
+    foreach ($rows as $r) {
+      echo '<td>' . $quantities[$r->name] . '</td>';
+    }
+    echo '</tr>
         </table>
       </div>
     </div>
     ';
   }
-  
+
   $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE done = FALSE";
   $orders = $wpdb->get_results($sql);
 
