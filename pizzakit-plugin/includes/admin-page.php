@@ -161,7 +161,7 @@ if ($_POST["page"] == "edit-menu") {
       echo '
                               <input type="hidden" name="deactivateItem" value="' . $i->name . '">
                               <input type="hidden" name="page" value="edit-menu">
-                              <input type="submit" class="btn-xs btn-warning pull-left" value="Avaktivera">
+                              <input type="submit" class="btn-xs btn-warning pull-left" value="Inaktivera">
                             ';
     }
 
@@ -488,7 +488,7 @@ else {
         }
       }
       echo  '</li>
-              <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+              <li class="list-group-item">
                 <div class="row">
                   <div class="col-sm-12 col-md-12 col-lg-12" style="padding-top:5px">
                     <tstyle style="font-size: 14px">';
