@@ -29,10 +29,14 @@ if (isset($_POST["delete"])) {
 
 // handle an incoming POST object with items to delete from db
 if (isset($_POST["deleteItem"])) {
+  $sql = "SELECT list_order FROM " . $wpdb->prefix . "items WHERE name = '" . $_POST["deleteItem"] . "'";
+  $listorder = $wpdb->get_results($sql);
   $table = $wpdb->prefix . 'items';
   $where = array("name" => $_POST["deleteItem"]);
   $where_format = array("%s");
   $wpdb->delete($table, $where, $where_format);
+  $sql = "UPDATE " . $wpdb->prefix . "items SET list_order = list_order-1 WHERE list_order > " . $listorder[0]->list_order;
+  $wpdb->query($sql);
 }
 
 // For handling additions to wp-items from "Ändra meny"
@@ -456,7 +460,7 @@ elseif ($_POST["page"] == "all-orders") {
         </div>
       </div>';
     foreach ($orders as $o) {
-      if ($o->done == TRUE) {
+      if ($o->done) {
         echo '<!-- One order block, generate one per order -->
           <div class="container-fluid"
               style="padding-left: 15px;padding-right: 15px;justify-content:center;width:90%">
@@ -500,7 +504,7 @@ elseif ($_POST["page"] == "all-orders") {
                               <!-- Generate these for each order-->';
         $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
         $items = $wpdb->get_results($sql);
-        if ($items[0] != NULL) {
+        if ($items[0]) {
           $c = 1;
           foreach ($items as $i) {
             if ($c != 1)
@@ -564,7 +568,7 @@ elseif ($_POST["page"] == "all-orders") {
                               <!-- Generate these for each order-->';
         $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
         $items = $wpdb->get_results($sql);
-        if ($items[0] != NULL) {
+        if ($items[0]) {
           $c = 1;
           foreach ($items as $i) {
             if ($c != 1)
@@ -899,7 +903,7 @@ else {
       echo  '</li>
               <li class="list-group-item">
                 <div class="row">
-                  <div class="col-sm-12 col-md-12 col-lg-12" style="padding-top:5px">
+                  <div class="col-sm-12 col-md-12 col-lg-12">
                     <tstyle style="font-size: 14px">';
       if ($o->comments) {
         echo '<b>Kommentar: </b>' . $o->comments . '<br>';
