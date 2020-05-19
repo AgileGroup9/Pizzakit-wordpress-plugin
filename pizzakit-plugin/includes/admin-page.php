@@ -487,23 +487,20 @@ else {
           }
         }
       }
-      echo  '</li>';
+      echo  '</li>
+              <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+                <div class="row">
+                  <div class="col-sm-12 col-md-12 col-lg-12" style="padding-top:5px">
+                    <tstyle style="font-size: 14px">';
       if ($o->comments) {
-        echo '
-                <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12" style="padding-top:5px">
-                      <tstyle style="font-size: 14px">';
-        if ($o->comments) {
-          echo '<b>Kommentar: </b>' . $o->comments . '<br>';
-        }
-        echo '<b>Kontakt:</b> ' . $o->name . ', ' . $o->email . ', ' . $o->telNr . '
+        echo '<b>Kommentar: </b>' . $o->comments . '<br>';
+      }
+      echo '<b>Kontakt:</b> ' . $o->name . ', ' . $o->email . ', ' . $o->telNr . '
                       </tstyle>
                     </div>
                   </div>
                 </li>
               ';
-      }
       echo '</ul>
         </div>';
     }
