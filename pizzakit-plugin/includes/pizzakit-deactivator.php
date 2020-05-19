@@ -11,9 +11,5 @@ class Pizzakit_Deactivator
 			$sql = "DROP TABLE IF EXISTS " . $wpdb->prefix . $table;
 			$wpdb->query($sql);
 		}
-
-		//deleting admin-page
-		$page = get_page_by_title("Pizzakit Admin Page");
-		wp_delete_post($page->ID, true);
 	}
 }
