@@ -69,51 +69,6 @@ if (isset($_POST["deactivateItem"])) {
 if (isset($_POST["clearAllOldOrders"])) {
   $wpdb->query('DELETE from ' . $wpdb->prefix . 'orders WHERE (14 <= (SELECT DATEDIFF(CURRENT_TIMESTAMP, date) AS dd));');
 }
-
-if (isset($_POST["export"])){
-  
-  header('Content-Type: text/csv; charset=utf-8');  
-  header('Content-Disposition: attachment; filename=backup-' . date("Y/m/d") . '.csv');  
-
-  // Opens output stream
-  $output = fopen("php://output", "w");
-
-  // Title row for order table
-  $array = array('ID', 'Email', 'Namn', 'Telefon', 'Adress', 'Portkod', 'Postnummer', 'Kommentar', 'Timestamp', 'Klar');
-  
-  // SQL-query for complete orderinfo   
-  $orders = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'orders',"ARRAY_A"); 
-
-  // Outputs title rows and order info to CSV and pushes download
-  fputcsv($output, array('wp-orders:'));
-  fputcsv($output, $array);
-  foreach($orders as $r)  
-  {  
-    fputcsv($output, $r);  
-  } 
-  
-  // Creates title row for entries table
-  $array = array('orderID', 'item', 'quantity');
-
-  // SQL query from wp-entries
-  $entries = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'entries', "ARRAY_A");
-
-  // Outputs title row and entries info for second table, with break row
-  fputcsv($output, array());
-  fputcsv($output, array('wp-entries:'));  
-  fputcsv($output, $array);
-  
-  foreach($entries as $e)  
-  {  
-    fputcsv($output, $e);  
-  } 
-
-  // Closes output stream, kills site to supress HTML output
-  fclose($output);
-  die();
-
-}
-
 ?>
 
 <!-- import bootstrap css -->
@@ -139,10 +94,6 @@ if ($_POST["page"] == "edit-menu") {
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-secondary" value="Alla ordrar">
-              </form></li>
-              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="export">
-                  <input type="submit" class="btn btn-secondary" value="Exportera">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
@@ -277,10 +228,6 @@ elseif ($_POST["page"] == "all-orders") {
                   <input type="hidden" name="page" value="all-orders">
                   <input type="submit" class="btn btn-primary" value="Alla ordrar">
               </form></li>
-              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="export">
-                  <input type="submit" class="btn btn-secondary" value="Exportera">
-              </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
                 <input type="text" class="form-control" name="order-search" placeholder="';
@@ -315,7 +262,7 @@ elseif ($_POST["page"] == "all-orders") {
         </div>
       </div>';
     foreach ($orders as $o) {
-      if ($o->done == TRUE) {
+      if ($o->done) {
         echo '<!-- One order block, generate one per order -->
           <div class="container-fluid"
               style="padding-left: 15px;padding-right: 15px;justify-content:center;width:90%">
@@ -359,7 +306,7 @@ elseif ($_POST["page"] == "all-orders") {
                               <!-- Generate these for each order-->';
         $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
         $items = $wpdb->get_results($sql);
-        if ($items[0] != NULL) {
+        if ($items[0]) {
           $c = 1;
           foreach ($items as $i) {
             if ($c != 1)
@@ -370,8 +317,21 @@ elseif ($_POST["page"] == "all-orders") {
         };
         echo '</div>
                       </div>
-                  </li>
-              </ul>
+                  </li>';
+        if ($o->comments) {
+          echo '
+                      <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+                        <div class="row">
+                          <div class="col-sm-8 col-md-8 col-lg-8" style="padding-top:5px">
+                            <tstyle style="font-size: 14px">
+                                <b>Kommentar: </b>' . $o->comments . '
+                            </tstyle>
+                          </div>
+                        </div>
+                      </li>
+                    ';
+        }
+        echo '</ul>
           </div>';
       } else {
         echo '<!-- One order block, generate one per order -->
@@ -410,7 +370,7 @@ elseif ($_POST["page"] == "all-orders") {
                               <!-- Generate these for each order-->';
         $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
         $items = $wpdb->get_results($sql);
-        if ($items[0] != NULL) {
+        if ($items[0]) {
           $c = 1;
           foreach ($items as $i) {
             if ($c != 1)
@@ -421,171 +381,26 @@ elseif ($_POST["page"] == "all-orders") {
         };
         echo '</div>
                       </div>
-                  </li>
-              </ul>
+                  </li>';
+        if ($o->comments) {
+          echo '
+                      <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+                        <div class="row">
+                          <div class="col-sm-8 col-md-8 col-lg-8" style="padding-top:5px">
+                            <tstyle style="font-size: 14px">
+                                <b>Kommentar: </b>' . $o->comments . '
+                            </tstyle>
+                          </div>
+                        </div>
+                      </li>
+                    ';
+        }
+        echo '</ul>
           </div>';
       }
     }
   } else {
     echo '<h3 style="padding-left: 25px">Inga ordrar hittade</h3>';
-  }
-}
-
-// Generate export/import-page
-elseif ($_POST["page"] == "export"){
-
-  echo '<nav class="navbar navbar-inverse">
-          <div class="container-fluid">
-            <div class="navbar-header">
-              <a class="navbar-brand" href="#">Verktyg</a>
-            </div>
-            <ul class="nav navbar-nav">
-              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="orders">
-                  <input type="submit" class="btn btn-secondary" value="Nya ordrar">
-              </form></li>
-              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn btn-secondary" value="Ändra meny">
-              </form></li>
-              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="all-orders">
-                  <input type="submit" class="btn btn-secondary" value="Alla ordrar">
-              </form></li>
-              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="export">
-                  <input type="submit" class="btn btn-primary" value="Exportera">
-              </form></li>
-              <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
-                <input type="hidden" name="page" value="all-orders">
-                <input type="text" class="form-control" name="order-search" placeholder="Namn eller mailadress">
-                <input type="submit" class="btn btn-secondary" value="Sök">
-              </form></li>
-            </ul>
-          </div>
-        </nav>
-      <h3 style="padding-left: 25px">Exportera och Importera</h3>
-        <div class="container-fluid">
-          <form method="post" action="." align="center">  
-            <input type="submit" name="export" value="Exportera till CSV" class="btn btn-success" />
-          </form>      
-        </div>
-        <form class="form-horizontal" action="." method="post"
-                name="frmCSVImport" id="frmCSVImport"
-                enctype="multipart/form-data">
-                <div class="input-row">
-                    <label class="col-md-4 control-label">Välj CSV-fil
-                    </label> <input type="file" name="file"
-                        id="file" accept=".csv">
-                    <input type="hidden" name="page" value="export">
-                    <button type="submit" id="submit" name="import"
-                        class="btn-submit">Import</button>
-                    <br />
-                </div>
-            </form>
-      <div class="container" style="width:900px;align:left">   
-      <h3 align="left">Orderdata</h3>                 
-      <br />  
-      <div class="table-responsive" id="employee_table" align="left">  
-           <table class="table table-bordered">  
-                <tr>  
-                     <th width="10%">ID</th>  
-                     <th width="15%">Email</th>  
-                     <th width="15%">Name</th>  
-                     <th width="10%">Telefon</th>  
-                     <th width="20%">Adress</th>
-                     <th width="10%">Postkod</th>  
-                     <th width="20%">Timestamp</th>    
-                </tr>';  
-                $query = 'SELECT * FROM '. $wpdb->prefix . 'orders';
-                $rows = $wpdb->get_results($query);
-                foreach($rows as $row)   
-                {  
-                  echo '
-                <tr>  
-                     <td>' . $row->id . '</td>  
-                     <td>' . $row->email . '</td>
-                     <td>' . $row->name . '</td>
-                     <td>' . $row->telNr . '</td>
-                     <td>' . $row->address . '</td>
-                     <td>' . $row->postalCode . '</td>
-                     <td>' . $row->date . '</td>     
-
-                </tr>';  
-                  
-                }  
-             echo '
-           </table>  
-      </div>  
- </div>';
-if(isset($_POST["import"])){
- echo '
- <div class="container" style="width:900px;align:left">   
- <h3 align="left">Importerade data</h3>                 
- <br />  
- <div class="table-responsive" id="employee_table" align="left">  
-      <table class="table table-bordered">  
-           <tr>  
-                <th width="10%">ID</th>  
-                <th width="15%">Email</th>  
-                <th width="15%">Name</th>  
-                <th width="10%">Telefon</th>  
-                <th width="20%">Adress</th>
-                <th width="10%">Postkod</th>  
-                <th width="20%">Timestamp</th>    
-           </tr>';
-
-    $fileName = $_FILES["file"]["tmp_name"];
-
-    if ($_FILES["file"]["size"] > 0) {
-        $file = fopen($fileName, "r");
-        fgetcsv($file, 10000, ",");
-        fgetcsv($file, 10000, ",");
-        echo '<h4 style="margin-top:0px">Orderinfo</h4>';
-        while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
-          if(count(array_filter($column)) == 0) {
-            break;
-          } 
-          echo '
-            <tr>  
-              <td>' . $column[0] . '</td>  
-              <td>' . $column[1] . '</td>
-              <td>' . $column[2] . '</td>
-              <td>' . $column[3] . '</td>
-              <td>' . $column[4] . '</td>
-              <td>' . $column[6] . '</td>
-              <td>' . $column[8] . '</td>     
-            </tr>';
-        }
-echo '
-      </table>
-    </div>
-    <div class="table-responsive" id="employee_table" align="left">  
-      <table class="table table-bordered">  
-         <tr>  
-              <th width="20%">ID</th>  
-              <th width="40%">Föremål</th>  
-              <th width="40%">Kvantitet</th>     
-         </tr>';
-         fgetcsv($file, 10000, ",");
-         fgetcsv($file, 10000, ",");
-         echo '<h4>Orderinlägg</h4>';
-         while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
-          if(count(array_filter($column)) == 0) {
-            break;
-          } 
-        echo '
-            <tr>  
-              <td>' . $column[0] . '</td>  
-              <td>' . $column[1] . '</td>
-              <td>' . $column[2] . '</td>   
-            </tr>  
-          ';
-        }
-      echo '</table>
-    </div>
-    ';
-    }
   }
 }
 
@@ -610,10 +425,6 @@ else {
             <input type="hidden" name="page" value="all-orders">
             <input type="submit" class="btn btn-secondary" value="Alla ordrar">
           </form></li>
-          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
-                  <input type="hidden" name="page" value="export">
-                  <input type="submit" class="btn btn-secondary" value="Exportera">
-          </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
             <input type="hidden" name="page" value="all-orders">
             <input type="text" class="form-control" name="order-search" placeholder="Namn, mailadress eller ID">
@@ -627,23 +438,22 @@ else {
   $orders = $wpdb->get_results($sql);
 
   if (!empty($orders)) {
-    echo '<h3 style="padding-left: 25px">Nya ordrar</h3>';
     foreach ($orders as $o) {
       echo '<!-- One order block, generate one per order -->
         <div class="container-fluid col-sm-12 col-md-6 col-lg-4">
           <ul class="list-group">
             <!-- top section -->
-            <li class="list-group-item" style="min-height: 75px">
+            <li class="list-group-item" style="min-height: 90px">
               <div>
                 <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
                   <b>Order ID: </b> ' . $o->id . '
-                  <br>
-                    <p style="font-size: 15px">
-                      <b>Adress: </b> ' . $o->address . ',' . $o->postalCode . '
+                    <p style="font-size: 14px">
+                      <b> Upphämtas: </b>' . $o->location . '  
+                      <br><b> Datum: </b>' . $o->date . '
                     </p>
                 </div>
                 <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                  <div class="btn-group pull-right" style="width:50px">
+                  <div class="btn-group pull-right" style="width:40px">
                     <form action="." method="post">
                       <input type="hidden" name="done" value="' . $o->id . '">
                       <input type="submit" class="btn-sm btn-success" value="Klar">
@@ -653,47 +463,49 @@ else {
               </div>
             </li>
             <!-- main items section -->
-            <li class="list-group-item" style="padding-bottom:0">
-              <tstyle style="font-size: 16px">
-                Pizzakit
-              </tstyle>
-              <ul class="list-group" style="padding-top: 5px">
-                <!-- generate a <li> for each main item -->';
+            <li class="list-group-item">';
       $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
       $items = $wpdb->get_results($sql);
-      if ($items[0] != NULL) {
+      if ($items[0]) {
         foreach ($items as $i) {
-          if ($i->main_item == TRUE) {
-            echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
+          if ($i->main_item) {
+            echo '<b>' . $i->item . ': </b>' . $i->quantity . '<br>';
           }
         }
       }
-      echo '</ul>
+      echo  '
             </li>
-            <!-- topping section -->
-            <li class="list-group-item" style="padding-bottom:0">
-              <tstyle style="font-size: 16px">
-                Tillbehör
-              </tstyle>
-              <ul class="list-group" style="padding-top: 5px">
+              <!-- topping section -->
+              <li class="list-group-item">
                 <!-- generate a <li> for each topping -->';
       $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
       $items = $wpdb->get_results($sql);
-      if ($items[0] != NULL) {
+      if ($items[0]) {
         foreach ($items as $i) {
-          if ($i->main_item == FALSE) {
-            echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
+          if (!$i->main_item) {
+            echo '<b>' . $i->item . ': </b>' . $i->quantity . '<br>';
           }
         }
       }
+      echo  '</li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-sm-12 col-md-12 col-lg-12" style="padding-top:5px">
+                    <tstyle style="font-size: 14px">';
+      if ($o->comments) {
+        echo '<b>Kommentar: </b>' . $o->comments . '<br>';
+      }
+      echo '<b>Kontakt:</b> ' . $o->name . ', ' . $o->email . ', ' . $o->telNr . '
+                      </tstyle>
+                    </div>
+                  </div>
+                </li>
+              ';
       echo '</ul>
-            </li>
-          </ul>
         </div>';
     }
   } else {
     echo '<h3 style="padding-left: 25px">Inga nya ordrar</h3>';
   }
 }
-
 ?>
