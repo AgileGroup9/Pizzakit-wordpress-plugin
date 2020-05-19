@@ -298,8 +298,8 @@ class Pizzakit {
 
 		//insert items
 		foreach ($data["menu"] as $item) {
-			$data_arr = array('name' => $item["name"], 'price' => $item["price"], "comment" => $item["comment"], "main_item" => $item["main_item"]);
-			$format = array('%s', '%d', '%s', '%d');
+			$data_arr = array('name' => $item["name"], 'list_order' => $item["list_order"], 'price' => $item["price"], "comment" => $item["comment"], "main_item" => $item["main_item"]);
+			$format = array('%s', '%d', '%d', '%s', '%d');
 			$wpdb->insert($table, $data_arr, $format);
 		}
 	}
