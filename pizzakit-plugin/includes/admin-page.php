@@ -448,8 +448,8 @@ else {
                 <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
                   <b>Order ID: </b> ' . $o->id . '
                     <p style="font-size: 14px">
-                      <b> Upphämtas: </b>' . 'Placeholder - Meno Male' . '  
-                      <b> Datum: </b>' . $o->date . '
+                      <b> Upphämtas: </b>' . $o->location . '  
+                      <br><b> Datum: </b>' . $o->date . '
                     </p>
                 </div>
                 <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
