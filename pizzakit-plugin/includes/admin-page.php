@@ -210,7 +210,7 @@ if ($_POST["page"] == "edit-menu") {
       echo '
                               <input type="hidden" name="deactivateItem" value="' . $i->name . '">
                               <input type="hidden" name="page" value="edit-menu">
-                              <input type="submit" class="btn-xs btn-warning pull-left" value="Avaktivera">
+                              <input type="submit" class="btn-xs btn-warning pull-left" value="Inaktivera">
                             ';
     }
 
@@ -370,8 +370,21 @@ elseif ($_POST["page"] == "all-orders") {
         };
         echo '</div>
                       </div>
-                  </li>
-              </ul>
+                  </li>';
+        if ($o->comments) {
+          echo '
+                      <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+                        <div class="row">
+                          <div class="col-sm-8 col-md-8 col-lg-8" style="padding-top:5px">
+                            <tstyle style="font-size: 14px">
+                                <b>Kommentar: </b>' . $o->comments . '
+                            </tstyle>
+                          </div>
+                        </div>
+                      </li>
+                    ';
+        }
+        echo '</ul>
           </div>';
       } else {
         echo '<!-- One order block, generate one per order -->
@@ -421,8 +434,21 @@ elseif ($_POST["page"] == "all-orders") {
         };
         echo '</div>
                       </div>
-                  </li>
-              </ul>
+                  </li>';
+        if ($o->comments) {
+          echo '
+                      <li class="list-group-item" style="padding-bottom:0;min-height:45px;padding-top:5px">
+                        <div class="row">
+                          <div class="col-sm-8 col-md-8 col-lg-8" style="padding-top:5px">
+                            <tstyle style="font-size: 14px">
+                                <b>Kommentar: </b>' . $o->comments . '
+                            </tstyle>
+                          </div>
+                        </div>
+                      </li>
+                    ';
+        }
+        echo '</ul>
           </div>';
       }
     }
@@ -627,23 +653,22 @@ else {
   $orders = $wpdb->get_results($sql);
 
   if (!empty($orders)) {
-    echo '<h3 style="padding-left: 25px">Nya ordrar</h3>';
     foreach ($orders as $o) {
       echo '<!-- One order block, generate one per order -->
         <div class="container-fluid col-sm-12 col-md-6 col-lg-4">
           <ul class="list-group">
             <!-- top section -->
-            <li class="list-group-item" style="min-height: 75px">
+            <li class="list-group-item" style="min-height: 90px">
               <div>
                 <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
                   <b>Order ID: </b> ' . $o->id . '
-                  <br>
-                    <p style="font-size: 15px">
-                      <b>Adress: </b> ' . $o->address . ',' . $o->postalCode . '
+                    <p style="font-size: 14px">
+                      <b> Upphämtas: </b>' . $o->location . '  
+                      <br><b> Datum: </b>' . $o->date . '
                     </p>
                 </div>
                 <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                  <div class="btn-group pull-right" style="width:50px">
+                  <div class="btn-group pull-right" style="width:40px">
                     <form action="." method="post">
                       <input type="hidden" name="done" value="' . $o->id . '">
                       <input type="submit" class="btn-sm btn-success" value="Klar">
@@ -653,42 +678,45 @@ else {
               </div>
             </li>
             <!-- main items section -->
-            <li class="list-group-item" style="padding-bottom:0">
-              <tstyle style="font-size: 16px">
-                Pizzakit
-              </tstyle>
-              <ul class="list-group" style="padding-top: 5px">
-                <!-- generate a <li> for each main item -->';
+            <li class="list-group-item">';
       $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
       $items = $wpdb->get_results($sql);
-      if ($items[0] != NULL) {
+      if ($items[0]) {
         foreach ($items as $i) {
-          if ($i->main_item == TRUE) {
-            echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
+          if ($i->main_item) {
+            echo '<b>' . $i->item . ': </b>' . $i->quantity . '<br>';
           }
         }
       }
-      echo '</ul>
+      echo  '
             </li>
-            <!-- topping section -->
-            <li class="list-group-item" style="padding-bottom:0">
-              <tstyle style="font-size: 16px">
-                Tillbehör
-              </tstyle>
-              <ul class="list-group" style="padding-top: 5px">
+              <!-- topping section -->
+              <li class="list-group-item">
                 <!-- generate a <li> for each topping -->';
       $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
       $items = $wpdb->get_results($sql);
-      if ($items[0] != NULL) {
+      if ($items[0]) {
         foreach ($items as $i) {
-          if ($i->main_item == FALSE) {
-            echo '<li class="list-group-item"><b>' . $i->item . ': </b>' . $i->quantity . '</li>';
+          if (!$i->main_item) {
+            echo '<b>' . $i->item . ': </b>' . $i->quantity . '<br>';
           }
         }
       }
+      echo  '</li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-sm-12 col-md-12 col-lg-12" style="padding-top:5px">
+                    <tstyle style="font-size: 14px">';
+      if ($o->comments) {
+        echo '<b>Kommentar: </b>' . $o->comments . '<br>';
+      }
+      echo '<b>Kontakt:</b> ' . $o->name . ', ' . $o->email . ', ' . $o->telNr . '
+                      </tstyle>
+                    </div>
+                  </div>
+                </li>
+              ';
       echo '</ul>
-            </li>
-          </ul>
         </div>';
     }
   } else {
