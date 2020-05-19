@@ -65,7 +65,7 @@ if (isset($_POST["export"])){
   
   header('Content-Type: text/csv; charset=utf-8');  
   header('Content-Disposition: attachment; filename=backup-' . date("Y/m/d") . '.csv');  
-  
+
   // Opens output stream
   $output = fopen("php://output", "w");
 
@@ -99,23 +99,20 @@ if (isset($_POST["export"])){
     fputcsv($output, $e);  
   } 
 
-  // Closes output stream
+  // Closes output stream, kills site to supress HTML output
   fclose($output);
+  die();
 
 }
 
 ?>
-
+<!-- import bootstrap css -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
 <?php
 
-
-
 // Generate edit menu
 if ($_POST["page"] == "edit-menu") {
-  
-  // <!-- import bootstrap css -->
-  echo '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">';
 
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
@@ -253,8 +250,6 @@ if ($_POST["page"] == "edit-menu") {
 }
 
 elseif ($_POST["page"] == "export"){
-  // <!-- import bootstrap css -->
-  echo '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">';
 
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
@@ -413,9 +408,6 @@ echo '
 
 // Generate the all orders-page
 elseif ($_POST["page"] == "all-orders") {
-  
-  // <!-- import bootstrap css -->
-  echo '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">';
   
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
@@ -584,10 +576,7 @@ elseif ($_POST["page"] == "all-orders") {
 }
 
 // Generate the new orders-page
-elseif($_POST["page"] == "orders")  {
-  
-  // <!-- import bootstrap css -->
-  echo '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">';
+else {
   
   echo '
     <nav class="navbar navbar-inverse">
