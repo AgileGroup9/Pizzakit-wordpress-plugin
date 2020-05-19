@@ -800,7 +800,7 @@ else {
     </nav>';
 
   // Only load if there are > 0 orders in wp-orders
-  if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders") > 0) {
+  if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders WHERE done = 0") > 0) {
     // Get rows, and number of rows for table width. One redundant query here that could be removed
     $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "items");
     $rows = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "items ORDER BY list_order ASC");
