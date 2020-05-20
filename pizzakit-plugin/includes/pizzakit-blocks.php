@@ -31,7 +31,16 @@ class Pizzakit_Blocks {
 		$items = $wpdb->get_results($sql);
 		$json = json_encode($items);
 
-		return '<script>window.pizzakitItems = ' . $json . ';</script><div id="pizzakit-order-form"></div>';
+		ob_start();
+		?>
+			<script>window.pizzakitItems = <?php echo($json); ?>;</script>
+			<div id="pizzakit-order-form">
+				<p class="has-text-align-center">
+					<strong>Pizzakit Order Formulär: Laddar...</strong>
+				</p>
+			</div>
+		<?php
+		return ob_get_clean();
 	}
 }
 
