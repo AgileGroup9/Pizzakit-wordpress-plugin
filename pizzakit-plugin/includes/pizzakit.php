@@ -72,7 +72,7 @@ class Pizzakit {
 	public static function item_query_handler($data)
 	{
 		global $wpdb;
-		$sql = "SELECT * FROM wp_items";
+		$sql = "SELECT * FROM " . $wpdb->prefix . "items";
 		$items = $wpdb->get_results($sql);
 		wp_send_json($items);
 	}
@@ -82,8 +82,8 @@ class Pizzakit {
 		# Return payment status of order
 		# No side effects
 		global $wpdb;
-		$table = $wpdb->prefix . 'payment';
-		$query = $wpdb->prepare('SELECT status FROM '.$table.' WHERE orderID = %d',$data->get_url_params()['id']);
+		$table = $wpdb->prefix . 'orders';
+		$query = $wpdb->prepare('SELECT status FROM '.$table.' WHERE id = %d',$data->get_url_params()['id']);
 		$res = $wpdb->get_var($query);
 		if($res != NULL){
 			wp_send_json(array("payment" => $res));
@@ -95,8 +95,8 @@ class Pizzakit {
 
 	private static function validate_callback($order_id,$uuid){
 		global $wpdb;
-		$table = $wpdb->prefix . 'payment';
-		$query = $wpdb->prepare('SELECT uuid FROM '.$table.' WHERE orderID = %d',$order_id);
+		$table = $wpdb->prefix . 'orders';
+		$query = $wpdb->prepare('SELECT uuid FROM '.$table.' WHERE id = %d',$order_id);
 		$res = $wpdb->get_var($query);
 		trigger_error("Checking: ".$uuid." === ".$res." -> ".strcmp($res,$uuid));
 		return(strcmp($res,$uuid) == 0);
@@ -115,10 +115,10 @@ class Pizzakit {
 					$resp_json = json_decode($resp,true);
 					if($resp_json['status'] == "PAID"){
 						global $wpdb;
-						$table = $wpdb->prefix . 'payment';
-						$res = $wpdb->update($table,array( 'status' => $resp_json['status']),array('orderID' => $_data->get_url_params()['id']),array('%s'),array('%d'));
-						if($res == false){
-							trigger_error("Pizzakit: error creating entry in wp_payment");
+						$table = $wpdb->prefix . 'orders';
+						$res = $wpdb->update($table,array( 'status' => $resp_json['status']),array('id' => $_data->get_url_params()['id']),array('%s'),array('%d'));
+						if(!$res){
+							trigger_error("Pizzakit: error creating entry in orders");
 						}
 					}
 				}
@@ -135,8 +135,8 @@ class Pizzakit {
 
 		if($order_total < 1){
 			global $wpdb;
-			$table = $wpdb->prefix . 'payment';
-			$data = array('orderID' => $order_id,'uuid' => '-2','status'=>'INVALID_TOTAL');
+			$table = $wpdb->prefix . 'orders';
+			$data = array('id' => $order_id,'uuid' => '-2','status'=>'INVALID_TOTAL');
 			$format = array('%d','%s','%s');
 			$wpdb->insert($table,$data,$format);
 			return(-1);
@@ -146,8 +146,8 @@ class Pizzakit {
 
 		if($res['response'] !== NULL){
 			global $wpdb;
-			$table = $wpdb->prefix . 'payment';
-			$data = array('orderID' => $order_id,'uuid' => $res['uuid'],'status'=>'PENDING');
+			$table = $wpdb->prefix . 'orders';
+			$data = array('id' => $order_id,'uuid' => $res['uuid'],'status'=>'PENDING');
 			$format = array('%d','%s','%s');
 			$wpdb->insert($table,$data,$format);
 			return($order_id);
@@ -243,16 +243,16 @@ class Pizzakit {
 	{
 
 		global $wpdb;
-		$sql = "SELECT * FROM wp_items";
+		$sql = "SELECT * FROM " . $wpdb->prefix . "items";
 		$items = $wpdb->get_results($sql,$output=ARRAY_N);
 
 		//insert into orders, using insert() function to get it prepared. Returns id of last inserted order.
 		$_table = $wpdb->prefix . 'orders';
 		$_dataArr = array(
-			'id' => null, 'email' => Pizzakit::sanitizeText($_data["email"]), 'name' => Pizzakit::sanitizeText($_data["name"]), 'telNr' => Pizzakit::sanitizeText($_data["telNr"]),
-			'address' => Pizzakit::sanitizeText($_data["address"]), 'doorCode' => Pizzakit::sanitizeText($_data["doorCode"]), 'postalCode' => Pizzakit::sanitizeText($_data["postalCode"]), 'comments' => Pizzakit::sanitizeText($_data["comments"])
+			'id' => null, 'location' => Pizzakit::sanitizeText($_data["location"]), 'email' => Pizzakit::sanitizeText($_data["email"]), 'telNr' => Pizzakit::sanitizeText($_data["telNr"]),
+			'name' => Pizzakit::sanitizeText($_data["name"]), 'comments' => Pizzakit::sanitizeText($_data["comments"])
 		);
-		$_format = array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s');
+		$_format = array('%d', '%s', '%s', '%s', '%s', '%s');
 		$wpdb->insert($_table, $_dataArr, $_format);
 		$_lastid = $wpdb->insert_id;
 
