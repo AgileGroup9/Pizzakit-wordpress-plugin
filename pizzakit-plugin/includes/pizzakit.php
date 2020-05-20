@@ -242,9 +242,10 @@ class Pizzakit {
 	private static function insert_into_tables($_data)
 	{
 
-		$json = file_get_contents(plugin_dir_path(__FILE__) . 'items_for_sale.json');
-		$decoded = json_decode($json, true);
-		$items = $decoded['menu'];
+		global $wpdb;
+		$sql = "SELECT * FROM wp_items";
+		$items = $wpdb->get_results($sql,$output=ARRAY_N);
+		trigger_error(print_r($items,$return=true));
 
 		global $wpdb;
 
@@ -262,11 +263,10 @@ class Pizzakit {
 		$item_cost = 0;
 
 		//insert into entries
-
 		foreach ($_data["cart"] as $_item){
 			foreach($items as $i){
-				if($i['name'] == $_item[0]){
-					$total_cost += $i['price']*$_item[1];
+				if($i[0] == $_item[0]){
+					$total_cost += $i[1]*$_item[1];
 				}
 			}
 			$_table = $wpdb->prefix. 'entries';
