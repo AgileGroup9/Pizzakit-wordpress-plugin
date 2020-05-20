@@ -18,11 +18,11 @@ class OrderForm extends React.Component {
 
 		// Required for intercepting onChange events from <input>
 		this.handle_detail_update = this.handle_detail_update.bind(this);
-		// Create empty states, will be initialized by get_items()
-		this.items = [];
-		this.prices = new Map();
+
+		this.items = window.pizzakitItems;
+		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
 		this.state = {
-			cart : new Map(),
+			cart : new Map( this.items.map(x => [x['name'],0])),
 			email : '',
 			name : '',
 			telNr : '',
@@ -32,7 +32,6 @@ class OrderForm extends React.Component {
 			comments : '',
 			isLoading: false
 		};
-		this.get_items();
 	}
 
 	handle_cart_update(item,delta){
@@ -63,23 +62,6 @@ class OrderForm extends React.Component {
 			}
 		}
 		return false;
-	}
-
-	async get_items(){
-		const response = await fetch('/index.php/wp-json/pizzakit/items');
-		this.items = await response.json();
-		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
-		console.log(this.prices);
-		this.setState({
-			cart : new Map( this.items.map(x => [x['name'],0])),
-			email : '',
-			name : '',
-			telNr : '',
-			address : '',
-			doorCode : '',
-			postalCode : '',
-			comments : '',
-		});
 	}
 
 	async handle_submit(target_addr) {

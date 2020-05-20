@@ -26,7 +26,12 @@ class Pizzakit_Blocks {
 		);
 	}
 	public static function render_order_form($attributes, $content) {
-		return '<div id="pizzakit-order-form"></div>';
+		global $wpdb;
+		$sql = "SELECT * FROM wp_items";
+		$items = $wpdb->get_results($sql);
+		$json = json_encode($items);
+
+		return '<script>window.pizzakitItems = ' . $json . ';</script><div id="pizzakit-order-form"></div>';
 	}
 }
 
