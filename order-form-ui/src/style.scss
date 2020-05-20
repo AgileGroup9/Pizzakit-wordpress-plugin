@@ -59,6 +59,20 @@
 		label {
 			font-size: 2rem;
 		}
+
+		&:not(.loading-item) {
+			overflow-y: hidden;
+			animation: bring-in 0.5s ease-in 1;
+		}
+
+		@keyframes bring-in {
+			0% {
+				max-height: 0px;
+			}
+			100% {
+				max-height: 100px;
+			}
+		}
 	}
 
 	.number-select {
