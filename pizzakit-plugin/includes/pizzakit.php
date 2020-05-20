@@ -264,6 +264,9 @@ class Pizzakit {
 		//insert into entries
 
 		foreach ($_data["cart"] as $_item){
+			if($_item[1] === 0){
+				continue;
+			}
 			foreach($items as $i){
 				if($i['name'] == $_item[0]){
 					$total_cost += $i['price']*$_item[1];
