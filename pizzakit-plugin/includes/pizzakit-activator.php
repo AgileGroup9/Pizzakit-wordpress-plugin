@@ -60,7 +60,7 @@ class Pizzakit_Activator
 		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'items') != $wpdb->prefix . 'items') {
 			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'items(
 			name VARCHAR(100) NOT NULL,
-			list_order INT UNSIGNED DEFAULT 0,
+			list_order INT UNSIGNED DEFAULT 99,
 			price INT UNSIGNED NOT NULL CHECK (price > 0),
 			comment TEXT,
 			main_item BOOLEAN DEFAULT FALSE,
