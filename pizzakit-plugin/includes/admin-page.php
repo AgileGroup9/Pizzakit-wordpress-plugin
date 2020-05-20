@@ -827,7 +827,7 @@ else {
     // Outputs table that generates dynamically depending on amount of items currently in DB
     echo '
     <div class="container" style="width:1200px;" align="left">
-      <h3 align="center" style="margin-top:0px">Orderkvantitet sammanställning</h3>
+      <h3 align="center" style="margin-top:0px">Sammanställning orderkvantitet</h3>
       <div class="table-responsive" id="summary_table" align="left">
         <table class="table table-bordered" align="left" style="text-align:center">
             <tr>';
