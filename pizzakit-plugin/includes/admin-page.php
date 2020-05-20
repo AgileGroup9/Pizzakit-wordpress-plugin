@@ -502,7 +502,7 @@ elseif ($_POST["page"] == "all-orders") {
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
                               <!-- Generate these for each order-->';
-        $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
+        $sql = "SELECT * FROM " . $wpdb->prefix . "entries WHERE orderID = " . $o->id;
         $items = $wpdb->get_results($sql);
         if ($items[0]) {
           $c = 1;
@@ -806,24 +806,9 @@ else {
   // Only load if there are > 0 orders in wp-orders
   if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders WHERE done = 0") > 0) {
     // Get rows, and number of rows for table width. One redundant query here that could be removed
-    $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "items");
-    $rows = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "items ORDER BY list_order ASC");
+    $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 GROUP BY item");
+    $rows = $wpdb->get_results("SELECT item, SUM(quantity) AS total_quantity FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 GROUP BY item");
 
-    // Initialize array with quantities of each item. Don't know if this is necessary tbh
-    $quantities = array();
-    foreach ($rows as $r)
-      $quantities[$r->name] = 0;
-
-    // Get entries
-    $entries = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "entries");
-
-    // For each entry that isn't part of a "done" order, continue. Otherwise, add quantity to array
-    foreach ($entries as $e) {
-      if ($wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "orders WHERE id = " . $e->orderID)[0]->done == 1) {
-        continue;
-      }
-      $quantities[$e->item] += $e->quantity;
-    }
     // Outputs table that generates dynamically depending on amount of items currently in DB
     echo '
     <div class="container" style="width:1200px;" align="left">
@@ -832,13 +817,13 @@ else {
         <table class="table table-bordered" align="left" style="text-align:center">
             <tr>';
     foreach ($rows as $r) {
-      echo '<th style="text-align:center; font-size:12px" width="' . floor(100 / $numberRows) . '%">' . $r->name . '</th>';
+      echo '<th style="text-align:center; font-size:12px" width="' . floor(100 / $numberRows) . '%">' . $r->item . '</th>';
     }
     echo '   
             </tr>
             <tr>';
     foreach ($rows as $r) {
-      echo '<td>' . $quantities[$r->name] . '</td>';
+      echo '<td>' . $r->total_quantity . '</td>';
     }
     echo '</tr>
         </table>
@@ -877,27 +862,11 @@ else {
             </li>
             <!-- main items section -->
             <li class="list-group-item">';
-      $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
+      $sql = "SELECT * FROM " . $wpdb->prefix . "entries WHERE orderID = " . $o->id;
       $items = $wpdb->get_results($sql);
       if ($items[0]) {
         foreach ($items as $i) {
-          if ($i->main_item) {
-            echo '<b>' . $i->item . ': </b>' . $i->quantity . '<br>';
-          }
-        }
-      }
-      echo  '
-            </li>
-              <!-- topping section -->
-              <li class="list-group-item">
-                <!-- generate a <li> for each topping -->';
-      $sql = "SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "items WHERE " . $wpdb->prefix . "entries.item = " . $wpdb->prefix . "items.name AND " . $wpdb->prefix . "entries.orderID = " . $o->id;
-      $items = $wpdb->get_results($sql);
-      if ($items[0]) {
-        foreach ($items as $i) {
-          if (!$i->main_item) {
-            echo '<b>' . $i->item . ': </b>' . $i->quantity . '<br>';
-          }
+          echo '<b>' . $i->item . ': </b>' . $i->quantity . '<br>';
         }
       }
       echo  '</li>
