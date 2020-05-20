@@ -245,7 +245,6 @@ class Pizzakit {
 		global $wpdb;
 		$sql = "SELECT * FROM wp_items";
 		$items = $wpdb->get_results($sql,$output=ARRAY_N);
-		trigger_error(print_r($items,$return=true));
 
 		//insert into orders, using insert() function to get it prepared. Returns id of last inserted order.
 		$_table = $wpdb->prefix . 'orders';
