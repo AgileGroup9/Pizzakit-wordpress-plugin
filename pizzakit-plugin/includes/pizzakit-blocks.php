@@ -24,6 +24,8 @@ class Pizzakit_Blocks {
 				'script' => 'pizzakit-order-form-js'
 			)
 		);
+
+		wp_localize_script('pizzakit-order-form-js', 'WPURLS', array('siteurl' => get_option('siteurl')));
 	}
 	public static function render_order_form($attributes, $content) {
 		global $wpdb;
