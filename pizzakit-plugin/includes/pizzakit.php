@@ -150,6 +150,7 @@ class Pizzakit {
 			global $wpdb;
 			$table = $wpdb->prefix . 'orders';
 			$data = array('uuid' => $res['uuid'],'status'=>'PENDING');
+			$where = array('id' => $order_id);
 			$format = array('%s','%s');
 			$where_format = array('%d');
 			$wpdb->update($table,$data,$where,$format,$where_format);
