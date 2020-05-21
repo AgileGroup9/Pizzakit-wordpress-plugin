@@ -29,7 +29,7 @@ class PaymentConfirmation extends React.Component {
 		try {
 
 			const response = await fetch(
-				`//${location.host}/index.php/wp-json/pizzakit/payment/${this.props.token}`,
+				WPURLS.siteurl + '/index.php/wp-json/pizzakit/payment/' + this.props.token,
 				{
 					signal: this.controller.signal,
 					method: 'GET'
