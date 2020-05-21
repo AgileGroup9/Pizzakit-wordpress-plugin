@@ -78,7 +78,6 @@ class OrderForm extends React.Component {
 				'Access-Control-Allow-Origin':'true',
 				'Content-Type': 'application/json'
 			},
-			redirect: "follow",
 			body: this.state_to_json(),
 		});
 		if (response.ok) {
