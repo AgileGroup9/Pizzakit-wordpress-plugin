@@ -63,7 +63,6 @@ class OrderForm extends React.Component {
 	}
 
 	async handle_submit(target_addr) {
-		console.log(target_addr);
 		if(this.is_fields_empty()){
 			alert('Vänligen fyll i alla obligatoriska fält');
 			return;
