@@ -99,5 +99,10 @@ class Pizzakit_Activator
 
 		Pizzakit_Activator::add_admin_page();
 
+		// adding settings
+		add_site_option('pizzakit_time_start_weekday', 1);
+		add_site_option('pizzakit_time_start_hours', 0);
+		add_site_option('pizzakit_time_end_weekday', 4);
+		add_site_option('pizzakit_time_end_hours', 24);
 	}
 }
