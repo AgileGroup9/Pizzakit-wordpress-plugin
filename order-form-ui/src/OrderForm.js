@@ -3,7 +3,6 @@ import Small_item from './Items';
 import PaymentConfirmation from './PaymentConfirmation';
 import ConSuccess from './ConSuccess';
 import ConFailed from './ConFailed';
-import TimeBlock from './TimeBlock';
 
 // Main Application
 // Renders a form and keeps track of items the client has selected
@@ -30,11 +29,8 @@ class OrderForm extends React.Component {
 			comments : '',
 			isLoading: false
 		};
-
-		if (this.outsideTimeFrame()) {
-			this.props.navigateTo(TimeBlock);
-		}
 	}
+
 	handle_cart_update(item,delta){
 		const newValue = this.state.cart.get(item) + delta;
 		if(newValue >= 0){
@@ -173,6 +169,10 @@ class OrderForm extends React.Component {
 	}
 
 	render() {
+		if (this.outsideTimeFrame()) {
+			return <p>Inga beställningar emotages vid denna tid.</p>;
+		}
+
 		// Render items dynamicaly
 		const extras = this.items.filter(x => x["main_item"] == false);
 		const extra_list = extras.map(x => {
