@@ -70,6 +70,9 @@ class OrderForm extends React.Component {
 		if(validation_results !== ''){
 			alert(validation_results);
 		}
+		if (!window.confirm('Gå vidare till betalning?')) {
+			return;
+		}
 		this.setState({ isLoading: true });
 		const response = await fetch(target_addr, {
 			method: 'POST',
