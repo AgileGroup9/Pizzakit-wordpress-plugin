@@ -279,7 +279,7 @@ class OrderForm extends React.Component {
 
 		return (
 			<>
-				<p className="has-text-align-center">Vi kan endast ta emot beställningar mellan {startText} och {endText}.</p>
+				<p className="has-text-align-center">Vi tar emot beställningar mellan {startText} och {endText} för upphämtning på fredagar!</p>
 				{content}
 			</>
 		);
