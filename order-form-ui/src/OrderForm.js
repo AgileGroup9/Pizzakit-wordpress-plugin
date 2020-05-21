@@ -168,11 +168,7 @@ class OrderForm extends React.Component {
 		return false;
 	}
 
-	render() {
-		if (this.outsideTimeFrame()) {
-			return <p>Inga beställningar emotages vid denna tid.</p>;
-		}
-
+	form() {
 		// Render items dynamicaly
 		const extras = this.items.filter(x => x["main_item"] == false);
 		const extra_list = extras.map(x => {
@@ -259,6 +255,33 @@ class OrderForm extends React.Component {
 					</button>
 				</div>
 			</p>
+		);
+	}
+
+	render() {
+		const weekdays = [ 'måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag' ];
+		const startText = weekdays[window.pizzakitTimes.start.weekday - 1] + (window.pizzakitTimes.start.hours != 0 ? ` ${window.pizzakitTimes.start.hours}:00` : '');
+		const endText = weekdays[window.pizzakitTimes.end.weekday - 1] + (window.pizzakitTimes.end.hours != 24 ? ` ${window.pizzakitTimes.end.hours}:00` : '');
+
+		let content;
+		if (this.outsideTimeFrame()) {
+			content = (
+				<p className="has-text-align-center">
+					<div>
+						<h6>Vi tar inte emot några beställningar just nu</h6>
+					</div>
+				</p>
+			);
+		}
+		else {
+			content = this.form();
+		}
+
+		return (
+			<>
+				<p className="has-text-align-center">Vi kan endast ta emot beställningar mellan {startText} och {endText}.</p>
+				{content}
+			</>
 		);
 	}
 }
