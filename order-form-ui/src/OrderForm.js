@@ -78,6 +78,7 @@ class OrderForm extends React.Component {
 				'Access-Control-Allow-Origin':'true',
 				'Content-Type': 'application/json'
 			},
+			redirect: "follow",
 			body: this.state_to_json(),
 		});
 		if (response.ok) {
@@ -207,7 +208,12 @@ class OrderForm extends React.Component {
 					</div>
 					<div className="form-group" >
 						<label htmlFor="pickup_inpt">Uthämtningsställe<span>*</span>:</label>
-						<input type="text" name="location" id="pickup_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Meno Male"/>
+						<select name="location" id="pickup_inpt" onChange={this.handle_detail_update}>
+							<option value="" disabled selected>Välj:</option>
+							<option value="Vasastan">Vasastan</option>
+							<option value="Kungsholmen">Kungsholmen</option>
+							<option value="Östermalm">Östermalm</option>
+						</select>
 					</div>
 				</div>
 				<hr/>
