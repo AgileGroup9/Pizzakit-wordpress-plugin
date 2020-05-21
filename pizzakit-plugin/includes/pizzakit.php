@@ -136,9 +136,11 @@ class Pizzakit {
 		if($order_total < 1){
 			global $wpdb;
 			$table = $wpdb->prefix . 'orders';
-			$data = array('id' => $order_id,'uuid' => '-2','status'=>'INVALID_TOTAL');
-			$format = array('%d','%s','%s');
-			$wpdb->insert($table,$data,$format);
+			$data = array('uuid' => '-2','status'=>'INVALID_TOTAL');
+			$where = array('id' => $order_id);
+			$format = array('%s','%s');
+			$where_format = array('%d');
+			$wpdb->update($table,$data,$where,$format,$where_format);
 			return(-1);
 		}
 
@@ -147,9 +149,10 @@ class Pizzakit {
 		if($res['response'] !== NULL){
 			global $wpdb;
 			$table = $wpdb->prefix . 'orders';
-			$data = array('id' => $order_id,'uuid' => $res['uuid'],'status'=>'PENDING');
-			$format = array('%d','%s','%s');
-			$wpdb->insert($table,$data,$format);
+			$data = array('uuid' => $res['uuid'],'status'=>'PENDING');
+			$format = array('%s','%s');
+			$where_format = array('%d');
+			$wpdb->update($table,$data,$where,$format,$where_format);
 			return($order_id);
 		}
 		return(-1);
