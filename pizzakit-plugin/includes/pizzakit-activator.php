@@ -27,9 +27,9 @@ class Pizzakit_Activator
 
 		/** Creating the database tables according to the following schema
 		 *
-		 * wp_orders(_id_, email, name, telNr, address, doorCode, postalCode date)
+		 * wp_orders(_id_, location, email, telNr, name, comments, date, done, uuid, status)
 		 *
-		 * wp_items (_name_, price,comment,main_item)
+		 * wp_items (_name_, list_order, price, comment, main_item, isActive)
 		 *
 		 * wp_entries(_order_, _item_, quantity)
 		 *   order -> wp_orders.id
@@ -40,15 +40,15 @@ class Pizzakit_Activator
 		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'orders') != $wpdb->prefix . 'orders') {
 			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'orders(
 			id INT UNSIGNED AUTO_INCREMENT,
+			location TEXT,
 			email VARCHAR(100),
-			name TEXT,
 			telNr VARCHAR(15),
-			address TEXT,
-			doorCode VARCHAR(10),
-			postalCode VARCHAR(10),
+			name TEXT,
 			comments TEXT,
 			date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			done BOOLEAN DEFAULT false,
+			uuid VARCHAR(32) NOT NULL,
+			status VARCHAR(30) NOT NULL,
 			PRIMARY KEY (id)
 		  )';
 
@@ -60,6 +60,7 @@ class Pizzakit_Activator
 		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'items') != $wpdb->prefix . 'items') {
 			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'items(
 			name VARCHAR(100) NOT NULL,
+			list_order INT UNSIGNED DEFAULT 99,
 			price INT UNSIGNED NOT NULL CHECK (price > 0),
 			comment TEXT,
 			main_item BOOLEAN DEFAULT FALSE,
@@ -84,20 +85,6 @@ class Pizzakit_Activator
 			dbDelta($sql);
 			add_option('entries_version', '1.0');
 		}
-
-		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'payment') != $wpdb->prefix . 'payment') {
-			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'payment(
-			orderID INT UNSIGNED REFERENCES ' . $wpdb->prefix . 'orders(id),
-			uuid VARCHAR(32) NOT NULL,
-			status VARCHAR(30) NOT NULL,
-			PRIMARY KEY(orderID)
-			)';
-
-			dbDelta($sql);
-			add_option('payment_version','2.1');
-		}
-
-		Pizzakit_Activator::add_admin_page();
 
 	}
 }

@@ -24,9 +24,25 @@ class Pizzakit_Blocks {
 				'script' => 'pizzakit-order-form-js'
 			)
 		);
+
+		wp_localize_script('pizzakit-order-form-js', 'WPURLS', array('siteurl' => get_option('siteurl') . '/'));
 	}
 	public static function render_order_form($attributes, $content) {
-		return '<div id="pizzakit-order-form"></div>';
+		global $wpdb;
+		$sql = "SELECT * FROM wp_items";
+		$items = $wpdb->get_results($sql);
+		$json = json_encode($items);
+
+		ob_start();
+		?>
+			<script>window.pizzakitItems = <?php echo($json); ?>;</script>
+			<div id="pizzakit-order-form">
+				<p class="has-text-align-center">
+					<strong>Pizzakit Order Formulär: Laddar...</strong>
+				</p>
+			</div>
+		<?php
+		return ob_get_clean();
 	}
 }
 

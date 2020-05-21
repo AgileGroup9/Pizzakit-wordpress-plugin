@@ -1,8 +1,8 @@
 import React from 'react';
 import Small_item from './Items';
 import PaymentConfirmation from './PaymentConfirmation';
-import ConSuccess from './ConSuccess'
-import ConFailed from './ConFailed'
+import ConSuccess from './ConSuccess';
+import ConFailed from './ConFailed';
 
 // Main Application
 // Renders a form and keeps track of items the client has selected
@@ -14,25 +14,21 @@ class OrderForm extends React.Component {
 		this.state = {};
 		this.is_email_valid = true;
 		this.is_telNr_valid = true;
-		this.is_postalCode_valid = true;
 
 		// Required for intercepting onChange events from <input>
 		this.handle_detail_update = this.handle_detail_update.bind(this);
-		// Create empty states, will be initialized by get_items()
-		this.items = [];
-		this.prices = new Map();
+
+		this.items = window.pizzakitItems;
+		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
 		this.state = {
-			cart : new Map(),
+			cart : new Map( this.items.map(x => [x['name'],0])),
+			location : '',
 			email : '',
-			name : '',
 			telNr : '',
-			address : '',
-			doorCode : '',
-			postalCode : '',
+			name : '',
 			comments : '',
 			isLoading: false
 		};
-		this.get_items();
 	}
 
 	handle_cart_update(item,delta){
@@ -58,28 +54,11 @@ class OrderForm extends React.Component {
 	is_fields_empty(){
 		const current_state = {... this.state};
 		for (const property in current_state){
-			if(property != 'cart' && property != 'comments' && property != 'doorCode' && current_state[property] === ''){
+			if(property != 'cart' && property != 'comments' && current_state[property] === ''){
 				return true;
 			}
 		}
 		return false;
-	}
-
-	async get_items(){
-		const response = await fetch('/index.php/wp-json/pizzakit/items');
-		this.items = await response.json();
-		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
-		console.log(this.prices);
-		this.setState({
-			cart : new Map( this.items.map(x => [x['name'],0])),
-			email : '',
-			name : '',
-			telNr : '',
-			address : '',
-			doorCode : '',
-			postalCode : '',
-			comments : '',
-		});
 	}
 
 	async handle_submit(target_addr) {
@@ -126,11 +105,6 @@ class OrderForm extends React.Component {
 		return re.exec(str.replace(/\s/g,'')) !== null;
 	}
 
-	validate_postalcode(str){
-		var re = /^[0-9]{5}$/;
-		return re.exec(str.replace(/\s/g,'')) !== null;
-	}
-
 	validate(name,value){
 		switch (name) {
 		case 'email':
@@ -141,8 +115,6 @@ class OrderForm extends React.Component {
 			this.is_telNr_valid = this.validate_tel(value);
 			console.log('Validating Tel: '+ this.is_telNr_valid);
 			break;
-		case 'postalCode':
-			this.is_postalCode_valid = this.validate_postalcode(value);
 		}
 	}
 
@@ -150,11 +122,9 @@ class OrderForm extends React.Component {
 		// Generates a string of (if any) validation errors that exist
 		const email_error = 'Ogiltig email address';
 		const tel_error = 'Ogiltig telefonnummer';
-		const postalCode_error = 'Ogiltig Postnummer';
 		var res = '';
 		res = this.is_email_valid ? res : res + email_error + '\n';
 		res = this.is_telNr_valid ? res : res + tel_error + '\n';
-		res = this.is_postalCode_valid ? res : res + postalCode_error + '\n';
 		return res;
 
 	}
@@ -206,7 +176,7 @@ class OrderForm extends React.Component {
 					</div>
 					<div>
 						<small className="form-text text-muted">
-							I alla pizzakit ingår Tomatsås San Marzano, Fior di Latte (mozzarella), en Basilikakruka, samt Instruktioner
+							I alla pizzakit ingår tomatsås San Marzano, fior di latte (mozzarella), en basilikakruka, samt instruktioner
 						</small>
 					</div>
 				</div>
@@ -229,23 +199,20 @@ class OrderForm extends React.Component {
 					</div>
 					<div className="form-group" id="tele">
 						<label htmlFor="tel_inpt">Telefonnummer<span>*</span>:</label>
-						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="070......."/>
+						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="07........"/>
 					</div>
 					<div className="form-group">
 						<label htmlFor="name_inpt">Namn<span>*</span>:</label>
-						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Glen Glensson"/>
+						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Namn Efternamn"/>
 					</div>
 					<div className="form-group" >
-						<label htmlFor="addr_inpt">Leveransaddress<span>*</span>:</label>
-						<input type="text" name="address" id="addr_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Pizzagatan 123"/>
-					</div>
-					<div className="form-group" >
-						<label htmlFor="post_nr_inpt">Postkod<span>*</span>:</label>
-						<input type="text" name="postalCode" id="post_nr_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_postalCode_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="123 45"/>
-					</div>
-					<div className="form-group" >
-						<label htmlFor="code_inpt">Portkod:</label>
-						<input type="text" name="doorCode" id="code_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="0001"/>
+						<label htmlFor="pickup_inpt">Uthämtningsställe<span>*</span>:</label>
+						<select name="location" id="pickup_inpt" onChange={this.handle_detail_update}>
+							<option value="" disabled selected>Välj:</option>
+							<option value="Vasastan">Vasastan</option>
+							<option value="Kungsholmen">Kungsholmen</option>
+							<option value="Östermalm">Östermalm</option>
+						</select>
 					</div>
 				</div>
 				<hr/>
