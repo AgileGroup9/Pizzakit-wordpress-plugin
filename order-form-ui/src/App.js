@@ -39,7 +39,9 @@ class App extends React.Component {
 	}
 
 	componentDidUpdate() {
-		this.ref.current.scrollIntoView();
+		if (this.ref.current.getBoundingClientRect().top < 0) {
+			this.ref.current.scrollIntoView();
+		}
 	}
 }
 
