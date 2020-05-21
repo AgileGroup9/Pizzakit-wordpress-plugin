@@ -33,9 +33,23 @@ class Pizzakit_Blocks {
 		$items = $wpdb->get_results($sql);
 		$json = json_encode($items);
 
+		$times = array(
+			'start' => array(
+				'weekday' => get_site_option('pizzakit_time_start_weekday'),
+				'hours' => get_site_option('pizzakit_time_start_hours')
+			),
+			'end' => array(
+				'weekday' => get_site_option('pizzakit_time_end_weekday'),
+				'hours' => get_site_option('pizzakit_time_end_hours')
+			)
+		);
+
 		ob_start();
 		?>
-			<script>window.pizzakitItems = <?php echo($json); ?>;</script>
+			<script>
+				window.pizzakitItems = <?php echo($json); ?>;
+				window.pizzakitTimes = <?php echo(json_encode($times)); ?>;
+			</script>
 			<div id="pizzakit-order-form">
 				<p class="has-text-align-center">
 					<strong>Pizzakit Order Formulär: Laddar...</strong>

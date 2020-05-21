@@ -137,7 +137,42 @@ class OrderForm extends React.Component {
 		return JSON.stringify(json_obj);
 	}
 
+	/**
+	 * Returns true if the current time and date is outside of the "open" time
+	 * frame.
+	 */
+	outsideTimeFrame() {
+		const date = new Date();
+		const weekday = date.getDay() || 7; // JavaScript days are Sun-Sat 0-6 but we want Mon-Sun 1-7.
+		const hour = date.getHours();
+
+		if (weekday < window.pizzakitTimes.start.weekday) {
+			return true;
+		}
+		else if (weekday == window.pizzakitTimes.start.weekday) {
+			if (hour < window.pizzakitTimes.start.hours) {
+				return true;
+			}
+		}
+		else {
+			if (window.pizzakitTimes.end.weekday < weekday) {
+				return true;
+			}
+			else if (window.pizzakitTimes.end.weekday == weekday) {
+				if (window.pizzakitTimes.end.hours <= hour) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	render() {
+		if (this.outsideTimeFrame()) {
+			return <p>Inga beställningar emotages vid denna tid.</p>;
+		}
+
 		// Render items dynamicaly
 		const extras = this.items.filter(x => x["main_item"] == false);
 		const extra_list = extras.map(x => {
