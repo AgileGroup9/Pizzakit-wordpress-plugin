@@ -18,7 +18,7 @@ class OrderForm extends React.Component {
 		// Required for intercepting onChange events from <input>
 		this.handle_detail_update = this.handle_detail_update.bind(this);
 
-		this.items = window.pizzakitItems;
+		this.items = window.pizzakitItems.sort((a, b) => a.list_order - b.list_order);
 		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
 		this.state = {
 			cart : new Map( this.items.map(x => [x['name'],0])),
