@@ -3,6 +3,7 @@ import Small_item from './Items';
 import PaymentConfirmation from './PaymentConfirmation';
 import ConSuccess from './ConSuccess';
 import ConFailed from './ConFailed';
+import Policy from './Policy';
 
 // Main Application
 // Renders a form and keeps track of items the client has selected
@@ -62,8 +63,13 @@ class OrderForm extends React.Component {
 	}
 
 	async handle_submit(target_addr) {
+		console.log(target_addr);
 		if(this.is_fields_empty()){
-			alert('Var snäll och fyll i alla obligatoriska fält');
+			alert('Vänligen fyll i alla obligatoriska fält');
+			return;
+		}
+		if(!document.getElementById("policy").checked) {
+			alert('Vänligen godkänn köpvillkoren')
 			return;
 		}
 		const validation_results = this.check_validation();
@@ -135,6 +141,10 @@ class OrderForm extends React.Component {
 		json_obj.cart = cart;
 		json_obj.pizzakitFormSubmission = true;
 		return JSON.stringify(json_obj);
+	}
+
+	show_policy() {
+		this.props.navigateTo(Policy);
 	}
 
 	render() {
@@ -213,6 +223,10 @@ class OrderForm extends React.Component {
 							<option value="Kungsholmen">Kungsholmen</option>
 							<option value="Östermalm">Östermalm</option>
 						</select>
+					</div>
+					<div className="form-group">
+						<input type="checkbox" id="policy" name="policy" value="TRUE"></input>
+						<label htmlFor="policy">Jag godkänner <a onClick={() => this.show_policy()}>köpvillkoren</a><span>*</span>:</label>
 					</div>
 				</div>
 				<hr/>
