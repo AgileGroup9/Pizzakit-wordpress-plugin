@@ -62,13 +62,11 @@ class Pizzakit
 	// returns true if the incoming order has negative quantities or is empty
 	public static function is_empty($data)
 	{
-		foreach ($data["cart"] as $_item) {
-			if ($_item[1] < 0)
-				return (true);
-		}
 		$sum = 0;
 		foreach ($data["cart"] as $item) {
 			$sum = $sum + $item[1];
+			if ($item[1] < 0)
+				return (true);
 		}
 		if ($sum <= 0) {
 			return true;
