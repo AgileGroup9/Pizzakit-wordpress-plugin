@@ -498,6 +498,7 @@ elseif ($_POST["page"] == "all-orders") {
                                   <b>Datum:</b> ' . $o->date . '
                                   <b>Mail:</b> ' . $o->email . '
                                   <b>Tel. nr.:</b> ' . $o->telNr . '
+                                  <b>Status:</b> ' . ($o->status == 'PAID' ? 'Betald' : 'Obetald') . '
                               </tstyle>
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
@@ -841,13 +842,14 @@ else {
         <div class="container-fluid col-sm-12 col-md-6 col-lg-4">
           <ul class="list-group">
             <!-- top section -->
-            <li class="list-group-item" style="min-height: 90px">
+            <li class="list-group-item" style="min-height: 110px">
               <div>
                 <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="font-size: 22px">
                   <b>Order ID: </b> ' . $o->id . '
                     <p style="font-size: 14px">
                       <b> Upphämtas: </b>' . $o->location . '  
                       <br><b> Datum: </b>' . $o->date . '
+                      <br><b> Status: </b>' . ($o->status == 'PAID' ? 'Betald' : 'Obetald') . '
                     </p>
                 </div>
                 <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
