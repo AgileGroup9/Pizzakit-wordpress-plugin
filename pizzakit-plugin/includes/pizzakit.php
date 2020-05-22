@@ -43,24 +43,66 @@ class Pizzakit
 		// In this the example it's "pizzakitFormSubmission".
 		if (isset($data["pizzakitFormSubmission"])) {
 
-			//if there are negative item quantities, abort mission
-			if (Pizzakit::is_empty($data)) {
-				wp_send_json(array('token' => '-1'));
-			} else { // else insert the stuff and create payment
+			$validity = Pizzakit::order_validity($data);
+			if ($validity > 0) {
 				$order = Pizzakit::insert_into_tables($data);
 				$response = Pizzakit::create_payment($order);
-
 				if ($response > 0) {
 					wp_send_json(array('token' => strval($order[0])));
 				} else {
 					wp_send_json(array('token' => '-1'));
 				}
+			} else {
+				wp_send_json(array('token' => strval($validity)));
 			}
 		}
 	}
+	// checks the validity of an order concerning on a few things..
+	private static function order_validity($data)
+	{
+		if (Pizzakit::is_empty($data)) {
+			return '-2';
+		}
+		if (!Pizzakit::is_valid_number($data['telNr'])) {
+			return '-3';
+		}
+		if (Pizzakit::contains_only_toppings($data['cart'])) {
+			return '-4';
+		}
+		return '1';
+	}
+
+	// checks if an order only contains toppings
+	private static function contains_only_toppings($cart)
+	{
+		global $wpdb;
+		$sql = "SELECT * FROM " . $wpdb->prefix . "items";
+		$items = $wpdb->get_results($sql, $output = ARRAY_A);
+
+		foreach ($cart as $cart_item) {
+			foreach ($items as $menu_item) {
+				if ($menu_item['name'] == $cart_item[0]) {
+					if ($menu_item['main_item']) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	//checks if phone number is in valid form (starting with a + or 0)
+	private static function is_valid_number($tel_nr)
+	{
+		if ($tel_nr[0] == '0' || $tel_nr[0] == '+' || $tel_nr[0] == '4') {
+			return true;
+		}
+		return false;
+	}
+
 
 	// returns true if the incoming order has negative quantities or is empty
-	public static function is_empty($data)
+	private static function is_empty($data)
 	{
 		$sum = 0;
 		foreach ($data["cart"] as $item) {
@@ -89,7 +131,7 @@ class Pizzakit
 		# No side effects
 		global $wpdb;
 		$table = $wpdb->prefix . 'orders';
-		$query = $wpdb->prepare('SELECT status FROM '.$table.' WHERE id = %d',$data->get_url_params()['id']);
+		$query = $wpdb->prepare('SELECT status FROM ' . $table . ' WHERE id = %d', $data->get_url_params()['id']);
 		$res = $wpdb->get_var($query);
 		if ($res != NULL) {
 			wp_send_json(array("payment" => $res));
@@ -102,7 +144,7 @@ class Pizzakit
 	{
 		global $wpdb;
 		$table = $wpdb->prefix . 'orders';
-		$query = $wpdb->prepare('SELECT uuid FROM '.$table.' WHERE id = %d',$order_id);
+		$query = $wpdb->prepare('SELECT uuid FROM ' . $table . ' WHERE id = %d', $order_id);
 		$res = $wpdb->get_var($query);
 		trigger_error("Checking: " . $uuid . " === " . $res . " -> " . strcmp($res, $uuid));
 		return (strcmp($res, $uuid) == 0);
@@ -122,8 +164,8 @@ class Pizzakit
 					if ($resp_json['status'] == "PAID") {
 						global $wpdb;
 						$table = $wpdb->prefix . 'orders';
-						$res = $wpdb->update($table,array( 'status' => $resp_json['status']),array('id' => $_data->get_url_params()['id']),array('%s'),array('%d'));
-						if(!$res){
+						$res = $wpdb->update($table, array('status' => $resp_json['status']), array('id' => $_data->get_url_params()['id']), array('%s'), array('%d'));
+						if (!$res) {
 							trigger_error("Pizzakit: error creating entry in orders");
 						}
 					}
@@ -143,12 +185,12 @@ class Pizzakit
 		if ($order_total < 1) {
 			global $wpdb;
 			$table = $wpdb->prefix . 'orders';
-			$data = array('uuid' => '-2','status'=>'INVALID_TOTAL');
+			$data = array('uuid' => '-2', 'status' => 'INVALID_TOTAL');
 			$where = array('id' => $order_id);
-			$format = array('%s','%s');
+			$format = array('%s', '%s');
 			$where_format = array('%d');
-			$wpdb->update($table,$data,$where,$format,$where_format);
-			return(-1);
+			$wpdb->update($table, $data, $where, $format, $where_format);
+			return (-1);
 		}
 
 		$res = Pizzakit::create_swish_payment($order_id, $order_total, $tel_nr);
@@ -156,12 +198,12 @@ class Pizzakit
 		if ($res['response'] !== NULL) {
 			global $wpdb;
 			$table = $wpdb->prefix . 'orders';
-			$data = array('uuid' => $res['uuid'],'status'=>'PENDING');
+			$data = array('uuid' => $res['uuid'], 'status' => 'PENDING');
 			$where = array('id' => $order_id);
-			$format = array('%s','%s');
+			$format = array('%s', '%s');
 			$where_format = array('%d');
-			$wpdb->update($table,$data,$where,$format,$where_format);
-			return($order_id);
+			$wpdb->update($table, $data, $where, $format, $where_format);
+			return ($order_id);
 		}
 		return (-1);
 	}
@@ -263,7 +305,7 @@ class Pizzakit
 
 		global $wpdb;
 		$sql = "SELECT * FROM " . $wpdb->prefix . "items";
-		$items = $wpdb->get_results($sql,$output=ARRAY_N);
+		$items = $wpdb->get_results($sql, $output = ARRAY_N);
 
 		//insert into orders, using insert() function to get it prepared. Returns id of last inserted order.
 		$_table = $wpdb->prefix . 'orders';
