@@ -563,6 +563,7 @@ elseif ($_POST["page"] == "all-orders") {
                                   <b>Datum:</b> ' . $o->date . '
                                   <b>Mail:</b> ' . $o->email . '
                                   <b>Tel. nr.:</b> ' . $o->telNr . '
+                                  <b>Status:</b> ' . ($o->status == 'PAID' ? 'Betald' : 'Obetald') . '
                               </tstyle>
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
