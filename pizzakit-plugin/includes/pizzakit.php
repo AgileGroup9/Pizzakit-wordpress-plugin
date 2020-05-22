@@ -45,9 +45,9 @@ class Pizzakit
 
 			//if there are negative item quantities, abort mission
 			if (Pizzakit::is_empty($data)) {
-				wp_send_json(array('token' => '-1'));
+				wp_send_json(array('token' => '-2'));
 			} else if (Pizzakit::outsideTimeFrame()) {
-				wp_send_json(array('token' => '-1'));
+				wp_send_json(array('token' => '-3'));
 			} else { // else insert the stuff and create payment
 				$order = Pizzakit::insert_into_tables($data);
 				$response = Pizzakit::create_payment($order);
@@ -315,9 +315,12 @@ class Pizzakit
 
 		//insert into entries
 		foreach ($_data["cart"] as $_item) {
+			if($_item[1] == 0){
+				continue;
+			}
 			foreach ($items as $i) {
 				if ($i[0] == $_item[0]) {
-					$total_cost += $i[1] * $_item[1];
+					$total_cost += $i[2] * $_item[1];
 				}
 			}
 			$_table = $wpdb->prefix . 'entries';
