@@ -195,6 +195,12 @@ if (isset($_POST["update-end-time"])) {
   update_site_option('pizzakit_time_end_hours', $_POST["hours"]);
 }
 
+// Updates the settings for pickup day.
+if (isset($_POST["update-pickup-time"])) {
+  update_site_option('pizzakit_time_pickup_start_day', $_POST["start"]);
+  update_site_option('pizzakit_time_pickup_end_day', $_POST["end"]);
+}
+
 ?>
 
 <!-- import bootstrap css -->
@@ -250,50 +256,73 @@ if ($_POST["page"] == "edit-menu") {
   ?>
     <div class="container">
       <h3 style="padding-left:200px">Beställningsfönster:</h3>
-        <div class="container-fluid">
-          <div class="row">
-            <div class="col-sm-4">
-              <form class="form-inline" action="." method="post">
-                <h4>Starttid:</h4>
-                <div class="form-group">
-                  <label for="start-weekday">Dag:</label>
-                  <select id="start-weekday" class="custom-select" name="weekday">
-                    <?php weekdayOptions(get_site_option('pizzakit_time_start_weekday')); ?>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="start-hours">Timme:</label>
-                  <select id="start-hours" class="custom-select" name="hours">
-                    <?php hoursOptions(get_site_option('pizzakit_time_start_hours')); ?>
-                  </select>
-                </div>
-                <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn-xs btn-primary" name="update-start-time" value="Uppdatera"/>
-              </form>
-            </div>
-            <div class="col-sm-4">
-              <form class="form-inline" action="." method="post">
-                <h4>Sluttid:</h4>
-                <div class="form-group">
-                  <label for="end-weekday">Dag:</label>
-                  <select id="end-weekday" class="custom-select" name="weekday">
-                    <?php weekdayOptions(get_site_option('pizzakit_time_end_weekday')); ?>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="end-hours">Timme:</label>
-                  <select id="end-hours" class="custom-select" name="hours">
-                    <?php hoursOptions(get_site_option('pizzakit_time_end_hours')); ?>
-                  </select>
-                </div>
-                <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn-xs btn-primary" name="update-end-time" value="Uppdatera"/>
-              </form>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-4">
+            <form class="form-inline" action="." method="post">
+              <h4>Starttid:</h4>
+              <div class="form-group">
+                <label for="start-weekday">Dag:</label>
+                <select id="start-weekday" class="custom-select" name="weekday">
+                  <?php weekdayOptions(get_site_option('pizzakit_time_start_weekday')); ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="start-hours">Timme:</label>
+                <select id="start-hours" class="custom-select" name="hours">
+                  <?php hoursOptions(get_site_option('pizzakit_time_start_hours')); ?>
+                </select>
+              </div>
+              <input type="hidden" name="page" value="edit-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-start-time" value="Uppdatera" />
+            </form>
+          </div>
+          <div class="col-sm-4">
+            <form class="form-inline" action="." method="post">
+              <h4>Sluttid:</h4>
+              <div class="form-group">
+                <label for="end-weekday">Dag:</label>
+                <select id="end-weekday" class="custom-select" name="weekday">
+                  <?php weekdayOptions(get_site_option('pizzakit_time_end_weekday')); ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="end-hours">Timme:</label>
+                <select id="end-hours" class="custom-select" name="hours">
+                  <?php hoursOptions(get_site_option('pizzakit_time_end_hours')); ?>
+                </select>
+              </div>
+              <input type="hidden" name="page" value="edit-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-end-time" value="Uppdatera" />
+            </form>
+          </div>
+        </div>
+      </div>
+      <h3 style="padding-left:200px">Upphämntningsdag:</h3>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-4">
+            <form class="form-inline" action="." method="post">
+              <div class="form-group">
+                <label for="pickup-start-day">Från:</label>
+                <select id="pickup-start-day" class="custom-select" name="start">
+                  <?php weekdayOptions(get_site_option('pizzakit_time_pickup_start_day')); ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="pickup-end-day">Till:</label>
+                <select id="pickup-end-day" class="custom-select" name="end">
+                  <?php weekdayOptions(get_site_option('pizzakit_time_pickup_end_day')); ?>
+                </select>
+              </div>
+              <input type="hidden" name="page" value="edit-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-pickup-time" value="Uppdatera" />
+            </form>
           </div>
         </div>
       </div>
     </div>
-    <hr/>
+    <hr />
   <?php
 
   $sql = "SELECT * FROM " . $wpdb->prefix . "items ORDER BY list_order ASC";

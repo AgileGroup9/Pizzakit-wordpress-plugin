@@ -41,6 +41,10 @@ class Pizzakit_Blocks {
 			'end' => array(
 				'weekday' => get_site_option('pizzakit_time_end_weekday'),
 				'hours' => get_site_option('pizzakit_time_end_hours')
+			),
+			'pickup' => array(
+				'startDay' => get_site_option('pizzakit_time_pickup_start_day'),
+				'endDay' => get_site_option('pizzakit_time_pickup_end_day')
 			)
 		);
 

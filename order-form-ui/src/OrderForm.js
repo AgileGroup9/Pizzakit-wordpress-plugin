@@ -262,6 +262,7 @@ class OrderForm extends React.Component {
 		const weekdays = [ 'måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag' ];
 		const startText = weekdays[window.pizzakitTimes.start.weekday - 1] + (window.pizzakitTimes.start.hours != 0 ? ` ${window.pizzakitTimes.start.hours}:00` : '');
 		const endText = weekdays[window.pizzakitTimes.end.weekday - 1] + (window.pizzakitTimes.end.hours != 24 ? ` ${window.pizzakitTimes.end.hours}:00` : '');
+		const pickupText = weekdays[window.pizzakitTimes.pickup.startDay - 1] + (window.pizzakitTimes.pickup.startDay != window.pizzakitTimes.pickup.endDay ? ' till ' + weekdays[window.pizzakitTimes.pickup.endDay - 1] : '');
 
 		let content;
 		if (this.outsideTimeFrame()) {
@@ -279,7 +280,7 @@ class OrderForm extends React.Component {
 
 		return (
 			<>
-				<p className="has-text-align-center">Vi tar emot beställningar mellan {startText} och {endText} för upphämtning på fredagar!</p>
+				<p className="has-text-align-center">Vi tar emot beställningar mellan {startText} och {endText} för upphämtning på {pickupText}!</p>
 				{content}
 			</>
 		);
