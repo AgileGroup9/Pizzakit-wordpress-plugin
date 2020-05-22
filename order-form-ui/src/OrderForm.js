@@ -91,7 +91,7 @@ class OrderForm extends React.Component {
 		if (response.ok) {
 			const json = await response.json();
 			
-			if (json.token != null && json.token !== '-1') {
+			if (json.token != null && parseInt(json.token) > 0) {
 				this.props.navigateTo(PaymentConfirmation, { token: json.token });
 			}
 			else {
