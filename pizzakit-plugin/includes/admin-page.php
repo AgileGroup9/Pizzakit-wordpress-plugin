@@ -443,9 +443,9 @@ elseif ($_POST["page"] == "all-orders") {
         </nav>';
 
   if (isset($_POST["order-search"])) {
-    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE " . $wpdb->prefix . "orders.name LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.id LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.email LIKE '%" . $_POST["order-search"] . "%'";
+    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE " . $wpdb->prefix . "orders.name LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.id LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.email LIKE '%" . $_POST["order-search"] . "%' AND status='PAID'";
   } else {
-    $sql = "SELECT * FROM " . $wpdb->prefix . "orders";
+    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE status='PAID'";
   }
   $orders = $wpdb->get_results($sql);
 
@@ -672,7 +672,7 @@ elseif ($_POST["page"] == "export") {
                      <th width="10%">UUID</th>
                      <th width="10%">Status</th>
                 </tr>';
-  $query = 'SELECT * FROM ' . $wpdb->prefix . 'orders';
+  $query = 'SELECT * FROM ' . $wpdb->prefix . "orders WHERE status='PAID'";
   $rows = $wpdb->get_results($query);
   foreach ($rows as $row) {
     echo '
@@ -806,7 +806,7 @@ else {
     </nav>';
 
   // Only load if there are > 0 orders in wp-orders
-  if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders WHERE done = 0") > 0) {
+  if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders WHERE done = 0 AND status='PAID'") > 0) {
     // Get rows, and number of rows for table width. One redundant query here that could be removed
     $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 AND status = 'PAID' GROUP BY item");
     $rows = $wpdb->get_results("SELECT item, SUM(quantity) AS total_quantity FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 AND status = 'PAID' GROUP BY item");
@@ -834,7 +834,7 @@ else {
     ';
   }
 
-  $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE done = FALSE";
+  $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE done = FALSE AND status='PAID'";
   $orders = $wpdb->get_results($sql);
 
   if (!empty($orders)) {
