@@ -63,11 +63,8 @@ class Pizzakit
 		if (Pizzakit::is_empty($data)) {
 			return '-2';
 		}
-		if (!Pizzakit::is_valid_number($data['telNr'])) {
-			return '-3';
-		}
 		if (Pizzakit::contains_only_toppings($data['cart'])) {
-			return '-4';
+			return '-3';
 		}
 		return '1';
 	}
@@ -90,16 +87,6 @@ class Pizzakit
 		}
 		return true;
 	}
-
-	//checks if phone number is in valid form (starting with a + or 0)
-	private static function is_valid_number($tel_nr)
-	{
-		if ($tel_nr[0] == '0' || $tel_nr[0] == '+' || $tel_nr[0] == '4') {
-			return true;
-		}
-		return false;
-	}
-
 
 	// returns true if the incoming order has negative quantities or is empty
 	private static function is_empty($data)
