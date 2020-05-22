@@ -197,6 +197,7 @@ class Pizzakit
 
 	private static function create_swish_payment($order_id, $cost, $tel_nr)
 	{
+		$tel_nr = Pizzakit::pretty_nr($tel_nr);
 		$random_uuid = str_replace("-", "", wp_generate_uuid4());
 		$endpoint = "/v2/paymentrequests/" . $random_uuid;
 		$method = CURLOPT_PUT;
@@ -210,6 +211,20 @@ class Pizzakit
 			"message" => "Menomale pizzakit"
 		);
 		return (array('uuid' => $random_uuid, 'response' => Pizzakit::communicate_with_swish($endpoint, $method, $data)));
+	}
+
+	private static function pretty_nr($tel_nr)
+	{
+		if ($tel_nr[0] == '+') {
+			return substr($tel_nr, 1);
+		}
+		if (substr($tel_nr, 0, 2) == '00') {
+			return substr($tel_nr, 2);
+		}
+		if (substr($tel_nr, 0, 2) == '07') {
+			return '46' . substr($tel_nr, 1);
+		}
+		return $tel_nr;
 	}
 
 	private static function verify_swish_payment($swish_id)
