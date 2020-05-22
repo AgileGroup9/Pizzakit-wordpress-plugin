@@ -443,9 +443,9 @@ elseif ($_POST["page"] == "all-orders") {
         </nav>';
 
   if (isset($_POST["order-search"])) {
-    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE " . $wpdb->prefix . "orders.name LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.id LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.email LIKE '%" . $_POST["order-search"] . "%' AND status='PAID'";
+    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE " . $wpdb->prefix . "orders.name LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.id LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.email LIKE '%" . $_POST["order-search"] . "%'";
   } else {
-    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE status='PAID'";
+    $sql = "SELECT * FROM " . $wpdb->prefix . "orders";
   }
   $orders = $wpdb->get_results($sql);
 
@@ -498,6 +498,7 @@ elseif ($_POST["page"] == "all-orders") {
                                   <b>Datum:</b> ' . $o->date . '
                                   <b>Mail:</b> ' . $o->email . '
                                   <b>Tel. nr.:</b> ' . $o->telNr . '
+                                  <b>Status:</b> ' . ($o->status == 'PAID' ? 'Betald' : 'Obetald') . '
                               </tstyle>
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
@@ -562,6 +563,7 @@ elseif ($_POST["page"] == "all-orders") {
                                   <b>Datum:</b> ' . $o->date . '
                                   <b>Mail:</b> ' . $o->email . '
                                   <b>Tel. nr.:</b> ' . $o->telNr . '
+                                  <b>Status:</b> ' . ($o->status == 'PAID' ? 'Betald' : 'Obetald') . '
                               </tstyle>
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
