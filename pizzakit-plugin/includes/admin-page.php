@@ -808,8 +808,8 @@ else {
   // Only load if there are > 0 orders in wp-orders
   if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders WHERE done = 0") > 0) {
     // Get rows, and number of rows for table width. One redundant query here that could be removed
-    $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 GROUP BY item");
-    $rows = $wpdb->get_results("SELECT item, SUM(quantity) AS total_quantity FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 GROUP BY item");
+    $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 AND status = 'PAID' GROUP BY item");
+    $rows = $wpdb->get_results("SELECT item, SUM(quantity) AS total_quantity FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 AND status = 'PAID' GROUP BY item");
 
     // Outputs table that generates dynamically depending on amount of items currently in DB
     echo '
