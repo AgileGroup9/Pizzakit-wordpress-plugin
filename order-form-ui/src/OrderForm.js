@@ -145,11 +145,42 @@ class OrderForm extends React.Component {
 		return JSON.stringify(json_obj);
 	}
 
+	/**
+	 * Returns true if the current time and date is outside of the "open" time
+	 * frame.
+	 */
+	outsideTimeFrame() {
+		const date = new Date();
+		const weekday = date.getDay() || 7; // JavaScript days are Sun-Sat 0-6 but we want Mon-Sun 1-7.
+		const hour = date.getHours();
+
+		if (weekday < window.pizzakitTimes.start.weekday) {
+			return true;
+		}
+		else if (weekday == window.pizzakitTimes.start.weekday) {
+			if (hour < window.pizzakitTimes.start.hours) {
+				return true;
+			}
+		}
+		else {
+			if (window.pizzakitTimes.end.weekday < weekday) {
+				return true;
+			}
+			else if (window.pizzakitTimes.end.weekday == weekday) {
+				if (window.pizzakitTimes.end.hours <= hour) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	show_policy() {
 		this.props.navigateTo(Policy, { state: this.state, post_address: this.post_address });
 	}
 
-	render() {
+	form() {
 		// Render items dynamicaly
 		const extras = this.items.filter(x => x["main_item"] == false);
 		const extra_list = extras.map(x => {
@@ -240,6 +271,34 @@ class OrderForm extends React.Component {
 					</button>
 				</div>
 			</p>
+		);
+	}
+
+	render() {
+		const weekdays = [ 'måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag' ];
+		const startText = weekdays[window.pizzakitTimes.start.weekday - 1] + (window.pizzakitTimes.start.hours != 0 ? ` ${window.pizzakitTimes.start.hours}:00` : '');
+		const endText = weekdays[window.pizzakitTimes.end.weekday - 1] + (window.pizzakitTimes.end.hours != 24 ? ` ${window.pizzakitTimes.end.hours}:00` : '');
+		const pickupText = weekdays[window.pizzakitTimes.pickup.startDay - 1] + (window.pizzakitTimes.pickup.startDay != window.pizzakitTimes.pickup.endDay ? ' till ' + weekdays[window.pizzakitTimes.pickup.endDay - 1] : '');
+
+		let content;
+		if (this.outsideTimeFrame()) {
+			content = (
+				<p className="has-text-align-center">
+					<div>
+						<h6>Vi tar inte emot några beställningar just nu</h6>
+					</div>
+				</p>
+			);
+		}
+		else {
+			content = this.form();
+		}
+
+		return (
+			<>
+				<p className="has-text-align-center">Vi tar emot beställningar mellan {startText} och {endText} för upphämtning på {pickupText}!</p>
+				{content}
+			</>
 		);
 	}
 }

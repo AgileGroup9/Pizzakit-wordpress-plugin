@@ -86,5 +86,13 @@ class Pizzakit_Activator
 			add_option('entries_version', '1.0');
 		}
 
+
+		// adding settings
+		add_site_option('pizzakit_time_start_weekday', 1);
+		add_site_option('pizzakit_time_start_hours', 0);
+		add_site_option('pizzakit_time_end_weekday', 4);
+		add_site_option('pizzakit_time_end_hours', 24);
+		add_site_option('pizzakit_time_pickup_start_day', 5);
+		add_site_option('pizzakit_time_pickup_end_day', 5);
 	}
 }

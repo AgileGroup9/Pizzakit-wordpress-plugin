@@ -46,6 +46,8 @@ class Pizzakit
 			//if there are negative item quantities, abort mission
 			if (Pizzakit::is_empty($data)) {
 				wp_send_json(array('token' => '-2'));
+			} else if (Pizzakit::outsideTimeFrame()) {
+				wp_send_json(array('token' => '-3'));
 			} else { // else insert the stuff and create payment
 				$order = Pizzakit::insert_into_tables($data);
 				$response = Pizzakit::create_payment($order);
@@ -74,6 +76,39 @@ class Pizzakit
 		return (false);
 	}
 
+	/**
+	 * Returns true if the current time and date is outside of the "open" time
+	 * frame.
+	 */
+	public static function outsideTimeFrame() {
+		$weekday = date('N');
+		$hour = date('G');
+
+		$startWeekday = get_site_option('pizzakit_time_start_day');
+		if ($weekday < $startWeekday) {
+			return true;
+		}
+		else if ($weekday == $startWeekday) {
+			$startHours = get_site_option('pizzakit_time_start_hours');
+			if ($hour < $startHours) {
+				return true;
+			}
+		}
+		else {
+			$endWeekday = get_site_option('pizzakit_time_end_day');
+			if ($endWeekday < $weekday) {
+				return true;
+			}
+			else if ($endWeekday == $weekday) {
+				$endHours = get_site_option('pizzakit_time_end_hours');
+				if ($endHours <= $hour) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 
 	public static function item_query_handler($data)
 	{
