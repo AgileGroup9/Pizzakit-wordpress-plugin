@@ -255,12 +255,12 @@ if ($_POST["page"] == "edit-menu") {
 
   ?>
     <div class="container">
-      <h3 style="padding-left:200px">Beställningsfönster:</h3>
+      <h3 align="center">Beställningsfönster:</h3>
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-4">
             <form class="form-inline" action="." method="post">
-              <h4>Starttid:</h4>
+              <h4>Orderstart:</h4>
               <div class="form-group">
                 <label for="start-weekday">Dag:</label>
                 <select id="start-weekday" class="custom-select" name="weekday">
@@ -279,7 +279,7 @@ if ($_POST["page"] == "edit-menu") {
           </div>
           <div class="col-sm-4">
             <form class="form-inline" action="." method="post">
-              <h4>Sluttid:</h4>
+              <h4>Orderstopp:</h4>
               <div class="form-group">
                 <label for="end-weekday">Dag:</label>
                 <select id="end-weekday" class="custom-select" name="weekday">
@@ -296,13 +296,9 @@ if ($_POST["page"] == "edit-menu") {
               <input type="submit" class="btn-xs btn-primary" name="update-end-time" value="Uppdatera" />
             </form>
           </div>
-        </div>
-      </div>
-      <h3 style="padding-left:200px">Upphämntningsdag:</h3>
-      <div class="container-fluid">
-        <div class="row">
           <div class="col-sm-4">
             <form class="form-inline" action="." method="post">
+            <h4>Upphämntningsdag:</h4>
               <div class="form-group">
                 <label for="pickup-start-day">Från:</label>
                 <select id="pickup-start-day" class="custom-select" name="start">
