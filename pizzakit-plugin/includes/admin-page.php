@@ -2,6 +2,11 @@
 /* Template Name: Admin page */
 global $wpdb;
 
+if (post_password_required()) {
+	echo(get_the_password_form());
+	die();
+}
+
 if (isset($_POST["done"])) {
   $table = $wpdb->prefix . 'orders';
   $data = array("done" => TRUE);
