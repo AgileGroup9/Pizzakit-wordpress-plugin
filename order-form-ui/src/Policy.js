@@ -4,7 +4,7 @@ class Policy extends React.Component {
 	
 	render() {
 		return(
-			<div className="policy-page">
+			<p className="policy-page">
 				<h2>Köpvillkor</h2>
 				    <p>PRISER OCH BETALNING</p><p>
 
@@ -48,7 +48,7 @@ class Policy extends React.Component {
 
                     Se även konsumentverket och distansavtalslagen, samt EU:s gemensamma
                     tvistlösningssida http://ec.europa.eu/odr.</p>
-			</div>
+			</p>
 		);
 	}
 }
