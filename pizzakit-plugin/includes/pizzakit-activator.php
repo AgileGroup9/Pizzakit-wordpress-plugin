@@ -86,5 +86,21 @@ class Pizzakit_Activator
 			add_option('entries_version', '1.0');
 		}
 
+		// WP_PASSWORDS
+		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'passwords') != $wpdb->prefix . 'passwords') {
+			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'passwords(
+			password VARCHAR(100) NOT NULL,
+			PRIMARY KEY(password)
+			)';
+
+			dbDelta($sql);
+			add_option('passwords_version', '1.0');
+		}
+
+		$table = $wpdb->prefix . 'passwords';
+		$data_arr = array('password' => '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8');
+		$format = array('%s');
+		$wpdb->insert($table, $data_arr, $format);
+
 	}
 }
