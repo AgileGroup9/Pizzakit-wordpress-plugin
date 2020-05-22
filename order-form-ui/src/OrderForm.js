@@ -21,7 +21,7 @@ class OrderForm extends React.Component {
 
 		this.items = window.pizzakitItems;
 		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
-		this.state = {
+		this.state = props.initState || {
 			cart : new Map( this.items.map(x => [x['name'],0])),
 			location : '',
 			email : '',
@@ -143,7 +143,7 @@ class OrderForm extends React.Component {
 	}
 
 	show_policy() {
-		this.props.navigateTo(Policy);
+		this.props.navigateTo(Policy, { state: this.state, post_address: this.post_address });
 	}
 
 	render() {
@@ -204,23 +204,23 @@ class OrderForm extends React.Component {
 				<div id="detail-form">
 					<div className="form-group" id="email">
 						<label htmlFor="email_inpt">Email<span>*</span>:</label>
-						<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')} placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+"/>
+						<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')} placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+" value={this.state.email}/>
 					</div>
 					<div className="form-group" id="tele">
 						<label htmlFor="tel_inpt">Telefonnummer<span>*</span>:</label>
-						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="07........"/>
+						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="07........" value={this.state.telNr}/>
 					</div>
 					<div className="form-group">
 						<label htmlFor="name_inpt">Namn<span>*</span>:</label>
-						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Namn Efternamn"/>
+						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Namn Efternamn" value={this.state.name}/>
 					</div>
 					<div className="form-group" >
 						<label htmlFor="pickup_inpt">Uthämtningsställe<span>*</span>:</label>
 						<select name="location" id="pickup_inpt" onChange={this.handle_detail_update}>
-							<option value="" disabled selected>Välj:</option>
-							<option value="Vasastan">Vasastan</option>
-							<option value="Kungsholmen">Kungsholmen</option>
-							<option value="Östermalm">Östermalm</option>
+							<option value="" disabled selected={this.state.location == ''}>Välj:</option>
+							<option value="Vasastan" selected={this.state.location == 'Vasastan'}>Vasastan</option>
+							<option value="Kungsholmen" selected={this.state.location == 'Kungsholmen'}>Kungsholmen</option>
+							<option value="Östermalm" selected={this.state.location == 'Östermalm'}>Östermalm</option>
 						</select>
 					</div>
 					<div className="form-group">

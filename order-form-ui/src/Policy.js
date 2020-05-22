@@ -1,11 +1,16 @@
 import React from 'react';
+import OrderForm from "./OrderForm";
 
 class Policy extends React.Component {
+	goBack() {
+		this.props.navigateTo(OrderForm, { initState: this.props.state, post_address: this.props.post_address });
+	}
 	
 	render() {
 		return(
-			<div className="policy-page">
+			<p className="policy-page">
 				<h2>Köpvillkor</h2>
+					<a onClick={() => this.goBack()}>&lt; Tillbaka</a>
 				    <p>PRISER OCH BETALNING</p><p>
 
                     Varje vara anges med pris inklusive moms. I kundvagnen kan man se det totala priset
@@ -48,7 +53,8 @@ class Policy extends React.Component {
 
                     Se även konsumentverket och distansavtalslagen, samt EU:s gemensamma
                     tvistlösningssida http://ec.europa.eu/odr.</p>
-			</div>
+					<a onClick={() => this.goBack()}>&lt; Tillbaka</a>
+			</p>
 		);
 	}
 }
