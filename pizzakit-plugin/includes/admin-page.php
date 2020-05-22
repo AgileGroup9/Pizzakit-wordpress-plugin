@@ -596,6 +596,7 @@ elseif ($_POST["page"] == "all-orders") {
                                   <b>Datum:</b> ' . $o->date . '
                                   <b>Mail:</b> ' . $o->email . '
                                   <b>Tel. nr.:</b> ' . $o->telNr . '
+                                  <b>Status:</b> ' . ($o->status == 'PAID' ? 'Betald' : 'Obetald') . '
                               </tstyle>
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
@@ -660,6 +661,7 @@ elseif ($_POST["page"] == "all-orders") {
                                   <b>Datum:</b> ' . $o->date . '
                                   <b>Mail:</b> ' . $o->email . '
                                   <b>Tel. nr.:</b> ' . $o->telNr . '
+                                  <b>Status:</b> ' . ($o->status == 'PAID' ? 'Betald' : 'Obetald') . '
                               </tstyle>
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
@@ -768,7 +770,7 @@ elseif ($_POST["page"] == "export") {
                      <th width="10%">UUID</th>
                      <th width="10%">Status</th>
                 </tr>';
-  $query = 'SELECT * FROM ' . $wpdb->prefix . 'orders';
+  $query = 'SELECT * FROM ' . $wpdb->prefix . "orders WHERE status='PAID'";
   $rows = $wpdb->get_results($query);
   foreach ($rows as $row) {
     echo '
@@ -902,10 +904,10 @@ else {
     </nav>';
 
   // Only load if there are > 0 orders in wp-orders
-  if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders WHERE done = 0") > 0) {
+  if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders WHERE done = 0 AND status='PAID'") > 0) {
     // Get rows, and number of rows for table width. One redundant query here that could be removed
-    $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 GROUP BY item");
-    $rows = $wpdb->get_results("SELECT item, SUM(quantity) AS total_quantity FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 GROUP BY item");
+    $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 AND status = 'PAID' GROUP BY item");
+    $rows = $wpdb->get_results("SELECT item, SUM(quantity) AS total_quantity FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 AND status = 'PAID' GROUP BY item");
 
     // Outputs table that generates dynamically depending on amount of items currently in DB
     echo '
@@ -930,7 +932,7 @@ else {
     ';
   }
 
-  $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE done = FALSE";
+  $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE done = FALSE AND status='PAID'";
   $orders = $wpdb->get_results($sql);
 
   if (!empty($orders)) {
