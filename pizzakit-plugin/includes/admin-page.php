@@ -1,6 +1,16 @@
 <?php
 /* Template Name: Admin page */
 global $wpdb;
+?>
+
+<!-- import bootstrap css -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<?php
+;if (isset($_POST["password"])) {
+  $sql = "SELECT * FROM " . $wpdb->prefix . "passwords WHERE password = '" . hash("sha256", $_POST["password"]) . "'";
+  $result = $wpdb->query($sql);
+  if ($result == 1) {
 
 if (isset($_POST["done"])) {
   $table = $wpdb->prefix . 'orders';
@@ -183,12 +193,6 @@ if (isset($_POST["export"])) {
   die();
 }
 
-?>
-
-<!-- import bootstrap css -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-
-<?php
 // Generate edit menu
 if ($_POST["page"] == "edit-menu") {
   echo '<nav class="navbar navbar-inverse">
@@ -199,24 +203,29 @@ if ($_POST["page"] == "edit-menu") {
             <ul class="nav navbar-nav">
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="orders">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-secondary" value="Nya ordrar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                 <input type="hidden" name="page" value="edit-menu">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
                 <input type="submit" class="btn btn-primary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="all-orders">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-secondary" value="Alla ordrar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="export">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-secondary" value="Exportera">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
                 <input type="text" class="form-control" name="order-search" placeholder="Namn, mailadress eller ID" style="min-width:250px">
-                <input type="submit" class="btn btn-secondary" value="Sök">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
           </div>
@@ -271,7 +280,8 @@ echo
                 <form action="." method="post">
                     <input type="hidden" name="moveUp" value="' . $i->list_order . '">
                     <input type="hidden" name="page" value="edit-menu">
-                    <input type="submit" class="btn-xs btn-primary pull-left" value="Upp">
+                    <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-xs btn-primary pull-left" value="Upp">
                 </form>';
             } echo '
           </div>
@@ -281,7 +291,8 @@ echo
                 <form action="." method="post">
                     <input type="hidden" name="moveDown" value="' . $i->list_order . '">
                     <input type="hidden" name="page" value="edit-menu">
-                    <input type="submit" class="btn-xs btn-dark pull-left" value="Ned">
+                    <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-xs btn-dark pull-left" value="Ned">
                 </form>';
             } echo '
           </div>
@@ -293,7 +304,8 @@ if ($i->isActive == 0) {
 echo '
                 <input type="hidden" name="activateItem" value="' . $i->name . '">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn-xs btn-success pull-left" value="Aktivera">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-xs btn-success pull-left" value="Aktivera">
               ';
 
 // If the item is enabled, generate deactivate button
@@ -301,7 +313,8 @@ echo '
 echo '
                 <input type="hidden" name="deactivateItem" value="' . $i->name . '">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn-xs btn-warning pull-left" value="Avaktivera">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-xs btn-warning pull-left" value="Avaktivera">
               ';
 }
 
@@ -316,7 +329,8 @@ if ($i->main_item == 0) {
 echo '
                 <input type="hidden" name="makeMain" value="' . $i->name . '">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn-xs btn-secondary pull-left" value="Till pizzakit">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-xs btn-secondary pull-left" value="Till pizzakit">
               ';
 
 // If the item is main, generate deactivate main button
@@ -324,7 +338,8 @@ echo '
 echo '
                 <input type="hidden" name="unmakeMain" value="' . $i->name . '">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn-xs btn-info pull-left" value="Till tillbehör">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-xs btn-info pull-left" value="Till tillbehör">
               ';
 }
 
@@ -335,14 +350,16 @@ echo '
             <form action="." method="post">
               <input type="hidden" name="editItem" value="' . $i->name . '">
               <input type="hidden" name="page" value="edit-menu">
-              <input type="submit" class="btn-xs btn-success pull-left" value="Redigera">
+              <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-xs btn-success pull-left" value="Redigera">
             </form>
           </div>
           <div class="col-sm-2">
             <form action="." method="post">
               <input type="hidden" name="deleteItem" value="' . $i->name . '">
               <input type="hidden" name="page" value="edit-menu">
-              <input type="submit" class="btn-xs btn-danger pull-left" value="Radera">
+              <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-xs btn-danger pull-left" value="Radera">
             </form>
           </div>
         </div>
@@ -372,7 +389,8 @@ echo '
             <div class="col-sm-2 col-xs-2 col-md-2 col-lg-2" style="font-size:16px">
                 <input type="hidden" name="saveItem" value="' . $_POST["editItem"] . '">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn-sm btn-success pull-left" value="Spara">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-sm btn-success pull-left" value="Spara">
               </form>
             </div>
           </div>
@@ -395,6 +413,7 @@ echo '
               <div class="col-sm-2 col-xs-2 col-md-2 col-lg-2" style="font-size:16px">
                   <input type="hidden" name="addItem" value="TRUE">
                   <input type="hidden" name="page" value="edit-menu">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn-sm btn-success pull-left" value="Lägg till">
                 </form>
               </div>
@@ -415,18 +434,22 @@ elseif ($_POST["page"] == "all-orders") {
             <ul class="nav navbar-nav">
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="orders">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-secondary" value="Nya ordrar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn btn-secondary" value="Ändra meny">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-secondary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="all-orders">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-primary" value="Alla ordrar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="export">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-secondary" value="Exportera">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
@@ -436,7 +459,8 @@ elseif ($_POST["page"] == "all-orders") {
     echo $_POST["order-search"];
   } else echo "Namn, mailadress eller ID";
   echo '">
-                <input type="submit" class="btn btn-secondary" value="Sök">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
           </div>
@@ -455,7 +479,8 @@ elseif ($_POST["page"] == "all-orders") {
           <form action="." method="post" style="padding-top:15px;padding-left:90px">
             <input type="hidden" name="clearAllOldOrders" value="TRUE">
             <input type="hidden" name="page" value="all-orders">
-            <input type="submit" class="btn btn-warning pull-left" value="Radera >2 veckor gamla ordrar" style="color:black">
+            <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-warning pull-left" value="Radera >2 veckor gamla ordrar" style="color:black">
           </form>
         </div>
       </div>';
@@ -476,14 +501,16 @@ elseif ($_POST["page"] == "all-orders") {
                                 <form action="." method="post">
                                   <input type="hidden" name="delete" value="' . $o->id . '">
                                   <input type="hidden" name="page" value="all-orders">
-                                  <input type="submit" class="btn-sm btn-danger" value="Radera">
+                                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-sm btn-danger" value="Radera">
                                 </form>
                               </div>
                               <div class="btn-group pull-right" style="min-width:25px;margin-right:10px">
                                 <form action="." method="post">
                                   <input type="hidden" name="redo" value="' . $o->id . '">
                                   <input type="hidden" name="page" value="all-orders">
-                                  <input type="submit" class="btn-sm btn-secondary" value="Återaktivera">
+                                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-sm btn-secondary" value="Återaktivera">
                                 </form>
                               </div>
                           </div>
@@ -547,7 +574,8 @@ elseif ($_POST["page"] == "all-orders") {
                                 <form action="." method="post">
                                   <input type="hidden" name="done" value="' . $o->id . '">
                                   <input type="hidden" name="page" value="all-orders">
-                                  <input type="submit" class="btn-sm btn-success" value="Klar">
+                                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-sm btn-success" value="Klar">
                                 </form>
                               </div>
                           </div>
@@ -613,31 +641,37 @@ elseif ($_POST["page"] == "export") {
             <ul class="nav navbar-nav">
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="orders">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-secondary" value="Nya ordrar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn btn-secondary" value="Ändra meny">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-secondary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="all-orders">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-secondary" value="Alla ordrar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="export">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-primary" value="Exportera">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
                 <input type="text" class="form-control" name="order-search" placeholder="Namn, mailadress eller ID" style="min-width:250px">
-                <input type="submit" class="btn btn-secondary" value="Sök">
+                <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-secondary" value="Sök">
               </form></li>
             </ul>
           </div>
         </nav>
         <div class="container-fluid">
           <form method="post" action="." align="center">  
-            <input type="submit" name="export" value="Exportera till CSV" class="btn btn-success" />
+            <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" name="export" value="Exportera till CSV" class="btn btn-success" />
           </form>      
         </div>
         <form class="form-horizontal" action="." method="post"
@@ -780,24 +814,30 @@ else {
         <ul class="nav navbar-nav">
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
               <input type="hidden" name="page" value="orders">
-              <input type="submit" class="btn btn-primary" value="Nya ordrar">
+              <input type="hidden" name="password" value="' . $_POST["password"] . '">
+              <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-primary" value="Nya ordrar">
           </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
             <input type="hidden" name="page" value="edit-menu">
-            <input type="submit" class="btn btn-secondary" value="Ändra meny">
+            <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-secondary" value="Ändra meny">
           </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
             <input type="hidden" name="page" value="all-orders">
-            <input type="submit" class="btn btn-secondary" value="Alla ordrar">
+            <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-secondary" value="Alla ordrar">
           </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="export">
+                  <input type="hidden" name="password" value="' . $_POST["password"] . '">
                   <input type="submit" class="btn btn-secondary" value="Exportera">
           </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
             <input type="hidden" name="page" value="all-orders">
             <input type="text" class="form-control" name="order-search" placeholder="Namn, mailadress eller ID" style="min-width:250px">
-            <input type="submit" class="btn btn-secondary" value="Sök">
+            <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn btn-secondary" value="Sök">
           </form></li>
         </ul>
       </div>
@@ -854,7 +894,8 @@ else {
                   <div class="btn-group pull-right" style="width:40px">
                     <form action="." method="post">
                       <input type="hidden" name="done" value="' . $o->id . '">
-                      <input type="submit" class="btn-sm btn-success" value="Klar">
+                      <input type="hidden" name="password" value="' . $_POST["password"] . '">
+                  <input type="submit" class="btn-sm btn-success" value="Klar">
                     </form>
                   </div>
                 </div>
@@ -889,6 +930,19 @@ else {
   } else {
     echo '<h3 style="padding-left: 25px">Inga nya ordrar</h3>';
   }
+}
+} else {
+  echo '<form action="." method="post" class="form-inline mr-auto" style="padding-top:100px;padding-left:50px">
+          <input type="text" class="form-control" name="password" placeholder="Lösenord" style="min-width:250px">
+          <input type="submit" class="btn btn-success" value="Logga in">
+        </form>
+        <label style="padding-left:50px">Fel lösenord</label>';
+}
+} else {
+  echo '<form action="." method="post" class="form-inline mr-auto" style="padding-top:100px;padding-left:50px">
+          <input type="text" class="form-control" name="password" placeholder="Lösenord" style="min-width:250px">
+          <input type="submit" class="btn btn-success" value="Logga in">
+        </form>';
 }
 
 ?>
