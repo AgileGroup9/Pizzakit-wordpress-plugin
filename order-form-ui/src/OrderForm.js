@@ -3,6 +3,7 @@ import Small_item from './Items';
 import PaymentConfirmation from './PaymentConfirmation';
 import ConSuccess from './ConSuccess';
 import ConFailed from './ConFailed';
+import Policy from './Policy';
 
 // Main Application
 // Renders a form and keeps track of items the client has selected
@@ -20,7 +21,7 @@ class OrderForm extends React.Component {
 
 		this.items = window.pizzakitItems.sort((a, b) => a.list_order - b.list_order);
 		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
-		this.state = {
+		this.state = props.initState || {
 			cart : new Map( this.items.map(x => [x['name'],0])),
 			location : '',
 			email : '',
@@ -63,7 +64,11 @@ class OrderForm extends React.Component {
 
 	async handle_submit(target_addr) {
 		if(this.is_fields_empty()){
-			alert('Var snäll och fyll i alla obligatoriska fält');
+			alert('Vänligen fyll i alla obligatoriska fält');
+			return;
+		}
+		if(!document.getElementById("policy").checked) {
+			alert('Vänligen godkänn köpvillkoren')
 			return;
 		}
 		const validation_results = this.check_validation();
@@ -137,6 +142,10 @@ class OrderForm extends React.Component {
 		return JSON.stringify(json_obj);
 	}
 
+	show_policy() {
+		this.props.navigateTo(Policy, { state: this.state, post_address: this.post_address });
+	}
+
 	render() {
 		// Render items dynamicaly
 		const extras = this.items.filter(x => x["main_item"] == false);
@@ -195,24 +204,28 @@ class OrderForm extends React.Component {
 				<div id="detail-form">
 					<div className="form-group" id="email">
 						<label htmlFor="email_inpt">Email<span>*</span>:</label>
-						<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')} placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+"/>
+						<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')} placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+" value={this.state.email}/>
 					</div>
 					<div className="form-group" id="tele">
 						<label htmlFor="tel_inpt">Telefonnummer<span>*</span>:</label>
-						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="07........"/>
+						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="07........" value={this.state.telNr}/>
 					</div>
 					<div className="form-group">
 						<label htmlFor="name_inpt">Namn<span>*</span>:</label>
-						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Namn Efternamn"/>
+						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Namn Efternamn" value={this.state.name}/>
 					</div>
 					<div className="form-group" >
 						<label htmlFor="pickup_inpt">Uthämtningsställe<span>*</span>:</label>
 						<select name="location" id="pickup_inpt" onChange={this.handle_detail_update}>
-							<option value="" disabled selected>Välj:</option>
-							<option value="Vasastan">Vasastan</option>
-							<option value="Kungsholmen">Kungsholmen</option>
-							<option value="Östermalm">Östermalm</option>
+							<option value="" disabled selected={this.state.location == ''}>Välj:</option>
+							<option value="Vasastan" selected={this.state.location == 'Vasastan'}>Vasastan</option>
+							<option value="Kungsholmen" selected={this.state.location == 'Kungsholmen'}>Kungsholmen</option>
+							<option value="Östermalm" selected={this.state.location == 'Östermalm'}>Östermalm</option>
 						</select>
+					</div>
+					<div className="form-group">
+						<input type="checkbox" id="policy" name="policy" value="TRUE"></input>
+						<label htmlFor="policy">Jag godkänner <a onClick={() => this.show_policy()}>köpvillkoren</a><span>*</span>:</label>
 					</div>
 				</div>
 				<hr/>
