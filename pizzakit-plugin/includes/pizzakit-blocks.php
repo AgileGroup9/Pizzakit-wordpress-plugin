@@ -29,7 +29,7 @@ class Pizzakit_Blocks {
 	}
 	public static function render_order_form($attributes, $content) {
 		global $wpdb;
-		$sql = "SELECT * FROM wp_items";
+		$sql = "SELECT * FROM " . $wpdb->prefix . "items";
 		$items = $wpdb->get_results($sql);
 		$json = json_encode($items);
 
@@ -48,15 +48,20 @@ class Pizzakit_Blocks {
 			)
 		);
 
+		$sql = "SELECT * FROM " . $wpdb->prefix . "pickups";
+		$pickups = $wpdb->get_results($sql);
+		$json2 = json_encode($pickups);
+
 		ob_start();
 		?>
 			<script>
 				window.pizzakitItems = <?php echo($json); ?>;
 				window.pizzakitTimes = <?php echo(json_encode($times)); ?>;
+				window.pizzakitPickups = <?php echo($json2); ?>;
 			</script>
 			<div id="pizzakit-order-form">
 				<p class="has-text-align-center">
-					<strong>Pizzakit Order Formulär: Laddar...</strong>
+					<strong>Pizzakit Orderformulär: Laddar...</strong>
 				</p>
 			</div>
 		<?php
