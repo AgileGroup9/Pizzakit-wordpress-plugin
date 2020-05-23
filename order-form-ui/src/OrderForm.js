@@ -109,7 +109,7 @@ class OrderForm extends React.Component {
 	}
 
 	validate_tel(str){
-		var re = /^[0-9]{10,11}$/;
+		var re = /^(([+]46)\s*(7)|07|(0046)\s*7)[02369]\s*(\d{4})\s*(\d{3})$/;
 		return re.exec(str.replace(/\s/g,'')) !== null;
 	}
 
