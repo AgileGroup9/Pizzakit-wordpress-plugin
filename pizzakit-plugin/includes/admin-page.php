@@ -39,7 +39,7 @@ if (isset($_POST["deleteItem"])) {
   $wpdb->query($sql);
 }
 
-// For handling additions to wp-items from "Ändra meny"
+// For handling additions to wp-items from "Inställningar"
 if (isset($_POST["addItem"])) {
   $maxorder = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "items");
   $table = $wpdb->prefix . 'items';
@@ -48,7 +48,7 @@ if (isset($_POST["addItem"])) {
   $wpdb->insert($table, $data, $where_format);
 }
 
-// For handling edits to wp-items from "Ändra meny"
+// For handling edits to wp-items from "Inställningar"
 if (isset($_POST["saveItem"])) {
   $table = $wpdb->prefix . 'items';
   $data = array('name' => $_POST["saveItemName"], 'price' => $_POST["saveItemPrice"], 'comment' => $_POST["saveItemComment"]);
@@ -101,11 +101,11 @@ if (isset($_POST["unmakeMain"])) {
 // handle an incoming POST object with item to move up in list
 if (isset($_POST["moveUp"])) {
   // retrieve row above
-  $sql = "SELECT name FROM " . $wpdb->prefix . "items WHERE list_order = " . ($_POST["moveUp"]-1);
+  $sql = "SELECT name FROM " . $wpdb->prefix . "items WHERE list_order = " . ($_POST["moveUp"] - 1);
   $previous = $wpdb->get_results($sql);
   // move item up
   $table = $wpdb->prefix . 'items';
-  $data = array("list_order" => ($_POST["moveUp"]-1));
+  $data = array("list_order" => ($_POST["moveUp"] - 1));
   $where = array("list_order" => $_POST["moveUp"]);
   $format = array("%d");
   $where_format = array("%d");
@@ -120,11 +120,11 @@ if (isset($_POST["moveUp"])) {
 // handle an incoming POST object with item to move up in list
 if (isset($_POST["moveDown"])) {
   // retrieve row under
-  $sql = "SELECT name FROM " . $wpdb->prefix . "items WHERE list_order = " . ($_POST["moveDown"]+1);
+  $sql = "SELECT name FROM " . $wpdb->prefix . "items WHERE list_order = " . ($_POST["moveDown"] + 1);
   $previous = $wpdb->get_results($sql);
   // move item down
   $table = $wpdb->prefix . 'items';
-  $data = array("list_order" => ($_POST["moveDown"]+1));
+  $data = array("list_order" => ($_POST["moveDown"] + 1));
   $where = array("list_order" => $_POST["moveDown"]);
   $format = array("%d");
   $where_format = array("%d");
@@ -221,7 +221,7 @@ if ($_POST["page"] == "edit-menu") {
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn btn-primary" value="Ändra meny">
+                <input type="submit" class="btn btn-primary" value="Inställningar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="all-orders">
@@ -241,90 +241,92 @@ if ($_POST["page"] == "edit-menu") {
         </nav>
       ';
 
-  function weekdayOptions($selected) {
+  function weekdayOptions($selected)
+  {
     $weekdays = array('Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag');
-    for ($i=1; $i <= count($weekdays); $i++) {
-      echo('<option value="' . $i . '" ' . ($i == $selected ? 'selected' : '') . '>' . $weekdays[$i - 1] . '</option>');
+    for ($i = 1; $i <= count($weekdays); $i++) {
+      echo ('<option value="' . $i . '" ' . ($i == $selected ? 'selected' : '') . '>' . $weekdays[$i - 1] . '</option>');
     }
   }
-  function hoursOptions($selected) {
-    for ($i=0; $i <= 24; $i++) {
-      echo("<option value=\"$i\" " . ($i == $selected ? 'selected' : '') . ">$i</option>");
+  function hoursOptions($selected)
+  {
+    for ($i = 0; $i <= 24; $i++) {
+      echo ("<option value=\"$i\" " . ($i == $selected ? 'selected' : '') . ">$i</option>");
     }
   }
 
-  ?>
-    <div class="container">
-      <h3 align="center">Beställningsfönster:</h3>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-sm-4">
-            <form class="form-inline" action="." method="post">
-              <h4>Orderstart:</h4>
-              <div class="form-group">
-                <label for="start-weekday">Dag:</label>
-                <select id="start-weekday" class="custom-select" name="weekday">
-                  <?php weekdayOptions(get_site_option('pizzakit_time_start_weekday')); ?>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="start-hours">Timme:</label>
-                <select id="start-hours" class="custom-select" name="hours">
-                  <?php hoursOptions(get_site_option('pizzakit_time_start_hours')); ?>
-                </select>
-              </div>
-              <input type="hidden" name="page" value="edit-menu">
-              <input type="submit" class="btn-xs btn-primary" name="update-start-time" value="Uppdatera" />
-            </form>
-          </div>
-          <div class="col-sm-4">
-            <form class="form-inline" action="." method="post">
-              <h4>Orderstopp:</h4>
-              <div class="form-group">
-                <label for="end-weekday">Dag:</label>
-                <select id="end-weekday" class="custom-select" name="weekday">
-                  <?php weekdayOptions(get_site_option('pizzakit_time_end_weekday')); ?>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="end-hours">Timme:</label>
-                <select id="end-hours" class="custom-select" name="hours">
-                  <?php hoursOptions(get_site_option('pizzakit_time_end_hours')); ?>
-                </select>
-              </div>
-              <input type="hidden" name="page" value="edit-menu">
-              <input type="submit" class="btn-xs btn-primary" name="update-end-time" value="Uppdatera" />
-            </form>
-          </div>
-          <div class="col-sm-4">
-            <form class="form-inline" action="." method="post">
-            <h4>Upphämntningsdag:</h4>
-              <div class="form-group">
-                <label for="pickup-start-day">Från:</label>
-                <select id="pickup-start-day" class="custom-select" name="start">
-                  <?php weekdayOptions(get_site_option('pizzakit_time_pickup_start_day')); ?>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="pickup-end-day">Till:</label>
-                <select id="pickup-end-day" class="custom-select" name="end">
-                  <?php weekdayOptions(get_site_option('pizzakit_time_pickup_end_day')); ?>
-                </select>
-              </div>
-              <input type="hidden" name="page" value="edit-menu">
-              <input type="submit" class="btn-xs btn-primary" name="update-pickup-time" value="Uppdatera" />
-            </form>
-          </div>
+?>
+  <div class="container">
+    <h3 align="center">Beställningsfönster:</h3>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-4">
+          <form class="form-inline" action="." method="post">
+            <h4>Orderstart:</h4>
+            <div class="form-group">
+              <label for="start-weekday">Dag:</label>
+              <select id="start-weekday" class="custom-select" name="weekday">
+                <?php weekdayOptions(get_site_option('pizzakit_time_start_weekday')); ?>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="start-hours">Timme:</label>
+              <select id="start-hours" class="custom-select" name="hours">
+                <?php hoursOptions(get_site_option('pizzakit_time_start_hours')); ?>
+              </select>
+            </div>
+            <input type="hidden" name="page" value="edit-menu">
+            <input type="submit" class="btn-xs btn-primary" name="update-start-time" value="Uppdatera" />
+          </form>
+        </div>
+        <div class="col-sm-4">
+          <form class="form-inline" action="." method="post">
+            <h4>Orderstopp:</h4>
+            <div class="form-group">
+              <label for="end-weekday">Dag:</label>
+              <select id="end-weekday" class="custom-select" name="weekday">
+                <?php weekdayOptions(get_site_option('pizzakit_time_end_weekday')); ?>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="end-hours">Timme:</label>
+              <select id="end-hours" class="custom-select" name="hours">
+                <?php hoursOptions(get_site_option('pizzakit_time_end_hours')); ?>
+              </select>
+            </div>
+            <input type="hidden" name="page" value="edit-menu">
+            <input type="submit" class="btn-xs btn-primary" name="update-end-time" value="Uppdatera" />
+          </form>
+        </div>
+        <div class="col-sm-4">
+          <form class="form-inline" action="." method="post">
+            <h4>Upphämtningsdag:</h4>
+            <div class="form-group">
+              <label for="pickup-start-day">Från:</label>
+              <select id="pickup-start-day" class="custom-select" name="start">
+                <?php weekdayOptions(get_site_option('pizzakit_time_pickup_start_day')); ?>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="pickup-end-day">Till:</label>
+              <select id="pickup-end-day" class="custom-select" name="end">
+                <?php weekdayOptions(get_site_option('pizzakit_time_pickup_end_day')); ?>
+              </select>
+            </div>
+            <input type="hidden" name="page" value="edit-menu">
+            <input type="submit" class="btn-xs btn-primary" name="update-pickup-time" value="Uppdatera" />
+          </form>
         </div>
       </div>
     </div>
-    <hr />
-  <?php
+  </div>
+  <hr />
+<?php
 
   $sql = "SELECT * FROM " . $wpdb->prefix . "items ORDER BY list_order ASC";
   $items = $wpdb->get_results($sql);
 
-echo '<ul class="list-group">
+  echo '<ul class="list-group">
   <li class="list-group-item">
     <div class="container-fluid">
       <div class="row">
@@ -345,16 +347,16 @@ echo '<ul class="list-group">
   </li>
 ';
 
-$maxorder = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "items")-1;
+  $maxorder = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "items") - 1;
 
-foreach ($items as $i) {
-echo
-'<li class="list-group-item">
+  foreach ($items as $i) {
+    echo
+      '<li class="list-group-item">
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-2 col-xs-2" style="font-size:16px">
         ' . $i->name .
-'</div>
+        '</div>
       <div class="col-sm-1 col-xs-1" style="font-size:16px">
         ' . $i->price . 'kr
       </div>
@@ -364,69 +366,71 @@ echo
       <div class="col-sm-5 col-xs-5" style="font-size:16px">
         <div class="row">
           <div class="col-sm-1">';
-            if ($i->list_order != 0) {
-              echo '
+    if ($i->list_order != 0) {
+      echo '
                 <form action="." method="post">
                     <input type="hidden" name="moveUp" value="' . $i->list_order . '">
                     <input type="hidden" name="page" value="edit-menu">
                     <input type="submit" class="btn-xs btn-primary pull-left" value="Upp">
                 </form>';
-            } echo '
+    }
+    echo '
           </div>
           <div class="col-sm-1">';
-            if ($i->list_order != $maxorder) {
-              echo '
+    if ($i->list_order != $maxorder) {
+      echo '
                 <form action="." method="post">
                     <input type="hidden" name="moveDown" value="' . $i->list_order . '">
                     <input type="hidden" name="page" value="edit-menu">
                     <input type="submit" class="btn-xs btn-dark pull-left" value="Ned">
                 </form>';
-            } echo '
+    }
+    echo '
           </div>
           <div class="col-sm-2">
             <form action="." method="post">';
 
-// If the item is disabled, generate activate buttons
-if ($i->isActive == 0) {
-echo '
+    // If the item is disabled, generate activate buttons
+    if ($i->isActive == 0) {
+      echo '
                 <input type="hidden" name="activateItem" value="' . $i->name . '">
                 <input type="hidden" name="page" value="edit-menu">
                 <input type="submit" class="btn-xs btn-success pull-left" value="Aktivera">
               ';
 
-// If the item is enabled, generate deactivate button
-} else {
-echo '
+      // If the item is enabled, generate deactivate button
+    } else {
+      echo '
                 <input type="hidden" name="deactivateItem" value="' . $i->name . '">
                 <input type="hidden" name="page" value="edit-menu">
                 <input type="submit" class="btn-xs btn-warning pull-left" value="Avaktivera">
               ';
-}
+    }
 
-echo '
+    echo '
             </form>
           </div>
             <div class="col-sm-2">
               <form action="." method="post">';
 
-// If the item is not main, generate make main buttons
-if ($i->main_item == 0) {
-echo '
+    // If the item is not main, generate make main buttons
+    if ($i->main_item == 0) {
+      echo '
                 <input type="hidden" name="makeMain" value="' . $i->name . '">
                 <input type="hidden" name="page" value="edit-menu">
                 <input type="submit" class="btn-xs btn-secondary pull-left" value="Till pizzakit">
               ';
 
-// If the item is main, generate deactivate main button
-} else {
-echo '
+      // If the item is main, generate deactivate main button
+    } else {
+      echo '
                 <input type="hidden" name="unmakeMain" value="' . $i->name . '">
                 <input type="hidden" name="page" value="edit-menu">
                 <input type="submit" class="btn-xs btn-info pull-left" value="Till tillbehör">
               ';
-}
+    }
 
-echo '
+    echo '
             </form>
           </div>
           <div class="col-sm-2">
@@ -448,7 +452,7 @@ echo '
     </div>
   </div>
 </li>';
-}
+  }
 
   //Adds a row with input fields for adding or editing items to wp-items. Handled at top of page.
   if (isset($_POST["editItem"])) {
@@ -477,7 +481,7 @@ echo '
         </div>
       </li>';
   } else {
-      echo '
+    echo '
         <li class="list-group-item">
           <div class="container-fluid">
             <div class="row">
@@ -517,7 +521,7 @@ elseif ($_POST["page"] == "all-orders") {
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn btn-secondary" value="Ändra meny">
+                <input type="submit" class="btn btn-secondary" value="Inställningar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="all-orders">
@@ -717,7 +721,7 @@ elseif ($_POST["page"] == "export") {
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn btn-secondary" value="Ändra meny">
+                <input type="submit" class="btn btn-secondary" value="Inställningar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="all-orders">
@@ -884,7 +888,7 @@ else {
           </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
             <input type="hidden" name="page" value="edit-menu">
-            <input type="submit" class="btn btn-secondary" value="Ändra meny">
+            <input type="submit" class="btn btn-secondary" value="Inställningar">
           </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
             <input type="hidden" name="page" value="all-orders">

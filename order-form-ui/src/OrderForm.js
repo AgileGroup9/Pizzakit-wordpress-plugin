@@ -8,7 +8,7 @@ import Policy from './Policy';
 // Main Application
 // Renders a form and keeps track of items the client has selected
 class OrderForm extends React.Component {
-	constructor(props){
+	constructor(props) {
 		super(props);
 
 		this.post_address = props.post_address;
@@ -20,24 +20,24 @@ class OrderForm extends React.Component {
 		this.handle_detail_update = this.handle_detail_update.bind(this);
 
 		this.items = window.pizzakitItems.sort((a, b) => a.list_order - b.list_order);
-		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
+		this.prices = new Map(this.items.map(x => [x['name'], x['price']]));
 		this.state = props.initState || {
-			cart : new Map( this.items.map(x => [x['name'],0])),
-			location : '',
-			email : '',
-			telNr : '',
-			name : '',
-			comments : '',
+			cart: new Map(this.items.map(x => [x['name'], 0])),
+			location: '',
+			email: '',
+			telNr: '',
+			name: '',
+			comments: '',
 			isLoading: false
 		};
 	}
 
-	handle_cart_update(item,delta){
+	handle_cart_update(item, delta) {
 		const newValue = this.state.cart.get(item) + delta;
-		if(newValue >= 0){
+		if (newValue >= 0) {
 			this.setState({
-				cart : this.state.cart.set(item,newValue),
-				delivery_method : this.state.delivery_method,
+				cart: this.state.cart.set(item, newValue),
+				delivery_method: this.state.delivery_method,
 			});
 		}
 	}
@@ -49,13 +49,13 @@ class OrderForm extends React.Component {
 		this.setState({
 			[name]: value
 		});
-		this.validate(name,value);
+		this.validate(name, value);
 	}
 
-	is_fields_empty(){
-		const current_state = {... this.state};
-		for (const property in current_state){
-			if(property != 'cart' && property != 'comments' && current_state[property] === ''){
+	is_fields_empty() {
+		const current_state = { ... this.state };
+		for (const property in current_state) {
+			if (property != 'cart' && property != 'comments' && current_state[property] === '') {
 				return true;
 			}
 		}
@@ -63,16 +63,16 @@ class OrderForm extends React.Component {
 	}
 
 	async handle_submit(target_addr) {
-		if(this.is_fields_empty()){
+		if (this.is_fields_empty()) {
 			alert('Vänligen fyll i alla obligatoriska fält');
 			return;
 		}
-		if(!document.getElementById("policy").checked) {
+		if (!document.getElementById("policy").checked) {
 			alert('Vänligen godkänn köpvillkoren')
 			return;
 		}
 		const validation_results = this.check_validation();
-		if(validation_results !== ''){
+		if (validation_results !== '') {
 			alert(validation_results);
 		}
 		if (!window.confirm('Gå vidare till betalning?')) {
@@ -81,16 +81,16 @@ class OrderForm extends React.Component {
 		this.setState({ isLoading: true });
 		const response = await fetch(target_addr, {
 			method: 'POST',
-			mode: 'no-cors', 
+			mode: 'no-cors',
 			headers: {
-				'Access-Control-Allow-Origin':'true',
+				'Access-Control-Allow-Origin': 'true',
 				'Content-Type': 'application/json'
 			},
 			body: this.state_to_json(),
 		});
 		if (response.ok) {
 			const json = await response.json();
-			
+
 			if (json.token != null && parseInt(json.token) > 0) {
 				this.props.navigateTo(PaymentConfirmation, { token: json.token });
 			}
@@ -103,30 +103,30 @@ class OrderForm extends React.Component {
 		}
 	}
 
-	validate_email(str){
+	validate_email(str) {
 		var re = /^[a-ö\-.]+@[a-ö]+\.[a-ö]+$/;
-		return re.exec(str) !== null;	
+		return re.exec(str) !== null;
 	}
 
-	validate_tel(str){
+	validate_tel(str) {
 		var re = /^[0-9]{8,15}$/;
-		return re.exec(str.replace(/\s/g,'')) !== null;
+		return re.exec(str.replace(/\s/g, '')) !== null;
 	}
 
-	validate(name,value){
+	validate(name, value) {
 		switch (name) {
-		case 'email':
-			this.is_email_valid = this.validate_email(value);
-			console.log('Validating Email: '+ this.is_email_valid);
-			break;
-		case 'telNr':
-			this.is_telNr_valid = this.validate_tel(value);
-			console.log('Validating Tel: '+ this.is_telNr_valid);
-			break;
+			case 'email':
+				this.is_email_valid = this.validate_email(value);
+				console.log('Validating Email: ' + this.is_email_valid);
+				break;
+			case 'telNr':
+				this.is_telNr_valid = this.validate_tel(value);
+				console.log('Validating Tel: ' + this.is_telNr_valid);
+				break;
 		}
 	}
 
-	check_validation(){
+	check_validation() {
 		// Generates a string of (if any) validation errors that exist
 		const email_error = 'Ogiltig email address';
 		const tel_error = 'Ogiltig telefonnummer';
@@ -137,9 +137,9 @@ class OrderForm extends React.Component {
 
 	}
 
-	state_to_json(){
+	state_to_json() {
 		const cart = Array.from(this.state.cart.entries());
-		var json_obj = Object.assign({},this.state);
+		var json_obj = Object.assign({}, this.state);
 		json_obj.cart = cart;
 		json_obj.pizzakitFormSubmission = true;
 		return JSON.stringify(json_obj);
@@ -184,38 +184,38 @@ class OrderForm extends React.Component {
 		// Render items dynamicaly
 		const extras = this.items.filter(x => x["main_item"] == false);
 		const extra_list = extras.map(x => {
-			return(<Small_item
-				key = {x['name']}
+			return (<Small_item
+				key={x['name']}
 				name={x['name']}
 				desc={x['comment']}
 				price={this.prices.get(x['name'])}
 				count={this.state.cart.get(x['name'])}
-				onClick={(name,delta) => this.handle_cart_update(name,delta)}
+				onClick={(name, delta) => this.handle_cart_update(name, delta)}
 			/>);
 		});
 
 		const mains = this.items.filter(x => x["main_item"] == true);
 		const main_list = mains.map(x => {
-			return(<Small_item 
-				key = {x['name']}
+			return (<Small_item
+				key={x['name']}
 				name={x['name']}
 				desc={x['comment']}
 				price={this.prices.get(x['name'])}
 				count={this.state.cart.get(x['name'])}
-				onClick={(name,delta) => this.handle_cart_update(name,delta)}
+				onClick={(name, delta) => this.handle_cart_update(name, delta)}
 			/>);
 		});
 
 		var sum = 0;
-		this.state.cart.forEach((v,k,m) => sum += this.prices.get(k)*v);
+		this.state.cart.forEach((v, k, m) => sum += this.prices.get(k) * v);
 		// Renders form. For info about how to add stuff, google jsx
 		// TODO: remove inline css (code smell)
-		return(
+		return (
 			<p className={`${this.state.isLoading ? 'loading' : ''}`}>
 				<div className="form-group">
 					<h6>Storlek på pizzakit:</h6>
 					<div>
-					{/*Main items are rendered here*/ main_list}
+						{/*Main items are rendered here*/ main_list}
 					</div>
 					<div>
 						<small className="form-text text-muted">
@@ -223,30 +223,30 @@ class OrderForm extends React.Component {
 						</small>
 					</div>
 				</div>
-				<hr/>
+				<hr />
 
 				<div className="form-group">
 
-				<h6>Välj extra tillägg:</h6>
-				{/*Extras are rendered here*/ extra_list}
-					
+					<h6>Välj extra tillägg:</h6>
+					{/*Extras are rendered here*/ extra_list}
+
 				</div>
-				<hr/>
+				<hr />
 
 				<h6><strong>Totalkostnad:</strong> {sum}kr</h6>
 				<p>(obligatoriska fält: <span>*</span>)</p>
 				<div id="detail-form">
 					<div className="form-group" id="email">
 						<label htmlFor="email_inpt">Email<span>*</span>:</label>
-						<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')} placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+" value={this.state.email}/>
+						<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')} placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+" value={this.state.email} />
 					</div>
 					<div className="form-group" id="tele">
 						<label htmlFor="tel_inpt">Telefonnummer<span>*</span>:</label>
-						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="07........" value={this.state.telNr}/>
+						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="07........" value={this.state.telNr} />
 					</div>
 					<div className="form-group">
 						<label htmlFor="name_inpt">Namn<span>*</span>:</label>
-						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Namn Efternamn" value={this.state.name}/>
+						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Namn Efternamn" value={this.state.name} />
 					</div>
 					<div className="form-group" >
 						<label htmlFor="pickup_inpt">Uthämtningsställe<span>*</span>:</label>
@@ -254,7 +254,7 @@ class OrderForm extends React.Component {
 							<option value="" disabled selected={this.state.location == ''}>Välj:</option>
 							<option value="Vasastan" selected={this.state.location == 'Vasastan'}>Vasastan</option>
 							<option value="Kungsholmen" selected={this.state.location == 'Kungsholmen'}>Kungsholmen</option>
-							<option value="Östermalm" selected={this.state.location == 'Östermalm'}>Östermalm</option>
+							<option value="Östermalm" selected={this.state.location == 'Östermalm'}>Östermalm (La Bottega)</option>
 						</select>
 					</div>
 					<div className="form-group">
@@ -262,7 +262,7 @@ class OrderForm extends React.Component {
 						<label htmlFor="policy">Jag godkänner <a onClick={() => this.show_policy()}>köpvillkoren</a><span>*</span>:</label>
 					</div>
 				</div>
-				<hr/>
+				<hr />
 				<div id="final-form">
 					<textarea name="comments" rows="2" cols="30" placeholder="Kommentarer" onChange={this.handle_detail_update}></textarea>
 					<button onClick={() => this.handle_submit(this.post_address)} className="btn btn-primary">
@@ -275,7 +275,7 @@ class OrderForm extends React.Component {
 	}
 
 	render() {
-		const weekdays = [ 'måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag' ];
+		const weekdays = ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag'];
 		const startText = weekdays[window.pizzakitTimes.start.weekday - 1] + (window.pizzakitTimes.start.hours != 0 ? ` ${window.pizzakitTimes.start.hours}:00` : '');
 		const endText = weekdays[window.pizzakitTimes.end.weekday - 1] + (window.pizzakitTimes.end.hours != 24 ? ` ${window.pizzakitTimes.end.hours}:00` : '');
 		const pickupText = weekdays[window.pizzakitTimes.pickup.startDay - 1] + (window.pizzakitTimes.pickup.startDay != window.pizzakitTimes.pickup.endDay ? ' till ' + weekdays[window.pizzakitTimes.pickup.endDay - 1] : '');
