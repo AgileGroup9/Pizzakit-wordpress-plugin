@@ -43,8 +43,14 @@ class Pizzakit
 		// In this the example it's "pizzakitFormSubmission".
 		if (isset($data["pizzakitFormSubmission"])) {
 
-			$validity = Pizzakit::order_validity($data);
-			if ($validity > 0) {
+			//if there are negative item quantities, abort mission
+			if (Pizzakit::is_empty($data)) {
+				wp_send_json(array('token' => '-2'));
+			} else if (Pizzakit::outsideTimeFrame()) {
+				wp_send_json(array('token' => '-3'));
+			} else if (Pizzakit::contains_only_toppings($data['cart'])) {
+        wp_send_json(array('token' => '-4'));
+		  } else { // else insert the stuff and create payment
 				$order = Pizzakit::insert_into_tables($data);
 				$response = Pizzakit::create_payment($order);
 				if ($response > 0) {
@@ -52,21 +58,8 @@ class Pizzakit
 				} else {
 					wp_send_json(array('token' => '-1'));
 				}
-			} else {
-				wp_send_json(array('token' => strval($validity)));
 			}
 		}
-	}
-	// checks the validity of an order concerning on a few things..
-	private static function order_validity($data)
-	{
-		if (Pizzakit::is_empty($data)) {
-			return '-2';
-		}
-		if (Pizzakit::contains_only_toppings($data['cart'])) {
-			return '-3';
-		}
-		return '1';
 	}
 
 	// checks if an order only contains toppings
@@ -103,6 +96,39 @@ class Pizzakit
 		return (false);
 	}
 
+	/**
+	 * Returns true if the current time and date is outside of the "open" time
+	 * frame.
+	 */
+	public static function outsideTimeFrame() {
+		$weekday = date('N');
+		$hour = date('G');
+
+		$startWeekday = get_site_option('pizzakit_time_start_day');
+		if ($weekday < $startWeekday) {
+			return true;
+		}
+		else if ($weekday == $startWeekday) {
+			$startHours = get_site_option('pizzakit_time_start_hours');
+			if ($hour < $startHours) {
+				return true;
+			}
+		}
+		else {
+			$endWeekday = get_site_option('pizzakit_time_end_day');
+			if ($endWeekday < $weekday) {
+				return true;
+			}
+			else if ($endWeekday == $weekday) {
+				$endHours = get_site_option('pizzakit_time_end_hours');
+				if ($endHours <= $hour) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 
 	public static function item_query_handler($data)
 	{
@@ -324,9 +350,12 @@ class Pizzakit
 
 		//insert into entries
 		foreach ($_data["cart"] as $_item) {
+			if($_item[1] == 0){
+				continue;
+			}
 			foreach ($items as $i) {
 				if ($i[0] == $_item[0]) {
-					$total_cost += $i[1] * $_item[1];
+					$total_cost += $i[2] * $_item[1];
 				}
 			}
 			$_table = $wpdb->prefix . 'entries';

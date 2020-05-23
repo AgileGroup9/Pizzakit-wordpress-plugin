@@ -183,6 +183,24 @@ if (isset($_POST["export"])) {
   die();
 }
 
+// Updates the settings for when the window for placing order start.
+if (isset($_POST["update-start-time"])) {
+  update_site_option('pizzakit_time_start_weekday', $_POST["weekday"]);
+  update_site_option('pizzakit_time_start_hours', $_POST["hours"]);
+}
+
+// Updates the settings for when the window for placing order ends.
+if (isset($_POST["update-end-time"])) {
+  update_site_option('pizzakit_time_end_weekday', $_POST["weekday"]);
+  update_site_option('pizzakit_time_end_hours', $_POST["hours"]);
+}
+
+// Updates the settings for pickup day.
+if (isset($_POST["update-pickup-time"])) {
+  update_site_option('pizzakit_time_pickup_start_day', $_POST["start"]);
+  update_site_option('pizzakit_time_pickup_end_day', $_POST["end"]);
+}
+
 ?>
 
 <!-- import bootstrap css -->
@@ -222,6 +240,86 @@ if ($_POST["page"] == "edit-menu") {
           </div>
         </nav>
       ';
+
+  function weekdayOptions($selected) {
+    $weekdays = array('Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag');
+    for ($i=1; $i <= count($weekdays); $i++) {
+      echo('<option value="' . $i . '" ' . ($i == $selected ? 'selected' : '') . '>' . $weekdays[$i - 1] . '</option>');
+    }
+  }
+  function hoursOptions($selected) {
+    for ($i=0; $i <= 24; $i++) {
+      echo("<option value=\"$i\" " . ($i == $selected ? 'selected' : '') . ">$i</option>");
+    }
+  }
+
+  ?>
+    <div class="container">
+      <h3 align="center">Beställningsfönster:</h3>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-4">
+            <form class="form-inline" action="." method="post">
+              <h4>Orderstart:</h4>
+              <div class="form-group">
+                <label for="start-weekday">Dag:</label>
+                <select id="start-weekday" class="custom-select" name="weekday">
+                  <?php weekdayOptions(get_site_option('pizzakit_time_start_weekday')); ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="start-hours">Timme:</label>
+                <select id="start-hours" class="custom-select" name="hours">
+                  <?php hoursOptions(get_site_option('pizzakit_time_start_hours')); ?>
+                </select>
+              </div>
+              <input type="hidden" name="page" value="edit-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-start-time" value="Uppdatera" />
+            </form>
+          </div>
+          <div class="col-sm-4">
+            <form class="form-inline" action="." method="post">
+              <h4>Orderstopp:</h4>
+              <div class="form-group">
+                <label for="end-weekday">Dag:</label>
+                <select id="end-weekday" class="custom-select" name="weekday">
+                  <?php weekdayOptions(get_site_option('pizzakit_time_end_weekday')); ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="end-hours">Timme:</label>
+                <select id="end-hours" class="custom-select" name="hours">
+                  <?php hoursOptions(get_site_option('pizzakit_time_end_hours')); ?>
+                </select>
+              </div>
+              <input type="hidden" name="page" value="edit-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-end-time" value="Uppdatera" />
+            </form>
+          </div>
+          <div class="col-sm-4">
+            <form class="form-inline" action="." method="post">
+            <h4>Upphämntningsdag:</h4>
+              <div class="form-group">
+                <label for="pickup-start-day">Från:</label>
+                <select id="pickup-start-day" class="custom-select" name="start">
+                  <?php weekdayOptions(get_site_option('pizzakit_time_pickup_start_day')); ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="pickup-end-day">Till:</label>
+                <select id="pickup-end-day" class="custom-select" name="end">
+                  <?php weekdayOptions(get_site_option('pizzakit_time_pickup_end_day')); ?>
+                </select>
+              </div>
+              <input type="hidden" name="page" value="edit-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-pickup-time" value="Uppdatera" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr />
+  <?php
 
   $sql = "SELECT * FROM " . $wpdb->prefix . "items ORDER BY list_order ASC";
   $items = $wpdb->get_results($sql);
@@ -498,6 +596,7 @@ elseif ($_POST["page"] == "all-orders") {
                                   <b>Datum:</b> ' . $o->date . '
                                   <b>Mail:</b> ' . $o->email . '
                                   <b>Tel. nr.:</b> ' . $o->telNr . '
+                                  <b>Status:</b> ' . ($o->status == 'PAID' ? 'Betald' : 'Obetald') . '
                               </tstyle>
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
@@ -562,6 +661,7 @@ elseif ($_POST["page"] == "all-orders") {
                                   <b>Datum:</b> ' . $o->date . '
                                   <b>Mail:</b> ' . $o->email . '
                                   <b>Tel. nr.:</b> ' . $o->telNr . '
+                                  <b>Status:</b> ' . ($o->status == 'PAID' ? 'Betald' : 'Obetald') . '
                               </tstyle>
                           </div>
                           <div class="col-sm-4 col-md-4 col-lg-4 pull-right" style="padding-top:0px;padding-bottom:5px">
@@ -670,7 +770,7 @@ elseif ($_POST["page"] == "export") {
                      <th width="10%">UUID</th>
                      <th width="10%">Status</th>
                 </tr>';
-  $query = 'SELECT * FROM ' . $wpdb->prefix . 'orders';
+  $query = 'SELECT * FROM ' . $wpdb->prefix . "orders WHERE status='PAID'";
   $rows = $wpdb->get_results($query);
   foreach ($rows as $row) {
     echo '
@@ -804,10 +904,10 @@ else {
     </nav>';
 
   // Only load if there are > 0 orders in wp-orders
-  if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders WHERE done = 0") > 0) {
+  if ($wpdb->query("SELECT * FROM " . $wpdb->prefix . "orders WHERE done = 0 AND status='PAID'") > 0) {
     // Get rows, and number of rows for table width. One redundant query here that could be removed
-    $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 GROUP BY item");
-    $rows = $wpdb->get_results("SELECT item, SUM(quantity) AS total_quantity FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 GROUP BY item");
+    $numberRows = $wpdb->query("SELECT * FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 AND status = 'PAID' GROUP BY item");
+    $rows = $wpdb->get_results("SELECT item, SUM(quantity) AS total_quantity FROM " . $wpdb->prefix . "entries, " . $wpdb->prefix . "orders WHERE id = orderID AND done = 0 AND status = 'PAID' GROUP BY item");
 
     // Outputs table that generates dynamically depending on amount of items currently in DB
     echo '
@@ -832,7 +932,7 @@ else {
     ';
   }
 
-  $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE done = FALSE";
+  $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE done = FALSE AND status='PAID'";
   $orders = $wpdb->get_results($sql);
 
   if (!empty($orders)) {
