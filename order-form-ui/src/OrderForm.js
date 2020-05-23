@@ -1,5 +1,6 @@
 import React from 'react';
 import Small_item from './Items';
+import Pickup from './Pickups';
 import PaymentConfirmation from './PaymentConfirmation';
 import ConSuccess from './ConSuccess';
 import ConFailed from './ConFailed';
@@ -30,6 +31,7 @@ class OrderForm extends React.Component {
 			comments : '',
 			isLoading: false
 		};
+		this.pickups = window.pizzakitPickups;
 	}
 
 	handle_cart_update(item,delta){
@@ -206,6 +208,13 @@ class OrderForm extends React.Component {
 			/>);
 		});
 
+		const pickup_list = this.pickups.map(x => {
+			return(<Pickup
+				key = {x['name']}
+				name={x['name']}
+			/>);
+		});
+
 		var sum = 0;
 		this.state.cart.forEach((v,k,m) => sum += this.prices.get(k)*v);
 		// Renders form. For info about how to add stuff, google jsx
@@ -252,14 +261,12 @@ class OrderForm extends React.Component {
 						<label htmlFor="pickup_inpt">Uthämtningsställe<span>*</span>:</label>
 						<select name="location" id="pickup_inpt" onChange={this.handle_detail_update}>
 							<option value="" disabled selected={this.state.location == ''}>Välj:</option>
-							<option value="Vasastan" selected={this.state.location == 'Vasastan'}>Vasastan</option>
-							<option value="Kungsholmen" selected={this.state.location == 'Kungsholmen'}>Kungsholmen</option>
-							<option value="Östermalm" selected={this.state.location == 'Östermalm'}>Östermalm</option>
+							{pickup_list}
 						</select>
 					</div>
 					<div className="form-group">
 						<input type="checkbox" id="policy" name="policy" value="TRUE"></input>
-						<label htmlFor="policy">Jag godkänner <a onClick={() => this.show_policy()}>köpvillkoren</a><span>*</span>:</label>
+						<label>Jag godkänner <a onClick={() => this.show_policy()}>köpvillkoren</a><span>*</span>:</label>
 					</div>
 				</div>
 				<hr/>
