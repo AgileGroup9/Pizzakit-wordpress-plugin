@@ -94,5 +94,6 @@ class Pizzakit_Activator
 		add_site_option('pizzakit_time_end_hours', 24);
 		add_site_option('pizzakit_time_pickup_start_day', 5);
 		add_site_option('pizzakit_time_pickup_end_day', 5);
+		add_site_option('pizzakit_swish_number', '');
 	}
 }

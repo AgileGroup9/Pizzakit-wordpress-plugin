@@ -206,6 +206,11 @@ if (isset($_POST["update-pickup-time"])) {
   update_site_option('pizzakit_time_pickup_end_day', $_POST["end"]);
 }
 
+// Updates the settings swish number.
+if (isset($_POST["update-swish-number"])) {
+  update_site_option('pizzakit_swish_number', $_POST["swish-number"]);
+}
+
 ?>
 
 <!-- import bootstrap css -->
@@ -318,6 +323,24 @@ if ($_POST["page"] == "edit-menu") {
               </div>
               <input type="hidden" name="page" value="edit-menu">
               <input type="submit" class="btn-xs btn-primary" name="update-pickup-time" value="Uppdatera" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div class="container">
+      <h3 align="center">Swish inställningar:</h3>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-12">
+            <form class="form-inline" action="." method="post">
+              <div class="form-group">
+                <label for="swish-number">Swish nummer:</label>
+                <input id="swish-number" type="tel" placeholder="1234679304" name="swish-number" value="<?php echo(get_site_option('pizzakit_swish_number')); ?>">
+              </div>
+              <input type="hidden" name="page" value="edit-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-swish-number" value="Uppdatera" />
             </form>
           </div>
         </div>

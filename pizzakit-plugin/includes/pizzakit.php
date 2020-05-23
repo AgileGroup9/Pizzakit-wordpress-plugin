@@ -231,7 +231,7 @@ class Pizzakit
 			"payeePaymentReference" => $order_id,
 			"callbackUrl" => get_home_url() . "/index.php/wp-json/pizzakit/callback/" . $order_id,
 			"payerAlias" => $tel_nr,
-			"payeeAlias" => "1234679304",
+			"payeeAlias" => get_site_option('pizzakit_swish_number'),
 			"amount" => $cost,
 			"currency" => "SEK",
 			"message" => "Menomale pizzakit"
