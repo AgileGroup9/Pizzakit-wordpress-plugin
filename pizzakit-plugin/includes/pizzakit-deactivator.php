@@ -19,5 +19,6 @@ class Pizzakit_Deactivator
 		delete_site_option('pizzakit_time_end_hours');
 		delete_site_option('pizzakit_time_pickup_start_day');
 		delete_site_option('pizzakit_time_pickup_end_day');
+		delete_site_option('pizzakit_swish_number');
 	}
 }
