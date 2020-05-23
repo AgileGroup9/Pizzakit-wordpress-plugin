@@ -546,9 +546,9 @@ elseif ($_POST["page"] == "all-orders") {
         </nav>';
 
   if (isset($_POST["order-search"])) {
-    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE " . $wpdb->prefix . "orders.name LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.id LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.email LIKE '%" . $_POST["order-search"] . "%'";
+    $sql = "SELECT * FROM " . $wpdb->prefix . "orders WHERE " . $wpdb->prefix . "orders.name LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.id LIKE '%" . $_POST["order-search"] . "%' OR " . $wpdb->prefix . "orders.email LIKE '%" . $_POST["order-search"] . "%' ORDER BY date DESC";
   } else {
-    $sql = "SELECT * FROM " . $wpdb->prefix . "orders";
+    $sql = "SELECT * FROM " . $wpdb->prefix . "orders ORDER BY date DESC";
   }
   $orders = $wpdb->get_results($sql);
 
