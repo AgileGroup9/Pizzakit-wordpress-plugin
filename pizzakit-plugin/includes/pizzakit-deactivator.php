@@ -6,7 +6,7 @@ class Pizzakit_Deactivator
 	{
 		// dropping tables
 		global $wpdb;
-		$table_arr = ['items', 'entries', 'orders'];
+		$table_arr = ['items', 'entries', 'orders', 'pickups'];
 		foreach ($table_arr as $table) {
 			$sql = "DROP TABLE IF EXISTS " . $wpdb->prefix . $table;
 			$wpdb->query($sql);
