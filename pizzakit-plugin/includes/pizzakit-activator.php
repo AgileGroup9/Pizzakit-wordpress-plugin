@@ -85,7 +85,26 @@ class Pizzakit_Activator
 			dbDelta($sql);
 			add_option('entries_version', '1.0');
 		}
+		
+		// WP_PICKUPS
+		if ($wpdb->get_var('SHOW TABLES LIKE ' . $wpdb->prefix . 'pickups') != $wpdb->prefix . 'pickups') {
+			$sql = 'CREATE TABLE ' . $wpdb->prefix . 'pickups(
+			name VARCHAR(50) NOT NULL,
+			PRIMARY KEY(name)
+			)';
 
+			dbDelta($sql);
+			add_option('pickups_version', '1.0');
+
+			$table = $wpdb->prefix . 'pickups';
+			$data = array('name' => "Vasastan");
+			$format = array('%s');
+			$wpdb->insert($table, $data, $format);
+			$data = array('name' => "Kungsholmen");
+			$wpdb->insert($table, $data, $format);
+			$data = array('name' => "Östermalm");
+			$wpdb->insert($table, $data, $format);
+		}
 
 		// adding settings
 		add_site_option('pizzakit_time_start_weekday', 1);
