@@ -104,12 +104,12 @@ class OrderForm extends React.Component {
 	}
 
 	validate_email(str){
-		var re = /^[a-ö\-.]+@[a-ö]+\.[a-ö]+$/;
+		var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 		return re.exec(str) !== null;	
 	}
 
 	validate_tel(str){
-		var re = /^[0-9]{8,15}$/;
+		var re = /^(([+]46)\s*(7)|07|(0046)\s*7)[02369]\s*(\d{4})\s*(\d{3})$/;
 		return re.exec(str.replace(/\s/g,'')) !== null;
 	}
 
