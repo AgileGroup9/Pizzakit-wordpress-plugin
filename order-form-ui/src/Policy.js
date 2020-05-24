@@ -35,7 +35,7 @@ class Policy extends React.Component {
                     När du lägger din beställning hos oss uppger du dina personuppgifter. I samband med
                     din registrering och beställning godkänner du att vi lagrar och använder dina
                     uppgifter i vår verksamhet för att fullfölja avtalet gentemot dig enligt denna
-                    integritetspolicy. Du har enligt Personuppgiftslagen rätt att få den information
+                    integritetspolicy. Du har enligt Dataskyddsförordningen rätt att få den information
                     som vi har registrerat om dig. Om den är felaktig, ofullständig eller irrelevant
                     kan du begära att informationen ska rättas eller tas bort. Kontakta oss i så fall
                     via e-post. Du har rätt att få utdrag av den information vi har sparad om dig och
