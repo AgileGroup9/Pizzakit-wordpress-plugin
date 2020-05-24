@@ -267,7 +267,7 @@ class OrderForm extends React.Component {
 					</div>
 					<div className="form-group">
 						<input type="checkbox" id="policy" name="policy" value="TRUE"></input>
-						<label>Jag godkänner <a onClick={() => this.show_policy()}>köpvillkoren</a><span>*</span>:</label>
+						<label htmlFor="policy">Jag godkänner <a onClick={() => this.show_policy()}>köpvillkoren</a><span>*</span>:</label>
 					</div>
 				</div>
 				<hr/>
