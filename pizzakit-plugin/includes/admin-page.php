@@ -243,13 +243,9 @@ if (isset($_POST["savePickup"])) {
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
 <?php
-// Generate edit menu
-if ($_POST["page"] == "edit-menu") {
+if ($_POST["page"] == "settings-menu") {
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
-            <div class="navbar-header">
-              <a class="navbar-brand" href="#">Verktyg</a>
-            </div>
             <ul class="nav navbar-nav">
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="orders">
@@ -257,7 +253,7 @@ if ($_POST["page"] == "edit-menu") {
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                 <input type="hidden" name="page" value="edit-menu">
-                <input type="submit" class="btn btn-primary" value="Ändra meny">
+                <input type="submit" class="btn btn-secondary" value="Ändra meny">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="all-orders">
@@ -266,6 +262,10 @@ if ($_POST["page"] == "edit-menu") {
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="export">
                   <input type="submit" class="btn btn-secondary" value="Exportera">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="settings-menu">
+                  <input type="submit" class="btn btn-primary" value="Inställningar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
@@ -309,7 +309,7 @@ if ($_POST["page"] == "edit-menu") {
                   <?php hoursOptions(get_site_option('pizzakit_time_start_hours')); ?>
                 </select>
               </div>
-              <input type="hidden" name="page" value="edit-menu">
+              <input type="hidden" name="page" value="settings-menu">
               <input type="submit" class="btn-xs btn-primary" name="update-start-time" value="Uppdatera" />
             </form>
           </div>
@@ -328,7 +328,7 @@ if ($_POST["page"] == "edit-menu") {
                   <?php hoursOptions(get_site_option('pizzakit_time_end_hours')); ?>
                 </select>
               </div>
-              <input type="hidden" name="page" value="edit-menu">
+              <input type="hidden" name="page" value="settings-menu">
               <input type="submit" class="btn-xs btn-primary" name="update-end-time" value="Uppdatera" />
             </form>
           </div>
@@ -347,7 +347,7 @@ if ($_POST["page"] == "edit-menu") {
                   <?php weekdayOptions(get_site_option('pizzakit_time_pickup_end_day')); ?>
                 </select>
               </div>
-              <input type="hidden" name="page" value="edit-menu">
+              <input type="hidden" name="page" value="settings-menu">
               <input type="submit" class="btn-xs btn-primary" name="update-pickup-time" value="Uppdatera" />
             </form>
           </div>
@@ -356,16 +356,16 @@ if ($_POST["page"] == "edit-menu") {
     </div>
     <hr />
     <div class="container">
-      <h3 align="center">Swish inställningar:</h3>
+      <h3 align="center">Swish:</h3>
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-12">
             <form class="form-inline" action="." method="post">
               <div class="form-group">
-                <label for="swish-number">Swish nummer:</label>
+                <label for="swish-number">Nummer:</label>
                 <input id="swish-number" type="tel" placeholder="1234679304" name="swish-number" value="<?php echo(get_site_option('pizzakit_swish_number')); ?>">
               </div>
-              <input type="hidden" name="page" value="edit-menu">
+              <input type="hidden" name="page" value="settings-menu">
               <input type="submit" class="btn-xs btn-primary" name="update-swish-number" value="Uppdatera" />
             </form>
           </div>
@@ -386,7 +386,7 @@ echo '<ul class="list-group">
         <div class="col-sm-r col-xs-2">
           <b>Namn</b>
         </div>
-        <div class="col-sm-r col-xs-4">
+        <div class="col-sm-r col-xs-2">
           <b>Åtgärder</b>
         </div>
       </div>
@@ -401,17 +401,17 @@ echo
     <div class="row">
       <div class="col-sm-2 col-xs-2" style="font-size:16px">
         ' . $p->name . '</div>
-      <div class="col-sm-2">
+      <div class="col-sm-1">
         <form action="." method="post">
           <input type="hidden" name="editPickup" value="' . $p->name . '">
-          <input type="hidden" name="page" value="edit-menu">
+          <input type="hidden" name="page" value="settings-menu">
           <input type="submit" class="btn-xs btn-success pull-left" value="Redigera">
         </form>
       </div>
-      <div class="col-sm-2">
+      <div class="col-sm-1">
         <form action="." method="post">
           <input type="hidden" name="deletePickup" value="' . $p->name . '">
-          <input type="hidden" name="page" value="edit-menu">
+          <input type="hidden" name="page" value="settings-menu">
           <input type="submit" class="btn-xs btn-danger pull-left" value="Radera">
         </form>
       </div>
@@ -420,7 +420,7 @@ echo
 </li>';
 }
 
-  //Adds a row with input fields for adding or editing items to wp-items. Handled at top of page.
+  //Adds a row with input fields for adding or editing pickups. Handled at top of page.
   if (isset($_POST["editPickup"])) {
     $sql = "SELECT * FROM " . $wpdb->prefix . "pickups WHERE name = '" . $_POST["editPickup"] . "'";
     $result = $wpdb->get_results($sql);
@@ -433,7 +433,7 @@ echo
             </div>
             <div class="col-sm-2 col-xs-2 col-md-2 col-lg-2" style="font-size:16px">
                 <input type="hidden" name="savePickup" value="' . $_POST["editPickup"] . '">
-                <input type="hidden" name="page" value="edit-menu">
+                <input type="hidden" name="page" value="settings-menu">
                 <input type="submit" class="btn-sm btn-success pull-left" value="Spara">
               </form>
             </div>
@@ -450,19 +450,52 @@ echo
               </div>
               <div class="col-sm-2 col-xs-2 col-md-2 col-lg-2" style="font-size:16px">
                   <input type="hidden" name="addPickup" value="TRUE">
-                  <input type="hidden" name="page" value="edit-menu">
+                  <input type="hidden" name="page" value="settings-menu">
                   <input type="submit" class="btn-sm btn-success pull-left" value="Lägg till">
                 </form>
               </div>
             </div>
           </div>
-        </li>';
+        </li>
+      </ul>
+    </div>';
   }
-  ?>
-  </ul>
-    </div>
-    <hr />
-  <?php
+}
+
+// Generate edit menu
+elseif ($_POST["page"] == "edit-menu") {
+  echo '<nav class="navbar navbar-inverse">
+          <div class="container-fluid">
+            <ul class="nav navbar-nav">
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="orders">
+                  <input type="submit" class="btn btn-secondary" value="Nya ordrar">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                <input type="hidden" name="page" value="edit-menu">
+                <input type="submit" class="btn btn-primary" value="Ändra meny">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="all-orders">
+                  <input type="submit" class="btn btn-secondary" value="Alla ordrar">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="export">
+                  <input type="submit" class="btn btn-secondary" value="Exportera">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="settings-menu">
+                  <input type="submit" class="btn btn-secondary" value="Inställningar">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
+                <input type="hidden" name="page" value="all-orders">
+                <input type="text" class="form-control" name="order-search" placeholder="Namn, mailadress eller ID" style="min-width:250px">
+                <input type="submit" class="btn btn-secondary" value="Sök">
+              </form></li>
+            </ul>
+          </div>
+        </nav>
+      ';
 
   $sql = "SELECT * FROM " . $wpdb->prefix . "items ORDER BY list_order ASC";
   $items = $wpdb->get_results($sql);
@@ -650,9 +683,6 @@ echo '
 elseif ($_POST["page"] == "all-orders") {
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
-            <div class="navbar-header">
-              <a class="navbar-brand" href="#">Verktyg</a>
-            </div>
             <ul class="nav navbar-nav">
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="orders">
@@ -669,6 +699,10 @@ elseif ($_POST["page"] == "all-orders") {
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="export">
                   <input type="submit" class="btn btn-secondary" value="Exportera">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="settings-menu">
+                  <input type="submit" class="btn btn-secondary" value="Inställningar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
@@ -850,9 +884,6 @@ elseif ($_POST["page"] == "export") {
 
   echo '<nav class="navbar navbar-inverse">
           <div class="container-fluid">
-            <div class="navbar-header">
-              <a class="navbar-brand" href="#">Verktyg</a>
-            </div>
             <ul class="nav navbar-nav">
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="orders">
@@ -869,6 +900,10 @@ elseif ($_POST["page"] == "export") {
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="export">
                   <input type="submit" class="btn btn-primary" value="Exportera">
+              </form></li>
+              <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+                  <input type="hidden" name="page" value="settings-menu">
+                  <input type="submit" class="btn btn-secondary" value="Inställningar">
               </form></li>
               <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
                 <input type="hidden" name="page" value="all-orders">
@@ -1017,9 +1052,6 @@ else {
   echo '
     <nav class="navbar navbar-inverse">
       <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">Verktyg</a>
-        </div>
         <ul class="nav navbar-nav">
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
               <input type="hidden" name="page" value="orders">
@@ -1036,6 +1068,10 @@ else {
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
                   <input type="hidden" name="page" value="export">
                   <input type="submit" class="btn btn-secondary" value="Exportera">
+          </form></li>
+          <li style="padding-top:10px; padding-left:10px"><form action="." method="post">
+              <input type="hidden" name="page" value="settings-menu">
+              <input type="submit" class="btn btn-secondary" value="Inställningar">
           </form></li>
           <li style="padding-top:10px; padding-left:10px"><form action="." method="post" class="form-inline mr-auto">
             <input type="hidden" name="page" value="all-orders">
