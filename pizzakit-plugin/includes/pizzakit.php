@@ -104,7 +104,7 @@ class Pizzakit
 		$weekday = date('N');
 		$hour = date('G');
 
-		$startWeekday = get_site_option('pizzakit_time_start_day');
+		$startWeekday = get_site_option('pizzakit_time_start_weekday');
 		if ($weekday < $startWeekday) {
 			return true;
 		}
@@ -115,7 +115,7 @@ class Pizzakit
 			}
 		}
 		else {
-			$endWeekday = get_site_option('pizzakit_time_end_day');
+			$endWeekday = get_site_option('pizzakit_time_end_weekday');
 			if ($endWeekday < $weekday) {
 				return true;
 			}
