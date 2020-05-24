@@ -211,6 +211,32 @@ if (isset($_POST["update-swish-number"])) {
   update_site_option('pizzakit_swish_number', $_POST["swish-number"]);
 }
 
+// handle an incoming POST object with pickups to delete from db
+if (isset($_POST["deletePickup"])) {
+  $table = $wpdb->prefix . 'pickups';
+  $where = array("name" => $_POST["deletePickup"]);
+  $where_format = array("%s");
+  $wpdb->delete($table, $where, $where_format);
+}
+
+// For handling additions to pickups
+if (isset($_POST["addPickup"])) {
+  $table = $wpdb->prefix . 'pickups';
+  $data = array('name' => $_POST["addPickupName"]);
+  $where_format = array('%s');
+  $wpdb->insert($table, $data, $where_format);
+}
+
+// For handling edits to pickups
+if (isset($_POST["savePickup"])) {
+  $table = $wpdb->prefix . 'pickups';
+  $data = array('name' => $_POST["savePickupName"]);
+  $where = array("name" => $_POST["savePickup"]);
+  $format = array('%s');
+  $where_format = array('%s');
+  $wpdb->update($table, $data, $where, $where_format);
+}
+
 ?>
 
 <!-- import bootstrap css -->
@@ -345,6 +371,95 @@ if ($_POST["page"] == "edit-menu") {
           </div>
         </div>
       </div>
+    </div>
+    <hr />
+    <div class="container">
+      <h3 align="center">Uthämtningsställen:</h3>
+      <?php
+      $sql = "SELECT * FROM " . $wpdb->prefix . "pickups";
+  $pickups = $wpdb->get_results($sql);
+
+echo '<ul class="list-group">
+  <li class="list-group-item">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-r col-xs-2">
+          <b>Namn</b>
+        </div>
+        <div class="col-sm-r col-xs-4">
+          <b>Åtgärder</b>
+        </div>
+      </div>
+    </div>
+  </li>
+';
+
+foreach ($pickups as $p) {
+echo
+'<li class="list-group-item">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-2 col-xs-2" style="font-size:16px">
+        ' . $p->name . '</div>
+      <div class="col-sm-2">
+        <form action="." method="post">
+          <input type="hidden" name="editPickup" value="' . $p->name . '">
+          <input type="hidden" name="page" value="edit-menu">
+          <input type="submit" class="btn-xs btn-success pull-left" value="Redigera">
+        </form>
+      </div>
+      <div class="col-sm-2">
+        <form action="." method="post">
+          <input type="hidden" name="deletePickup" value="' . $p->name . '">
+          <input type="hidden" name="page" value="edit-menu">
+          <input type="submit" class="btn-xs btn-danger pull-left" value="Radera">
+        </form>
+      </div>
+    </div>
+  </div>
+</li>';
+}
+
+  //Adds a row with input fields for adding or editing items to wp-items. Handled at top of page.
+  if (isset($_POST["editPickup"])) {
+    $sql = "SELECT * FROM " . $wpdb->prefix . "pickups WHERE name = '" . $_POST["editPickup"] . "'";
+    $result = $wpdb->get_results($sql);
+    echo '
+      <li class="list-group-item">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm-2 col-xs-2 col-md-2 col-lg-2" style="font-size:16px">
+              <form action="." method="post"><input class="form-control" type="text" name="savePickupName" value="' . $result[0]->name . '">
+            </div>
+            <div class="col-sm-2 col-xs-2 col-md-2 col-lg-2" style="font-size:16px">
+                <input type="hidden" name="savePickup" value="' . $_POST["editPickup"] . '">
+                <input type="hidden" name="page" value="edit-menu">
+                <input type="submit" class="btn-sm btn-success pull-left" value="Spara">
+              </form>
+            </div>
+          </div>
+        </div>
+      </li>';
+  } else {
+      echo '
+        <li class="list-group-item">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-2 col-xs-2 col-md-2 col-lg-2" style="font-size:16px">
+                <form action="." method="post"><input class="form-control" type="text" name="addPickupName" placeholder="Namn">
+              </div>
+              <div class="col-sm-2 col-xs-2 col-md-2 col-lg-2" style="font-size:16px">
+                  <input type="hidden" name="addPickup" value="TRUE">
+                  <input type="hidden" name="page" value="edit-menu">
+                  <input type="submit" class="btn-sm btn-success pull-left" value="Lägg till">
+                </form>
+              </div>
+            </div>
+          </div>
+        </li>';
+  }
+  ?>
+  </ul>
     </div>
     <hr />
   <?php
