@@ -2,7 +2,7 @@ import React from 'react';
 
 function Pickup(props){
 	return(
-        <option value={props.name}>{props.name}</option>
+        <option value={props.name} selected={props.selected}>{props.name}</option>
     );
 }
 
