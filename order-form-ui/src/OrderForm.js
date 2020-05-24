@@ -212,6 +212,7 @@ class OrderForm extends React.Component {
 			return(<Pickup
 				key = {x['name']}
 				name={x['name']}
+				selected={this.state.location == x['name']}
 			/>);
 		});
 
