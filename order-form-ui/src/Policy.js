@@ -11,6 +11,7 @@ class Policy extends React.Component {
 			<p className="policy-page">
 				<h2>Köpvillkor</h2>
 					<a onClick={() => this.goBack()}>&lt; Tillbaka</a>
+                    <p></p>
 				    <p>PRISER OCH BETALNING</p><p>
 
                     Varje vara anges med pris inklusive moms. I kundvagnen kan man se det totala priset
@@ -33,11 +34,14 @@ class Policy extends React.Component {
 
                     När du lägger din beställning hos oss uppger du dina personuppgifter. I samband med
                     din registrering och beställning godkänner du att vi lagrar och använder dina
-                    uppgifter i vår verksamhet för att fullfölja avtalet gentemot dig enligt vår
-                    integritetspolicy som hittas i sin helhet [HÄR]. Du har enligt Personuppgiftslagen
-                    rätt att få den information som vi har registrerat om dig. Om den är felaktig,
-                    ofullständig eller irrelevant kan du begära att informationen ska rättas eller tas
-                    bort. Kontakta oss i så fall via e-post.</p><p>
+                    uppgifter i vår verksamhet för att fullfölja avtalet gentemot dig enligt denna
+                    integritetspolicy. Du har enligt Personuppgiftslagen rätt att få den information
+                    som vi har registrerat om dig. Om den är felaktig, ofullständig eller irrelevant
+                    kan du begära att informationen ska rättas eller tas bort. Kontakta oss i så fall
+                    via e-post. Du har rätt att få utdrag av den information vi har sparad om dig och
+                    att när som helt återkalla ditt samtycke till vårt lagrande av dina personuppgifter.
+                    Du har rätt att ta upp eventuella klagomål gällande vår hantering av personuppgifter
+                    till Datainspektionen.</p><p>
 
                     RETURER</p><p>
 
