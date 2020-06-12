@@ -1,8 +1,10 @@
 import React from 'react';
 import Small_item from './Items';
+import Pickup from './Pickups';
 import PaymentConfirmation from './PaymentConfirmation';
 import ConSuccess from './ConSuccess';
 import ConFailed from './ConFailed';
+import Policy from './Policy';
 
 // Main Application
 // Renders a form and keeps track of items the client has selected
@@ -18,9 +20,9 @@ class OrderForm extends React.Component {
 		// Required for intercepting onChange events from <input>
 		this.handle_detail_update = this.handle_detail_update.bind(this);
 
-		this.items = window.pizzakitItems;
+		this.items = window.pizzakitItems.sort((a, b) => a.list_order - b.list_order);
 		this.prices = new Map(this.items.map(x => [x['name'],x['price']]));
-		this.state = {
+		this.state = props.initState || {
 			cart : new Map( this.items.map(x => [x['name'],0])),
 			location : '',
 			email : '',
@@ -29,6 +31,7 @@ class OrderForm extends React.Component {
 			comments : '',
 			isLoading: false
 		};
+		this.pickups = window.pizzakitPickups;
 	}
 
 	handle_cart_update(item,delta){
@@ -63,12 +66,19 @@ class OrderForm extends React.Component {
 
 	async handle_submit(target_addr) {
 		if(this.is_fields_empty()){
-			alert('Var snäll och fyll i alla obligatoriska fält');
+			alert('Vänligen fyll i alla obligatoriska fält');
+			return;
+		}
+		if(!document.getElementById("policy").checked) {
+			alert('Vänligen godkänn köpvillkoren')
 			return;
 		}
 		const validation_results = this.check_validation();
 		if(validation_results !== ''){
 			alert(validation_results);
+		}
+		if (!window.confirm('Gå vidare till betalning?')) {
+			return;
 		}
 		this.setState({ isLoading: true });
 		const response = await fetch(target_addr, {
@@ -83,7 +93,7 @@ class OrderForm extends React.Component {
 		if (response.ok) {
 			const json = await response.json();
 			
-			if (json.token != null && json.token !== '-1') {
+			if (json.token != null && parseInt(json.token) > 0) {
 				this.props.navigateTo(PaymentConfirmation, { token: json.token });
 			}
 			else {
@@ -96,12 +106,12 @@ class OrderForm extends React.Component {
 	}
 
 	validate_email(str){
-		var re = /^[a-ö\-.]+@[a-ö]+\.[a-ö]+$/;
+		var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 		return re.exec(str) !== null;	
 	}
 
 	validate_tel(str){
-		var re = /^[0-9]{8,15}$/;
+		var re = /^(([+]46)\s*(7)|07|(0046)\s*7)[02369]\s*(\d{4})\s*(\d{3})$/;
 		return re.exec(str.replace(/\s/g,'')) !== null;
 	}
 
@@ -137,7 +147,42 @@ class OrderForm extends React.Component {
 		return JSON.stringify(json_obj);
 	}
 
-	render() {
+	/**
+	 * Returns true if the current time and date is outside of the "open" time
+	 * frame.
+	 */
+	outsideTimeFrame() {
+		const date = new Date();
+		const weekday = date.getDay() || 7; // JavaScript days are Sun-Sat 0-6 but we want Mon-Sun 1-7.
+		const hour = date.getHours();
+
+		if (weekday < window.pizzakitTimes.start.weekday) {
+			return true;
+		}
+		else if (weekday == window.pizzakitTimes.start.weekday) {
+			if (hour < window.pizzakitTimes.start.hours) {
+				return true;
+			}
+		}
+		else {
+			if (window.pizzakitTimes.end.weekday < weekday) {
+				return true;
+			}
+			else if (window.pizzakitTimes.end.weekday == weekday) {
+				if (window.pizzakitTimes.end.hours <= hour) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	show_policy() {
+		this.props.navigateTo(Policy, { state: this.state, post_address: this.post_address });
+	}
+
+	form() {
 		// Render items dynamicaly
 		const extras = this.items.filter(x => x["main_item"] == false);
 		const extra_list = extras.map(x => {
@@ -160,6 +205,14 @@ class OrderForm extends React.Component {
 				price={this.prices.get(x['name'])}
 				count={this.state.cart.get(x['name'])}
 				onClick={(name,delta) => this.handle_cart_update(name,delta)}
+			/>);
+		});
+
+		const pickup_list = this.pickups.map(x => {
+			return(<Pickup
+				key = {x['name']}
+				name={x['name']}
+				selected={this.state.location == x['name']}
 			/>);
 		});
 
@@ -195,24 +248,26 @@ class OrderForm extends React.Component {
 				<div id="detail-form">
 					<div className="form-group" id="email">
 						<label htmlFor="email_inpt">Email<span>*</span>:</label>
-						<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')} placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+"/>
+						<input type="email" name="email" id="email_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_email_valid ? '' : 'invalid')} placeholder="exempel@mail.se" pattern="[a-ö\-\.]+@[a-ö]+\.[a-ö]+" value={this.state.email}/>
 					</div>
 					<div className="form-group" id="tele">
 						<label htmlFor="tel_inpt">Telefonnummer<span>*</span>:</label>
-						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="07........"/>
+						<input type="tel" name="telNr" id="tel_inpt" onChange={this.handle_detail_update} className={'form-control ' + (this.is_telNr_valid ? '' : 'invalid')} aria-describedby="emailHelp" placeholder="07........" value={this.state.telNr}/>
 					</div>
 					<div className="form-group">
 						<label htmlFor="name_inpt">Namn<span>*</span>:</label>
-						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Namn Efternamn"/>
+						<input type="text" name="name" id="name_inpt" onChange={this.handle_detail_update} className="form-control" aria-describedby="emailHelp" placeholder="Namn Efternamn" value={this.state.name}/>
 					</div>
 					<div className="form-group" >
 						<label htmlFor="pickup_inpt">Uthämtningsställe<span>*</span>:</label>
 						<select name="location" id="pickup_inpt" onChange={this.handle_detail_update}>
-							<option value="" disabled selected>Välj:</option>
-							<option value="Vasastan">Vasastan</option>
-							<option value="Kungsholmen">Kungsholmen</option>
-							<option value="Östermalm">Östermalm</option>
+							<option value="" disabled selected={this.state.location == ''}>Välj:</option>
+							{pickup_list}
 						</select>
+					</div>
+					<div className="form-group">
+						<input type="checkbox" id="policy" name="policy" value="TRUE"></input>
+						<label htmlFor="policy">Jag godkänner <a onClick={() => this.show_policy()}>köpvillkoren</a><span>*</span>:</label>
 					</div>
 				</div>
 				<hr/>
@@ -224,6 +279,34 @@ class OrderForm extends React.Component {
 					</button>
 				</div>
 			</p>
+		);
+	}
+
+	render() {
+		const weekdays = [ 'måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag' ];
+		const startText = weekdays[window.pizzakitTimes.start.weekday - 1] + (window.pizzakitTimes.start.hours != 0 ? ` ${window.pizzakitTimes.start.hours}:00` : '');
+		const endText = weekdays[window.pizzakitTimes.end.weekday - 1] + (window.pizzakitTimes.end.hours != 24 ? ` ${window.pizzakitTimes.end.hours}:00` : '');
+		const pickupText = weekdays[window.pizzakitTimes.pickup.startDay - 1] + (window.pizzakitTimes.pickup.startDay != window.pizzakitTimes.pickup.endDay ? ' till ' + weekdays[window.pizzakitTimes.pickup.endDay - 1] : '');
+
+		let content;
+		if (this.outsideTimeFrame()) {
+			content = (
+				<p className="has-text-align-center">
+					<div>
+						<h6>Vi tar inte emot några beställningar just nu</h6>
+					</div>
+				</p>
+			);
+		}
+		else {
+			content = this.form();
+		}
+
+		return (
+			<>
+				<p className="has-text-align-center">Vi tar emot beställningar mellan {startText} och {endText} för upphämtning på {pickupText}!</p>
+				{content}
+			</>
 		);
 	}
 }
