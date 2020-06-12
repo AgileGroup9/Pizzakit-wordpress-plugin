@@ -1,5 +1,13 @@
 <?php
 
+require 'PHPMailer/Exception.php';
+require 'PHPMailer/PHPMailer.php';
+require 'PHPMailer/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 class Pizzakit
 {
 
@@ -181,10 +189,60 @@ class Pizzakit
 						if (!$res) {
 							trigger_error("Pizzakit: error creating entry in orders");
 						}
+						$query = $wpdb->prepare('SELECT id,location,name,email from '.$table.' WHERE id = %d',$order_id);
+						$res = $wpdb->get_results($query);
+						trigger_error(print_r($res,$return=true));
+						Pizzakit::send_payment_confirmation($res[0]);
 					}
 				}
 			}
 		}
+	}
+
+	private static function send_payment_confirmation($details){
+		$mail = new PHPMailer(true);
+		try {
+			//Server settings
+			$mail->isSMTP();                                            // Send using SMTP
+			$mail->Host       = get_site_option('pizzakit_email_server');   // Set the SMTP server to send through
+			$mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+			$mail->Username   = get_site_option('pizzakit_email_address');  // SMTP username
+			$mail->Password   = get_site_option('pizzakit_email_password'); // SMTP password
+			$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->Port       = 587;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+		
+			//Recipients
+			$mail->setFrom(get_site_option('pizzakit_email_address'), 'Name');
+			$mail->addAddress($details->email, 'Customer');     // Add a recipient
+			$mail->addReplyTo(get_site_option('pizzakit_email_address'), 'Information');
+		
+			// Content
+			$mail->isHTML(true);                                  // Set email format to HTML
+			$mail->CharSet = "UTF-8";
+			$mail->Subject = "Menomale pizza kit order ".$details->id;
+			$mail->Body    = Pizzakit::generate_mail_body($details->id, $details->name, $details->location);
+			$mail->AltBody = "Order ".$details->id." registrerad under namn".$details->name;
+		
+			$mail->send();
+		} catch (Exception $e) {
+			trigger_error("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+		}
+	}
+
+	private static function generate_mail_body($id, $name, $location) {
+		$weekdays = array('måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag');
+		$startDay = $weekdays[get_site_option('pizzakit_time_pickup_start_day') - 1];
+		$endDay = $weekdays[get_site_option('pizzakit_time_pickup_end_day') - 1];
+
+		ob_start();
+		?>
+			<h3>Hej, vi har tagit emot din order!</h3>
+			<p>Order <?php echo($id); ?> registrerad under namn <?php echo($name); ?>.</p>
+			<p>
+				Hämta upp din order <?php echo($startDay); ?> till <?php echo($endDay); ?> denna vecka på Menomale i <?php echo($location); ?>.
+			</p>
+		<?php
+		return ob_get_clean();
 	}
 
 	private static function create_payment($order)

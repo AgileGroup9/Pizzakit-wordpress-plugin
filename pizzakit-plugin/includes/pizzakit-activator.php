@@ -114,5 +114,8 @@ class Pizzakit_Activator
 		add_site_option('pizzakit_time_pickup_start_day', 5);
 		add_site_option('pizzakit_time_pickup_end_day', 5);
 		add_site_option('pizzakit_swish_number', '');
+		add_site_option('pizzakit_email_server', '');
+		add_site_option('pizzakit_email_address', '');
+		add_site_option('pizzakit_email_password', '');
 	}
 }
