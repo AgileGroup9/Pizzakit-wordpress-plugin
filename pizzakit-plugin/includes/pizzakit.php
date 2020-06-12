@@ -203,19 +203,18 @@ class Pizzakit
 		$mail = new PHPMailer(true);
 		try {
 			//Server settings
-			$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
 			$mail->isSMTP();                                            // Send using SMTP
-			$mail->Host       = 'smtp.server.example';                    // Set the SMTP server to send through
+			$mail->Host       = get_site_option('pizzakit_email_server');   // Set the SMTP server to send through
 			$mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-			$mail->Username   = 'admin';                     // SMTP username
-			$mail->Password   = 'hunter2';                               // SMTP password
+			$mail->Username   = get_site_option('pizzakit_email_address');  // SMTP username
+			$mail->Password   = get_site_option('pizzakit_email_password'); // SMTP password
 			$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port       = 587;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 		
 			//Recipients
-			$mail->setFrom('from addr@coolsvile.cs', 'Name');
+			$mail->setFrom(get_site_option('pizzakit_email_address'), 'Name');
 			$mail->addAddress($details->email, 'Customer');     // Add a recipient
-			$mail->addReplyTo('from addr@coolsvile.cs', 'Information');
+			$mail->addReplyTo(get_site_option('pizzakit_email_address'), 'Information');
 		
 			// Content
 			$mail->isHTML(true);                                  // Set email format to HTML

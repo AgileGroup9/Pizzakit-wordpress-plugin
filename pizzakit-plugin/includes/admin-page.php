@@ -237,6 +237,19 @@ if (isset($_POST["savePickup"])) {
   $wpdb->update($table, $data, $where, $where_format);
 }
 
+// Updates the settings for the host of the email server.
+if (isset($_POST["update-email-server"])) {
+  update_site_option('pizzakit_email_server', $_POST["email-server"]);
+}
+// Updates the settings for the username/email of the email server.
+if (isset($_POST["update-email-address"])) {
+  update_site_option('pizzakit_email_address', $_POST["email-address"]);
+}
+// Updates the settings for the password of the email server.
+if (isset($_POST["update-email-password"])) {
+  update_site_option('pizzakit_email_password', $_POST["email-password"]);
+}
+
 ?>
 
 <!-- import bootstrap css -->
@@ -367,6 +380,44 @@ if ($_POST["page"] == "settings-menu") {
               </div>
               <input type="hidden" name="page" value="settings-menu">
               <input type="submit" class="btn-xs btn-primary" name="update-swish-number" value="Uppdatera" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div class="container">
+      <h3 align="center">Email:</h3>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-4">
+            <form class="form-inline" action="." method="post">
+              <div class="form-group">
+                <label for="email-server">Server:</label>
+                <input id="email-server" type="text" name="email-server" value="<?php echo(get_site_option('pizzakit_email_server')); ?>">
+              </div>
+              <input type="hidden" name="page" value="settings-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-email-server" value="Uppdatera" />
+            </form>
+          </div>
+          <div class="col-sm-4">
+            <form class="form-inline" action="." method="post">
+              <div class="form-group">
+                <label for="email-address">Adress:</label>
+                <input id="email-address" type="email" name="email-address" value="<?php echo(get_site_option('pizzakit_email_address')); ?>">
+              </div>
+              <input type="hidden" name="page" value="settings-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-email-address" value="Uppdatera" />
+            </form>
+          </div>
+          <div class="col-sm-4">
+            <form class="form-inline" action="." method="post">
+              <div class="form-group">
+                <label for="email-password">Lösenord:</label>
+                <input id="email-password" type="password" name="email-password" value="<?php echo(get_site_option('pizzakit_email_password')); ?>">
+              </div>
+              <input type="hidden" name="page" value="settings-menu">
+              <input type="submit" class="btn-xs btn-primary" name="update-email-password" value="Uppdatera" />
             </form>
           </div>
         </div>
