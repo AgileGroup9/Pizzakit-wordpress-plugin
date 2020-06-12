@@ -219,6 +219,7 @@ class Pizzakit
 		
 			// Content
 			$mail->isHTML(true);                                  // Set email format to HTML
+			$mail->CharSet = "UTF-8";
 			$mail->Subject = "Menomale pizza kit order ".$details->id;
 			$mail->Body    = Pizzakit::generate_mail_body($details->id, $details->name, $details->location);
 			$mail->AltBody = "Order ".$details->id." registrerad under namn".$details->name;
@@ -230,12 +231,16 @@ class Pizzakit
 	}
 
 	private static function generate_mail_body($id, $name, $location) {
+		$weekdays = array('måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag');
+		$startDay = $weekdays[get_site_option('pizzakit_time_pickup_start_day') - 1];
+		$endDay = $weekdays[get_site_option('pizzakit_time_pickup_end_day') - 1];
+
 		ob_start();
 		?>
 			<h3>Hej, vi har tagit emot din order!</h3>
-			<p>Order <?php $id ?> registrerad under namn <?php $name ?>.</p>
+			<p>Order <?php echo($id); ?> registrerad under namn <?php echo($name); ?>.</p>
 			<p>
-				Hämta upp din order från <?php get_site_option('pizzakit_time_pickup_start_day') ?> - <?php get_site_option('pizzakit_time_pickup_end_day') ?> denna vecka på Menomale i <?php $location ?>.
+				Hämta upp din order <?php echo($startDay); ?> till <?php echo($endDay); ?> denna vecka på Menomale i <?php echo($location); ?>.
 			</p>
 		<?php
 		return ob_get_clean();
