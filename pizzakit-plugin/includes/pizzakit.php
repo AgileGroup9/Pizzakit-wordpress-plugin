@@ -165,13 +165,25 @@ class Pizzakit
 			// Content
 			$mail->isHTML(true);                                  // Set email format to HTML
 			$mail->Subject = "Menomale pizza kit order ".$details->id;
-			$mail->Body    = "<h3>Hej, vi har tagit emot din order</h3><p>Order ".$details->id." registrerad under namn".$details->name."</p><p>hämta upp din order från fredag - söndag denna vecka på Menomale i ".$details->location."</p>";
+			$mail->Body    = Pizzakit::generate_mail_body($details->id, $details->name, $details->location);
 			$mail->AltBody = "Order ".$details->id." registrerad under namn".$details->name;
 		
 			$mail->send();
 		} catch (Exception $e) {
 			trigger_error("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
 		}
+	}
+
+	private static function generate_mail_body($id, $name, $location) {
+		ob_start();
+		?>
+			<h3>Hej, vi har tagit emot din order!</h3>
+			<p>Order <?php $id ?> registrerad under namn <?php $name ?>.</p>
+			<p>
+				Hämta upp din order från <?php get_site_option('pizzakit_time_pickup_start_day') ?> - <?php get_site_option('pizzakit_time_pickup_end_day') ?> denna vecka på Menomale i <?php $location ?>.
+			</p>
+		<?php
+		return ob_get_clean();
 	}
 
 	private static function create_payment($order)
